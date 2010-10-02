@@ -6,7 +6,7 @@
 
 ## Installation
 
-    $ npm install pool
+    $ npm install generic-pool
 
 ## Example
 

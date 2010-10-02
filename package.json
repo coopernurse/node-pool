@@ -1,5 +1,5 @@
 {
-  "name": "pool",
+  "name": "generic-pool",
   "description": "Generic resource pooling for Node.JS",
   "version": "1.0.0",
   "author": "James Cooper <james@bitmechanic.com>",
