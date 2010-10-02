@@ -25,7 +25,7 @@
             callback(c);
         },
         destroy  : function(client) { client.end(); },
-        max : 10,
+        max      : 10,
         idleTimeoutMillis : 30000
     });
 
@@ -43,11 +43,14 @@
 
     Pool() accepts an object with these slots:
 
-             name : name of pool (string, optional)
-           create : function that returns a new resource
-                      should call callback() with the created resource
-          destroy : function that accepts a resource and destroys it
-              max : 
+                  name : name of pool (string, optional)
+                create : function that returns a new resource
+                           should call callback() with the created resource
+               destroy : function that accepts a resource and destroys it
+                   max : maximum number of resources to create at any given time
+     idleTimeoutMillis : max milliseconds a resource can go unused before it should be destroyed
+                         (default 30000)
+    reapIntervalMillis : frequency to check for idle resources (default 1000)
 
 
 ## Run Tests
