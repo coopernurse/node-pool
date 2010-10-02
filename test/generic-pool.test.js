@@ -1,4 +1,4 @@
-var poolModule = require('pool');
+var poolModule = require('generic-pool');
 
 module.exports = {
 

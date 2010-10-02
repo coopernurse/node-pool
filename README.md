@@ -12,7 +12,7 @@
 
     // Create a MySQL connection pool with
     // a max of 10 connections and a 30 second max idle time
-    var poolModule = require('pool');
+    var poolModule = require('generic-pool');
     var pool = poolModule.Pool({
         name     : 'mysql',
         create   : function(callback) {
