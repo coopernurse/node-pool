@@ -5,6 +5,7 @@ module.exports = {
     'expands to max limit' : function (assert, beforeExit) {
         var createCount  = 0;
         var destroyCount = 0;
+        var borrowCount  = 0;
 
         var pool = poolModule.Pool({
             name     : 'test1',
@@ -19,15 +20,19 @@ module.exports = {
 
         for (var i = 0; i < 10; i++) {
             pool.borrow(function(obj) {
-                setTimeout(function() {
-                    pool.returnToPool(obj);
-                }, 100);
-            });
+                return function() {
+                    setTimeout(function() {
+                        borrowCount++;
+                        pool.returnToPool(obj);
+                    }, 100);
+                };
+            }());
         }
 
         beforeExit(function() {
             assert.equal(2, createCount);
             assert.equal(2, destroyCount);
+            assert.equal(10, borrowCount);
         });
     }
     

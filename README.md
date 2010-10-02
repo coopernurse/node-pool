@@ -41,17 +41,14 @@
 
 ## Documentation
 
-    // Pool() accepts 3 parameters:
-    //
-    //    (a) factory object with 3 slots:
-    //         name: string name
-    //       create: function that returns a new resource
-    //               should call callback() with the created resource
-    //      destroy: function that accepts a resource and destroys it
-    //
-    //    (b) max items to create in pool
-    //    (c) idle timeout (milliseconds)
-    //
+    Pool() accepts an object with these slots:
+
+             name : name of pool (string, optional)
+           create : function that returns a new resource
+                      should call callback() with the created resource
+          destroy : function that accepts a resource and destroys it
+              max : 
+
 
 ## Run Tests
 
