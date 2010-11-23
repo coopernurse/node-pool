@@ -26,7 +26,8 @@
         },
         destroy  : function(client) { client.end(); },
         max      : 10,
-        idleTimeoutMillis : 30000
+        idleTimeoutMillis : 30000,
+        log : false
     });
 
     // borrow connection - callback function is called
@@ -51,6 +52,8 @@
      idleTimeoutMillis : max milliseconds a resource can go unused before it should be destroyed
                          (default 30000)
     reapIntervalMillis : frequency to check for idle resources (default 1000)
+                   log : true/false  - if true, verbose log info will be sent to console.log()
+                         (default false)
 
 
 ## Run Tests
