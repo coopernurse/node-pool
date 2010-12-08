@@ -34,6 +34,52 @@ module.exports = {
             assert.equal(2, destroyCount);
             assert.equal(10, borrowCount);
         });
+    },
+    
+    'supports priority on borrow' : function(assert, beforeExit) {
+        var borrowTimeLow  = 0;
+        var borrowTimeHigh = 0;
+        var borrowCount = 0;
+        
+        var pool = poolModule.Pool({
+            name     : 'test2',
+            create   : function(callback) { callback(); },
+            destroy  : function(client) { },
+            max : 1,
+            idleTimeoutMillis : 100,
+            priorityRange : 2,
+        });
+        
+        for (var i = 0; i < 10; i++) {
+            pool.borrow(function(obj) {
+                return function() {
+                    setTimeout(function() {
+                        var t = new Date().getTime();
+                        if (t > borrowTimeLow) { borrowTimeLow = t; }
+                        borrowCount++;
+                        pool.returnToPool(obj);
+                    }, 50);
+                };
+            }(), 1);
+        }
+        
+        for (var i = 0; i < 10; i++) {
+            pool.borrow(function(obj) {
+                return function() {
+                    setTimeout(function() {
+                        var t = new Date().getTime();
+                        if (t > borrowTimeHigh) { borrowTimeHigh = t; }
+                        borrowCount++;
+                        pool.returnToPool(obj);
+                    }, 50);
+                };
+            }(), 0);
+        }
+        
+        beforeExit(function() {
+            assert.equal(20, borrowCount);
+            assert.equal(true, borrowTimeLow > borrowTimeHigh);
+        });
     }
     
 };
