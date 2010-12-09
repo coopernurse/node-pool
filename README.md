@@ -13,8 +13,9 @@
     1.0.3 - Dec 8 2010
        - Added priority queueing (thanks to sylvinus)
        - Contributions from Poetro
-         - borrow() renamed to acquire()
-         - returnToPool() renamed to release()
+         - Name changes to match conventions described here: http://en.wikipedia.org/wiki/Object_pool_pattern
+            - borrow() renamed to acquire()
+            - returnToPool() renamed to release()
          - destroy() removed from public interface
          - added JsDoc comments
          - Priority queueing enhancements
