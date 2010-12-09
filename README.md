@@ -10,7 +10,7 @@
     
 ## History
 
-    1.0.3 - Dec 8 2010
+    1.0.3 - Dec 9 2010
        - Added priority queueing (thanks to sylvinus)
        - Contributions from Poetro
          - Name changes to match conventions described here: http://en.wikipedia.org/wiki/Object_pool_pattern
@@ -54,45 +54,6 @@
         });
     });
     
-    
-## Priority Queueing
-
-The pool now supports optional priority queueing.  This becomes relevant when no resources 
-are available and the caller has to wait. acquire() accepts an optional priority int which 
-specifies the caller's relative position in the queue.
-
-    // create pool with priorityRange of 3
-    // borrowers can specify a priority 0 to 2
-    var pool = poolModule.Pool({
-        name     : 'mysql',
-        create   : function(callback) {
-            // do something
-        },
-        destroy  : function(client) { 
-            // cleanup.  omitted for this example
-        },
-        max      : 10,
-        idleTimeoutMillis : 30000,
-        priorityRange : 3
-    });
-
-    // acquire connection - no priority - will go at end of line
-    pool.acquire(function(client) {
-        pool.release(client);
-    });
-    
-    // acquire connection - high priority - will go into front slot
-    pool.acquire(function(client) {
-        pool.release(client);
-    }, 0);
-    
-    // acquire connection - medium priority - will go into middle slot
-    pool.acquire(function(client) {
-        pool.release(client);
-    }, 1);
-    
-    // etc..
-
 ## Documentation
 
     Pool() accepts an object with these slots:
@@ -111,6 +72,43 @@ specifies the caller's relative position in the queue.
                    log : true/false  - if true, verbose log info will be sent to console.log()
                          (default false)
 
+## Priority Queueing
+
+The pool now supports optional priority queueing.  This becomes relevant when no resources 
+are available and the caller has to wait. acquire() accepts an optional priority int which 
+specifies the caller's relative position in the queue.
+
+     // create pool with priorityRange of 3
+     // borrowers can specify a priority 0 to 2
+     var pool = poolModule.Pool({
+         name     : 'mysql',
+         create   : function(callback) {
+             // do something
+         },
+         destroy  : function(client) { 
+             // cleanup.  omitted for this example
+         },
+         max      : 10,
+         idleTimeoutMillis : 30000,
+         priorityRange : 3
+     });
+
+     // acquire connection - no priority - will go at end of line
+     pool.acquire(function(client) {
+         pool.release(client);
+     });
+
+     // acquire connection - high priority - will go into front slot
+     pool.acquire(function(client) {
+         pool.release(client);
+     }, 0);
+
+     // acquire connection - medium priority - will go into middle slot
+     pool.acquire(function(client) {
+         pool.release(client);
+     }, 1);
+
+     // etc..
 
 ## Run Tests
 
