@@ -4,7 +4,8 @@
   "version": "1.0.3",
   "author": "James Cooper <james@bitmechanic.com>",
   "contributors": [
-    { "name": "James Cooper", "email": "james@bitmechanic.com" }
+    { "name": "James Cooper", "email": "james@bitmechanic.com" },
+    { "name": "Peter Galiba", "email": "poetro@poetro.hu", "url": "http://poetro.hu/" }
   ],
   "keywords": ["pool", "pooling", "throttle"],
   "main": "lib/generic-pool.js",
