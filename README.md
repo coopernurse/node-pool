@@ -7,6 +7,20 @@
 ## Installation
 
     $ npm install generic-pool
+    
+## History
+
+    1.0.3 - Dec 8 2010
+       - Added priority queueing (thanks to sylvinus)
+       - Contributions from Poetro
+         - borrow() renamed to acquire()
+         - returnToPool() renamed to release()
+         - destroy() removed from public interface
+         - added JsDoc comments
+         - Priority queueing enhancements
+       
+    1.0.2 - Nov 9 2010 
+       - First NPM release
 
 ## Example
 
@@ -30,12 +44,12 @@
         log : false
     });
 
-    // borrow connection - callback function is called
+    // acquire connection - callback function is called
     // once a resource becomes available
-    pool.borrow(function(client) {
+    pool.acquire(function(client) {
         client.query("select * from foo", [], function() {
             // return object back to pool
-            pool.returnToPool(client);
+            pool.release(client);
         });
     });
     
@@ -43,7 +57,7 @@
 ## Priority Queueing
 
 The pool now supports optional priority queueing.  This becomes relevant when no resources 
-are available and the caller has to wait. borrow() accepts an optional priority int which 
+are available and the caller has to wait. acquire() accepts an optional priority int which 
 specifies the caller's relative position in the queue.
 
     // create pool with priorityRange of 3
@@ -61,19 +75,19 @@ specifies the caller's relative position in the queue.
         priorityRange : 3
     });
 
-    // borrow connection - no priority - will go at end of line
-    pool.borrow(function(client) {
-        pool.returnToPool(client);
+    // acquire connection - no priority - will go at end of line
+    pool.acquire(function(client) {
+        pool.release(client);
     });
     
-    // borrow connection - high priority - will go into front slot
-    pool.borrow(function(client) {
-        pool.returnToPool(client);
+    // acquire connection - high priority - will go into front slot
+    pool.acquire(function(client) {
+        pool.release(client);
     }, 0);
     
-    // borrow connection - medium priority - will go into middle slot
-    pool.borrow(function(client) {
-        pool.returnToPool(client);
+    // acquire connection - medium priority - will go into middle slot
+    pool.acquire(function(client) {
+        pool.release(client);
     }, 1);
     
     // etc..

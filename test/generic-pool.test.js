@@ -40,6 +40,7 @@ module.exports = {
         var borrowTimeLow  = 0;
         var borrowTimeHigh = 0;
         var borrowCount = 0;
+        var i;
         
         var pool = poolModule.Pool({
             name     : 'test2',
@@ -47,10 +48,10 @@ module.exports = {
             destroy  : function(client) { },
             max : 1,
             idleTimeoutMillis : 100,
-            priorityRange : 2,
+            priorityRange : 2
         });
         
-        for (var i = 0; i < 10; i++) {
+        for (i = 0; i < 10; i++) {
             pool.borrow(function(obj) {
                 return function() {
                     setTimeout(function() {
@@ -63,7 +64,7 @@ module.exports = {
             }(), 1);
         }
         
-        for (var i = 0; i < 10; i++) {
+        for (i = 0; i < 10; i++) {
             pool.borrow(function(obj) {
                 return function() {
                     setTimeout(function() {
