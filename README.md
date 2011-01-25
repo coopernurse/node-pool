@@ -10,6 +10,10 @@
     
 ## History
 
+    1.0.4 - Jan 25 2011
+       - Fixed #6 (objects reaped with undefined timeouts)
+       - Fixed #7 (objectTimeout issue)
+
     1.0.3 - Dec 9 2010
        - Added priority queueing (thanks to sylvinus)
        - Contributions from Poetro
