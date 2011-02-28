@@ -1,8 +1,9 @@
+var assert     = require('assert');
 var poolModule = require('generic-pool');
 
 module.exports = {
-    
-    'expands to max limit' : function (assert, beforeExit) {
+
+    'expands to max limit' : function (beforeExit) {
         var createCount  = 0;
         var destroyCount = 0;
         var borrowCount  = 0;
@@ -36,7 +37,7 @@ module.exports = {
         });
     },
     
-    'supports priority on borrow' : function(assert, beforeExit) {
+    'supports priority on borrow' : function(beforeExit) {
         var borrowTimeLow  = 0;
         var borrowTimeHigh = 0;
         var borrowCount = 0;
@@ -83,7 +84,7 @@ module.exports = {
         });
     },
     
-    'removes correct object on reap' : function (assert, beforeExit) {
+    'removes correct object on reap' : function (beforeExit) {
         var destroyed = [];
         var clientCount = 0;
         
