@@ -10,6 +10,9 @@
     
 ## History
 
+    1.0.5 - Apr 20 2011
+       - Merged #12 (ability to drain pool - contributed by gdusbabek)
+       
     1.0.4 - Jan 25 2011
        - Fixed #6 (objects reaped with undefined timeouts)
        - Fixed #7 (objectTimeout issue)
