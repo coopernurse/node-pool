@@ -114,6 +114,19 @@ specifies the caller's relative position in the queue.
 
      // etc..
 
+## Draining
+
+If you know would like to terminate all the resources in your queue before
+their timeouts have been reached, you can use `shutdownNow()` in conjunction
+with `drain()`:
+
+    pool.drain(function() {
+	    pool.destroyAllNow();
+    });
+
+One side-effect of calling `drain()` is that subsequent calls to `acquire()`
+will throw an Error.
+
 ## Run Tests
 
     $ npm install expresso

@@ -111,6 +111,41 @@ module.exports = {
             assert.equal(2, destroyed[0]);
             assert.equal(1, destroyed[1]);
         });
+    },
+  
+    'tests drain' : function (beforeExit) {
+        var created = 0;
+        var destroyed = 0;
+        var count = 5;
+        var acquired = 0;
+      
+        var pool = poolModule.Pool({
+            name    : 'test4',
+            create  : function(callback) { callback({id: ++created}); },
+            destroy : function(client) { destroyed += 1; },
+            max : 2,
+            idletimeoutMillis : 300000
+        });
+      
+        for (var i = 0; i < count; i++) {
+            pool.acquire(function(client) {
+                acquired += 1;
+                setTimeout(function() { pool.release(client); }, 250);
+            });
+        }
+      
+        assert.notEqual(count, acquired);
+        pool.drain(function() {
+            assert.equal(count, acquired);
+            // short circuit the absurdly long timeouts above.
+            pool.destroyAllNow();
+            beforeExit(function() {});
+        });
+      
+        // subsequent calls to acquire should return an error.
+        assert.throws(function() {
+            pool.acquire(function(client) {});
+        }, Error);
     }
     
 };
