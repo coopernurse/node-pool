@@ -1,5 +1,5 @@
 var assert     = require('assert');
-var poolModule = require('generic-pool');
+var poolModule = require('..');
 
 module.exports = {
 
@@ -149,6 +149,49 @@ module.exports = {
         assert.throws(function() {
             pool.acquire(function(client) {});
         }, Error);
+    },
+
+    'supports single arg callbacks' : function (beforeExit) {
+        var pool = poolModule.Pool({
+            name     : 'test5',
+            create   : function(callback) { callback({ id : 1 }); },
+            destroy  : function(client) { destroyed.push(client.id); },
+            max : 2,
+            idleTimeoutMillis : 100
+        });
+
+        pool.acquire(function(client) {
+            assert.equal(client.id, 1);
+        });
+    },
+
+    'handle creation errors' : function (beforeExit) {
+        var created = 0;
+        var pool = poolModule.Pool({
+            name     : 'test6',
+            create   : function(callback) {
+                if (created < 5) {
+                    callback(new Error('Error occurred.'));
+                } else {
+                    callback({ id : created });
+                }
+                created++;
+            },
+            destroy  : function(client) { },
+            max : 1,
+            idleTimeoutMillis : 1000
+        });
+        // ensure that creation errors do not populate the pool.
+        for (var i = 0; i < 5; i++) {
+            pool.acquire(function(err, client) {
+                assert.ok(err instanceof Error);
+                assert.ok(client === null);
+            });
+        }
+        pool.acquire(function(err, client) {
+            assert.ok(err === null);
+            assert.equal(typeof client.id, 'number');
+        });
     }
     
 };
