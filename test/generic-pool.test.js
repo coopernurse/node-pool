@@ -1,5 +1,5 @@
 var assert     = require('assert');
-var poolModule = require('generic-pool');
+var poolModule = require('..');
 
 module.exports = {
 
@@ -11,8 +11,7 @@ module.exports = {
         var pool = poolModule.Pool({
             name     : 'test1',
             create   : function(callback) {
-                createCount++;
-                callback(createCount);
+                callback(null, { count: ++createCount });
             },
             destroy  : function(client) { destroyCount++; },
             max : 2,
@@ -20,8 +19,9 @@ module.exports = {
         });
     
         for (var i = 0; i < 10; i++) {
-            pool.acquire(function(obj) {
-                return function() {
+            pool.acquire(function(err, obj) {
+                return function(err, obj) {
+                    assert.equal(typeof obj.count, 'number');
                     setTimeout(function() {
                         borrowCount++;
                         pool.release(obj);
@@ -53,7 +53,7 @@ module.exports = {
         });
         
         for (i = 0; i < 10; i++) {
-            pool.acquire(function(obj) {
+            pool.acquire(function(err, obj) {
                 return function() {
                     setTimeout(function() {
                         var t = new Date().getTime();
@@ -90,17 +90,19 @@ module.exports = {
         
         var pool = poolModule.Pool({
             name     : 'test3',
-            create   : function(callback) { callback({ id : ++clientCount }); },
+            create   : function(callback) { callback(null, { id : ++clientCount }); },
             destroy  : function(client) { destroyed.push(client.id); },
             max : 2,
             idleTimeoutMillis : 100
         });
         
-        pool.acquire(function(client) { 
+        pool.acquire(function(err, client) { 
+            assert.equal(typeof client.id, 'number');
             // should be removed second
             setTimeout(function() { pool.release(client); }, 5);
         });
-        pool.acquire(function(client) {
+        pool.acquire(function(err, client) {
+            assert.equal(typeof client.id, 'number');
             // should be removed first
             pool.release(client);
         });
@@ -121,15 +123,16 @@ module.exports = {
       
         var pool = poolModule.Pool({
             name    : 'test4',
-            create  : function(callback) { callback({id: ++created}); },
+            create  : function(callback) { callback(null, {id: ++created}); },
             destroy : function(client) { destroyed += 1; },
             max : 2,
             idletimeoutMillis : 300000
         });
       
         for (var i = 0; i < count; i++) {
-            pool.acquire(function(client) {
+            pool.acquire(function(err, client) {
                 acquired += 1;
+                assert.equal(typeof client.id, 'number');
                 setTimeout(function() { pool.release(client); }, 250);
             });
         }
@@ -146,6 +149,49 @@ module.exports = {
         assert.throws(function() {
             pool.acquire(function(client) {});
         }, Error);
+    },
+
+    'supports single arg callbacks' : function (beforeExit) {
+        var pool = poolModule.Pool({
+            name     : 'test5',
+            create   : function(callback) { callback({ id : 1 }); },
+            destroy  : function(client) { destroyed.push(client.id); },
+            max : 2,
+            idleTimeoutMillis : 100
+        });
+
+        pool.acquire(function(client) {
+            assert.equal(client.id, 1);
+        });
+    },
+
+    'handle creation errors' : function (beforeExit) {
+        var created = 0;
+        var pool = poolModule.Pool({
+            name     : 'test6',
+            create   : function(callback) {
+                if (created < 5) {
+                    callback(new Error('Error occurred.'));
+                } else {
+                    callback({ id : created });
+                }
+                created++;
+            },
+            destroy  : function(client) { },
+            max : 1,
+            idleTimeoutMillis : 1000
+        });
+        // ensure that creation errors do not populate the pool.
+        for (var i = 0; i < 5; i++) {
+            pool.acquire(function(err, client) {
+                assert.ok(err instanceof Error);
+                assert.ok(client === null);
+            });
+        }
+        pool.acquire(function(err, client) {
+            assert.ok(err === null);
+            assert.equal(typeof client.id, 'number');
+        });
     }
     
 };
