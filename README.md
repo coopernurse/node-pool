@@ -10,6 +10,12 @@
     
 ## History
 
+    1.0.6 - May 23 2011
+       - Merged #13 (support error variable in acquire callback - contributed by tmcw) 
+          - Note: This change is backwards compatible.  But new code should use the two
+                  parameter callback format in pool.create() functions from now on.
+       - Merged #15 (variable scope issue in dispense() - contributed by eevans)
+       
     1.0.5 - Apr 20 2011
        - Merged #12 (ability to drain pool - contributed by gdusbabek)
        
@@ -44,7 +50,10 @@
             c.password = 'tiger';
             c.database = 'mydb';
             c.connect();
-            callback(c);
+            
+            // parameter order: err, resource
+            // new in 1.0.6
+            callback(null, c);
         },
         destroy  : function(client) { client.end(); },
         max      : 10,
@@ -54,7 +63,7 @@
 
     // acquire connection - callback function is called
     // once a resource becomes available
-    pool.acquire(function(client) {
+    pool.acquire(function(err, client) {
         client.query("select * from foo", [], function() {
             // return object back to pool
             pool.release(client);
@@ -103,17 +112,17 @@ specifies the caller's relative position in the queue.
      });
 
      // acquire connection - no priority - will go at end of line
-     pool.acquire(function(client) {
+     pool.acquire(function(err, client) {
          pool.release(client);
      });
 
      // acquire connection - high priority - will go into front slot
-     pool.acquire(function(client) {
+     pool.acquire(function(err, client) {
          pool.release(client);
      }, 0);
 
      // acquire connection - medium priority - will go into middle slot
-     pool.acquire(function(client) {
+     pool.acquire(function(err, client) {
          pool.release(client);
      }, 1);
 
