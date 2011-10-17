@@ -19,7 +19,7 @@ module.exports = {
         });
     
         for (var i = 0; i < 10; i++) {
-            pool.acquire(function(err, obj) {
+            var full = !pool.acquire(function(err, obj) {
                 return function(err, obj) {
                     assert.equal(typeof obj.count, 'number');
                     setTimeout(function() {
@@ -28,6 +28,7 @@ module.exports = {
                     }, 100);
                 };
             }());
+            assert.ok((i < 1) ^ full);
         }
     
         beforeExit(function() {
