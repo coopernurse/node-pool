@@ -10,6 +10,10 @@
     
 ## History
 
+    1.0.7 - Oct 17 2011
+       - Merged #19 (prevent release on the same obj twice - contributed by tkrynski)
+       - Merged #20 (acquire() returns boolean indicating whether pool is full - contributed by tilgovi)
+
     1.0.6 - May 23 2011
        - Merged #13 (support error variable in acquire callback - contributed by tmcw) 
           - Note: This change is backwards compatible.  But new code should use the two
