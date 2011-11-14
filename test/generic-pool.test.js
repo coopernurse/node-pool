@@ -195,7 +195,8 @@ module.exports = {
         });
     },
 
-    'getCount' : function (beforeExit) {
+    'getPoolSize' : function (beforeExit) {
+        var assertion_count = 0;
         var pool = poolModule.Pool({
             name     : 'test1',
             create   : function(callback) { callback({id: Math.floor(Math.random()*1000)}); },
@@ -203,17 +204,33 @@ module.exports = {
             max : 2,
             idleTimeoutMillis : 100
         });
-    
-        assert.equal(pool.getCount(), 0);
+
+        assert.equal(pool.getPoolSize(), 0);
+        assertion_count += 1;
         pool.acquire(function(err, obj1) {
-            if (err) { console.log(err); }
-            assert.equal(pool.getCount(), 1);
+            if (err) { throw err; }
+            assert.equal(pool.getPoolSize(), 1);
+            assertion_count += 1;
             pool.acquire(function(err, obj2) {
-                if (err) { console.log(err); }
-                assert.equal(pool.getCount(), 2);
+                if (err) { throw err; }
+                assert.equal(pool.getPoolSize(), 2);
+                assertion_count += 1;
+
                 pool.release(obj1);
                 pool.release(obj2);
+
+                pool.acquire(function(err, obj3) {
+                    if (err) { throw err; }
+                    // should still be 2
+                    assert.equal(pool.getPoolSize(), 2);
+                    assertion_count += 1;
+                    pool.release(obj3);
+                });
             });
+        });
+
+        beforeExit(function() {
+            assert.equal(assertion_count, 4);
         });
     },
 
@@ -228,13 +245,14 @@ module.exports = {
         });
 
         assert.equal(pool.availableObjectsCount(), 0);
+        assertion_count += 1;
         pool.acquire(function(err, obj1) {
-            if (err) { console.log(err); }
+            if (err) { throw err; }
             assert.equal(pool.availableObjectsCount(), 0);
             assertion_count += 1;
 
             pool.acquire(function(err, obj2) {
-                if (err) { console.log(err); }
+                if (err) { throw err; }
                 assert.equal(pool.availableObjectsCount(), 0);
                 assertion_count += 1;
 
@@ -247,7 +265,7 @@ module.exports = {
                 assertion_count += 1;
 
                 pool.acquire(function(err, obj3) {
-                    if (err) { console.log(err); }
+                    if (err) { throw err; }
                     assert.equal(pool.availableObjectsCount(), 1);
                     assertion_count += 1;
                     pool.release(obj3);
@@ -259,7 +277,7 @@ module.exports = {
         });
 
         beforeExit(function() {
-            assert.equal(assertion_count, 6);
+            assert.equal(assertion_count, 7);
         });
     }
 };
