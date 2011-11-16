@@ -193,6 +193,91 @@ module.exports = {
             assert.ok(err === null);
             assert.equal(typeof client.id, 'number');
         });
+    },
+
+    'getPoolSize' : function (beforeExit) {
+        var assertion_count = 0;
+        var pool = poolModule.Pool({
+            name     : 'test1',
+            create   : function(callback) { callback({id: Math.floor(Math.random()*1000)}); },
+            destroy  : function(client) { },
+            max : 2,
+            idleTimeoutMillis : 100
+        });
+
+        assert.equal(pool.getPoolSize(), 0);
+        assertion_count += 1;
+        pool.acquire(function(err, obj1) {
+            if (err) { throw err; }
+            assert.equal(pool.getPoolSize(), 1);
+            assertion_count += 1;
+            pool.acquire(function(err, obj2) {
+                if (err) { throw err; }
+                assert.equal(pool.getPoolSize(), 2);
+                assertion_count += 1;
+
+                pool.release(obj1);
+                pool.release(obj2);
+
+                pool.acquire(function(err, obj3) {
+                    if (err) { throw err; }
+                    // should still be 2
+                    assert.equal(pool.getPoolSize(), 2);
+                    assertion_count += 1;
+                    pool.release(obj3);
+                });
+            });
+        });
+
+        beforeExit(function() {
+            assert.equal(assertion_count, 4);
+        });
+    },
+
+    'availableObjectsCount' : function (beforeExit) {
+        var assertion_count = 0;
+        var pool = poolModule.Pool({
+            name     : 'test1',
+            create   : function(callback) { callback({id: Math.floor(Math.random()*1000)}); },
+            destroy  : function(client) { },
+            max : 2,
+            idleTimeoutMillis : 100
+        });
+
+        assert.equal(pool.availableObjectsCount(), 0);
+        assertion_count += 1;
+        pool.acquire(function(err, obj1) {
+            if (err) { throw err; }
+            assert.equal(pool.availableObjectsCount(), 0);
+            assertion_count += 1;
+
+            pool.acquire(function(err, obj2) {
+                if (err) { throw err; }
+                assert.equal(pool.availableObjectsCount(), 0);
+                assertion_count += 1;
+
+                pool.release(obj1);
+                assert.equal(pool.availableObjectsCount(), 1);
+                assertion_count += 1;
+
+                pool.release(obj2);
+                assert.equal(pool.availableObjectsCount(), 2);
+                assertion_count += 1;
+
+                pool.acquire(function(err, obj3) {
+                    if (err) { throw err; }
+                    assert.equal(pool.availableObjectsCount(), 1);
+                    assertion_count += 1;
+                    pool.release(obj3);
+
+                    assert.equal(pool.availableObjectsCount(), 2);
+                    assertion_count += 1;
+                });
+            });
+        });
+
+        beforeExit(function() {
+            assert.equal(assertion_count, 7);
+        });
     }
-    
 };
