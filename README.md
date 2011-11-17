@@ -10,6 +10,9 @@
     
 ## History
 
+    1.0.8 - Nov 16 2011
+       - Merged #21 (add getter methods to see pool size, etc. - contributed by BryanDonovan)
+       
     1.0.7 - Oct 17 2011
        - Merged #19 (prevent release on the same obj twice - contributed by tkrynski)
        - Merged #20 (acquire() returns boolean indicating whether pool is full - contributed by tilgovi)
