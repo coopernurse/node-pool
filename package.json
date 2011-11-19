@@ -1,12 +1,13 @@
 {
   "name": "generic-pool",
   "description": "Generic resource pooling for Node.JS",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "author": "James Cooper <james@bitmechanic.com>",
   "contributors": [
     { "name": "James Cooper", "email": "james@bitmechanic.com" },
     { "name": "Peter Galiba", "email": "poetro@poetro.hu", "url": "http://poetro.hu/" },
     { "name": "Gary Dusbabek" },
+    { "name": "Adrien Cahen", "url" : "http://gaarf.info/" },
     { "name": "Tom MacWright", "url" : "http://www.developmentseed.org/" }
   ],
   "keywords": ["pool", "pooling", "throttle"],
@@ -15,5 +16,5 @@
     "type": "git",
     "url": "http://github.com/coopernurse/node-pool.git"
   },
-  "engines": { "node": ">= 0.2.0" }
+  "engines": { "node": ">= 0.3.0" }
 }
