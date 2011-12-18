@@ -93,9 +93,12 @@
                          relative priority in the queue if no resources are available.
                          see example.  (default 1)
                    log : true/false or function -
-                           If a log is a function, it will be called with log strings 
+                           If a log is a function, it will be called with two parameters:
+                                                    - log string
+                                                    - log level 
                            Else if log is true, verbose log info will be sent to console.log()
                            Else internal log messages be ignored (this is the default)
+              loglevel : the desired loglevel. can be 'verbose', 'info', 'warn', 'error'
 
 ## Priority Queueing
 
