@@ -10,6 +10,11 @@
     
 ## History
 
+    1.0.9 - Dec 18 2011
+       - Merged #25 (add getName() - contributed by BryanDonovan)
+       - Merged #27 (remove sys import - contributed by botker)
+       - Merged #26 (log levels - contributed by JoeZ99)
+
     1.0.8 - Nov 16 2011
        - Merged #21 (add getter methods to see pool size, etc. - contributed by BryanDonovan)
        
@@ -65,7 +70,7 @@
         destroy  : function(client) { client.end(); },
         max      : 10,
         idleTimeoutMillis : 30000,
-        log : false
+        log : true
     });
 
     // acquire connection - callback function is called
@@ -95,10 +100,9 @@
                    log : true/false or function -
                            If a log is a function, it will be called with two parameters:
                                                     - log string
-                                                    - log level 
+                                                    - log level ('verbose', 'info', 'warn', 'error')
                            Else if log is true, verbose log info will be sent to console.log()
                            Else internal log messages be ignored (this is the default)
-              loglevel : the desired loglevel. can be 'verbose', 'info', 'warn', 'error'
 
 ## Priority Queueing
 
@@ -150,6 +154,24 @@ with `drain()`:
 
 One side-effect of calling `drain()` is that subsequent calls to `acquire()`
 will throw an Error.
+
+## Pool info
+
+The following functions will let you get information about the pool:
+
+    // returns factory.name for this pool
+    pool.getName()
+
+    // returns number of resources in the pool regardless of
+    // whether they are free or in use
+    pool.getPoolSize()
+
+    // returns number of unused resources in the pool
+    pool.availableObjectsCount()
+
+    // returns number of callers waiting to acquire a resource
+    pool.waitingClientsCount()
+
 
 ## Run Tests
 

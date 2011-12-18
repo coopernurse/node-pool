@@ -281,7 +281,7 @@ module.exports = {
         });
     },
 
-    'loglevels': function(beforeExit, assert){
+    'logPassesLogLevel': function(beforeExit){
         var loglevels = {'verbose':0, 'info':1, 'warn':2, 'error':3};
         var logmessages = {verbose:[], info:[], warn:[], error:[]};
         var factory = {
@@ -290,7 +290,6 @@ module.exports = {
             destroy  : function(client) {},
             max      : 2,
             idleTimeoutMillis: 100,
-            loglevel : 'verbose',
             log      : function(msg, level) {testlog(msg, level);}
         };
         var testlog = function(msg, level){
@@ -298,25 +297,28 @@ module.exports = {
             logmessages[level].push(msg);
         };
         var pool = poolModule.Pool(factory);
-        factory.loglevel = 'warn';
-        var pool2 = poolModule.Pool(factory);
+
+        var pool2 = poolModule.Pool({
+            name     : 'testNoLog',
+            create   : function(callback) {callback(null, {id:Math.floor(Math.random()*1000)}); },
+            destroy  : function(client) {},
+            max      : 2,
+            idleTimeoutMillis: 100
+        });
+        assert.equal(pool2.getName(), 'testNoLog');
 
         pool.acquire(function(err, obj){
           if (err) {throw err;}
-          assert.equal(logmessages.verbose[0], 'dispense() clients=1 available=0');
-          assert.equal(logmessages.info[0], 'dispense() - creating obj - count=1');
+          assert.equal(logmessages.verbose[0], 'dispense() - creating obj - count=1');
+          assert.equal(logmessages.info[0], 'dispense() clients=1 available=0');
           logmessages.info = [];
           logmessages.verbose = [];
           pool2.borrow(function(err, obj){
             assert.equal(logmessages.info.length, 0);
             assert.equal(logmessages.verbose.length, 0);
-            assert.equal(logmessages.warn[0], 'borrow() is deprecated. use acquire() instead');
+            assert.equal(logmessages.warn.length, 0);
           });
         });
-
-
-
     }
-
 
 };
