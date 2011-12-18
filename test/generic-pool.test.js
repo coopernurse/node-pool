@@ -7,7 +7,7 @@ module.exports = {
         var createCount  = 0;
         var destroyCount = 0;
         var borrowCount  = 0;
-    
+
         var pool = poolModule.Pool({
             name     : 'test1',
             create   : function(callback) {
@@ -17,7 +17,7 @@ module.exports = {
             max : 2,
             idleTimeoutMillis : 100
         });
-    
+
         for (var i = 0; i < 10; i++) {
             var full = !pool.acquire(function(err, obj) {
                 return function(err, obj) {
@@ -30,20 +30,20 @@ module.exports = {
             }());
             assert.ok((i < 1) ^ full);
         }
-    
+
         beforeExit(function() {
             assert.equal(2, createCount);
             assert.equal(2, destroyCount);
             assert.equal(10, borrowCount);
         });
     },
-    
+
     'supports priority on borrow' : function(beforeExit) {
         var borrowTimeLow  = 0;
         var borrowTimeHigh = 0;
         var borrowCount = 0;
         var i;
-        
+
         var pool = poolModule.Pool({
             name     : 'test2',
             create   : function(callback) { callback(); },
@@ -52,7 +52,7 @@ module.exports = {
             idleTimeoutMillis : 100,
             priorityRange : 2
         });
-        
+
         for (i = 0; i < 10; i++) {
             pool.acquire(function(err, obj) {
                 return function() {
@@ -65,7 +65,7 @@ module.exports = {
                 };
             }(), 1);
         }
-        
+
         for (i = 0; i < 10; i++) {
             pool.acquire(function(obj) {
                 return function() {
@@ -78,17 +78,17 @@ module.exports = {
                 };
             }(), 0);
         }
-        
+
         beforeExit(function() {
             assert.equal(20, borrowCount);
             assert.equal(true, borrowTimeLow > borrowTimeHigh);
         });
     },
-    
+
     'removes correct object on reap' : function (beforeExit) {
         var destroyed = [];
         var clientCount = 0;
-        
+
         var pool = poolModule.Pool({
             name     : 'test3',
             create   : function(callback) { callback(null, { id : ++clientCount }); },
@@ -96,8 +96,8 @@ module.exports = {
             max : 2,
             idleTimeoutMillis : 100
         });
-        
-        pool.acquire(function(err, client) { 
+
+        pool.acquire(function(err, client) {
             assert.equal(typeof client.id, 'number');
             // should be removed second
             setTimeout(function() { pool.release(client); }, 5);
@@ -107,21 +107,21 @@ module.exports = {
             // should be removed first
             pool.release(client);
         });
-        
+
         setTimeout(function() { }, 102);
-        
+
         beforeExit(function() {
             assert.equal(2, destroyed[0]);
             assert.equal(1, destroyed[1]);
         });
     },
-  
+
     'tests drain' : function (beforeExit) {
         var created = 0;
         var destroyed = 0;
         var count = 5;
         var acquired = 0;
-      
+
         var pool = poolModule.Pool({
             name    : 'test4',
             create  : function(callback) { callback(null, {id: ++created}); },
@@ -129,7 +129,7 @@ module.exports = {
             max : 2,
             idletimeoutMillis : 300000
         });
-      
+
         for (var i = 0; i < count; i++) {
             pool.acquire(function(err, client) {
                 acquired += 1;
@@ -137,7 +137,7 @@ module.exports = {
                 setTimeout(function() { pool.release(client); }, 250);
             });
         }
-      
+
         assert.notEqual(count, acquired);
         pool.drain(function() {
             assert.equal(count, acquired);
@@ -145,7 +145,7 @@ module.exports = {
             pool.destroyAllNow();
             beforeExit(function() {});
         });
-      
+
         // subsequent calls to acquire should return an error.
         assert.throws(function() {
             pool.acquire(function(client) {});
@@ -279,5 +279,44 @@ module.exports = {
         beforeExit(function() {
             assert.equal(assertion_count, 7);
         });
+    },
+
+    'loglevels': function(beforeExit, assert){
+        var loglevels = {'verbose':0, 'info':1, 'warn':2, 'error':3};
+        var logmessages = {verbose:[], info:[], warn:[], error:[]};
+        var factory = {
+            name     : 'test1',
+            create   : function(callback) {callback(null, {id:Math.floor(Math.random()*1000)}); },
+            destroy  : function(client) {},
+            max      : 2,
+            idleTimeoutMillis: 100,
+            loglevel : 'verbose',
+            log      : function(msg, level) {testlog(msg, level);}
+        };
+        var testlog = function(msg, level){
+            assert.ok(level in loglevels);
+            logmessages[level].push(msg);
+        };
+        var pool = poolModule.Pool(factory);
+        factory.loglevel = 'warn';
+        var pool2 = poolModule.Pool(factory);
+
+        pool.acquire(function(err, obj){
+          if (err) {throw err;}
+          assert.equal(logmessages.verbose[0], 'dispense() clients=1 available=0');
+          assert.equal(logmessages.info[0], 'dispense() - creating obj - count=1');
+          logmessages.info = [];
+          logmessages.verbose = [];
+          pool2.borrow(function(err, obj){
+            assert.equal(logmessages.info.length, 0);
+            assert.equal(logmessages.verbose.length, 0);
+            assert.equal(logmessages.warn[0], 'borrow() is deprecated. use acquire() instead');
+          });
+        });
+
+
+
     }
+
+
 };
