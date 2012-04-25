@@ -116,7 +116,7 @@ module.exports = {
         });
     },
 
-    'tests drain' : function (beforeExit) {
+    'tests shutdown (drain/destroyAllNow)' : function (beforeExit) {
         var created = 0;
         var destroyed = 0;
         var count = 5;
@@ -139,10 +139,9 @@ module.exports = {
         }
 
         assert.notEqual(count, acquired);
-        pool.drain(function() {
+        // short circuit the absurdly long timeouts above.
+        pool.shutdown(function() {
             assert.equal(count, acquired);
-            // short circuit the absurdly long timeouts above.
-            pool.destroyAllNow();
             beforeExit(function() {});
         });
 
@@ -281,7 +280,7 @@ module.exports = {
         });
     },
 
-    'logPassesLogLevel': function(beforeExit){
+    'logPassesLogLevel': function(beforeExit) {
         var loglevels = {'verbose':0, 'info':1, 'warn':2, 'error':3};
         var logmessages = {verbose:[], info:[], warn:[], error:[]};
         var factory = {
