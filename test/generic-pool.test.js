@@ -319,6 +319,25 @@ module.exports = {
             assert.equal(logmessages.warn.length, 0);
           });
         });
+    },
+    
+    'removes from available objects on destroy': function(beforeExit){
+        var destroyCalled = false;
+        var factory = {
+            name: 'test',
+            create: function(callback) {callback(null, {})},
+            destroy: function(client) {destroyCalled = true},
+            max: 2,
+            idleTimeoutMillis: 100
+        };
+
+        var pool = poolModule.Pool(factory);
+        pool.acquire(function(err, obj){
+            pool.destroy(obj);            
+        });
+        assert.equal(destroyCalled, true);
+        assert.equal(pool.availableObjectsCount(), 0);        
     }
+
 
 };
