@@ -10,6 +10,9 @@
     
 ## History
 
+    1.0.10 - May 3 2012
+       - Merged #35 (Remove client from availbleObjects on destroy(client) - contributed by blax)
+
     1.0.9 - Dec 18 2011
        - Merged #25 (add getName() - contributed by BryanDonovan)
        - Merged #27 (remove sys import - contributed by botker)
