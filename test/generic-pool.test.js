@@ -195,6 +195,117 @@ module.exports = {
         });
     },
 
+    'pooled decorator should acquire and release' : function (beforeExit) {
+        var assertion_count = 0;
+        var destroyed_count = 0;
+        var pool = poolModule.Pool({
+            name     : 'test1',
+            create   : function(callback) { callback({id: Math.floor(Math.random()*1000)}); },
+            destroy  : function(client) { destroyed_count += 1; },
+            max : 1,
+            idleTimeoutMillis : 100
+        });
+
+        var pooledFn = pool.pooled(function(client, cb) {
+          assert.equal(typeof client.id, 'number');
+          assert.equal(pool.getPoolSize(), 1);
+          assertion_count += 2;
+          cb();
+        });
+
+        assert.equal(pool.getPoolSize(), 0);
+        assertion_count += 1;
+
+        pooledFn(function(err) {
+          if (err) { throw err; }
+          assert.ok(true);
+          assertion_count += 1;
+        });
+
+        beforeExit(function() {
+          assert.equal(assertion_count, 4);
+          assert.equal(destroyed_count, 1); 
+        });
+    },
+    
+    'pooled decorator should pass arguments and return values' : function(beforeExit) {
+        var assertion_count = 0;
+        var pool = poolModule.Pool({
+            name     : 'test1',
+            create   : function(callback) { callback({id: Math.floor(Math.random()*1000)}); },
+            destroy  : function(client) { },
+            max : 1,
+            idleTimeoutMillis : 100
+        });
+
+        var pooledFn = pool.pooled(function(client, arg1, arg2, cb) {
+          assert.equal(arg1, "First argument");
+          assert.equal(arg2, "Second argument");
+          assertion_count += 2;
+          cb(null, "First return", "Second return");
+        });
+
+        pooledFn("First argument", "Second argument", function(err, retVal1, retVal2) {
+          if(err) { throw err; }
+          assert.equal(retVal1, "First return");
+          assert.equal(retVal2, "Second return");
+          assertion_count += 2;
+        });
+
+        beforeExit(function() {
+          assert.equal(assertion_count, 4);
+        });
+    },
+
+    'pooled decorator should allow undefined callback' : function(beforeExit) {
+        var assertion_count = 0;
+        var pool = poolModule.Pool({
+            name     : 'test1',
+            create   : function(callback) { callback({id: Math.floor(Math.random()*1000)}); },
+            destroy  : function(client) { },
+            max : 1,
+            idleTimeoutMillis : 100
+        });
+
+        var pooledFn = pool.pooled(function(client, arg, cb) {
+          assert.equal(arg, "Arg!");
+          assertion_count += 1;
+          cb();
+        });
+
+        pooledFn("Arg!");
+
+        beforeExit(function() {
+          assert.equal(pool.getPoolSize(), 0);
+          assert.equal(assertion_count, 1);
+        });
+
+    },
+
+    'pooled decorator should forward pool errors' : function(beforeExit) {
+        var assertion_count = 0;
+        var pool = poolModule.Pool({
+            name     : 'test1',
+            create   : function(callback) { callback(new Error('Pool error')); },
+            destroy  : function(client) { },
+            max : 1,
+            idleTimeoutMillis : 100
+        });
+
+        var pooledFn = pool.pooled(function(cb) {
+          assert.ok(false, "Pooled function shouldn't be called due to a pool error");
+        });
+
+        pooledFn(function(err, obj) {
+          assert.equal(err.message, 'Pool error');
+          assertion_count += 1;
+        });
+
+        beforeExit(function() {
+          assert.equal(assertion_count, 1);
+        });
+    },
+
     'getPoolSize' : function (beforeExit) {
         var assertion_count = 0;
         var pool = poolModule.Pool({
