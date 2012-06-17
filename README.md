@@ -110,7 +110,7 @@
 ## Priority Queueing
 
 The pool now supports optional priority queueing.  This becomes relevant when no resources 
-are available and the caller has to wait. acquire() accepts an optional priority int which 
+are available and the caller has to wait. `acquire()` accepts an optional priority int which 
 specifies the caller's relative position in the queue.
 
      // create pool with priorityRange of 3
@@ -157,6 +157,35 @@ with `drain()`:
 
 One side-effect of calling `drain()` is that subsequent calls to `acquire()`
 will throw an Error.
+
+## Pooled function decoration
+
+To transparently handle object acquisition for a function, 
+one can use `pooled()`:
+
+  var privateFn, publicFn;
+  publicFn = pool.pooled(privateFn = function(client, arg, cb) {
+    // Do something with the client and arg. Client is auto-released when cb is called
+    cb(null, arg);
+  });
+
+Keeping both private and public versions of each function allows for pooled 
+functions to call other pooled functions with the same member. This is a handy
+pattern for database transactions:
+
+  var privateTop, privateBottom, publicTop, publicBottom;
+  publicBottom = pool.pooled(privateBottom = function(client, arg, cb) {
+    //Use client, assumed auto-release 
+  });
+
+  publicTop = pool.pooled(privateTop = function(client, cb) {
+    // e.g., open a database transaction
+    privateBottom(client, "arg", function(err, retVal) {
+      if(err) { return cb(err); }
+      // e.g., close a transaction
+      cb();
+    });
+  });
 
 ## Pool info
 
