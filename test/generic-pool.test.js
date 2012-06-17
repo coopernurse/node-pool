@@ -267,14 +267,16 @@ module.exports = {
             idleTimeoutMillis : 100
         });
 
-        var pooledFn = pool.pooled(function(client, arg) {
+        var pooledFn = pool.pooled(function(client, arg, cb) {
           assert.equal(arg, "Arg!");
           assertion_count += 1;
+          cb();
         });
 
         pooledFn("Arg!");
 
         beforeExit(function() {
+          assert.equal(pool.getPoolSize(), 0);
           assert.equal(assertion_count, 1);
         });
 
