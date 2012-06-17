@@ -163,29 +163,29 @@ will throw an Error.
 To transparently handle object acquisition for a function, 
 one can use `pooled()`:
 
-  var privateFn, publicFn;
-  publicFn = pool.pooled(privateFn = function(client, arg, cb) {
-    // Do something with the client and arg. Client is auto-released when cb is called
-    cb(null, arg);
-  });
+    var privateFn, publicFn;
+    publicFn = pool.pooled(privateFn = function(client, arg, cb) {
+        // Do something with the client and arg. Client is auto-released when cb is called
+        cb(null, arg);
+    });
 
 Keeping both private and public versions of each function allows for pooled 
 functions to call other pooled functions with the same member. This is a handy
 pattern for database transactions:
 
-  var privateTop, privateBottom, publicTop, publicBottom;
-  publicBottom = pool.pooled(privateBottom = function(client, arg, cb) {
-    //Use client, assumed auto-release 
-  });
-
-  publicTop = pool.pooled(privateTop = function(client, cb) {
-    // e.g., open a database transaction
-    privateBottom(client, "arg", function(err, retVal) {
-      if(err) { return cb(err); }
-      // e.g., close a transaction
-      cb();
+    var privateTop, privateBottom, publicTop, publicBottom;
+    publicBottom = pool.pooled(privateBottom = function(client, arg, cb) {
+        //Use client, assumed auto-release 
     });
-  });
+
+    publicTop = pool.pooled(privateTop = function(client, cb) {
+        // e.g., open a database transaction
+        privateBottom(client, "arg", function(err, retVal) {
+            if(err) { return cb(err); }
+            // e.g., close a transaction
+            cb();
+        });
+    });
 
 ## Pool info
 
