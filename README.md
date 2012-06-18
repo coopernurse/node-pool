@@ -10,6 +10,9 @@
     
 ## History
 
+    1.0.11 - June 17 2012
+       - Merged #36 ("pooled" method to perform function decoration for pooled methods - contributed by cosbynator)
+
     1.0.10 - May 3 2012
        - Merged #35 (Remove client from availbleObjects on destroy(client) - contributed by blax)
 
@@ -214,7 +217,7 @@ The following functions will let you get information about the pool:
 
 (The MIT License)
 
-Copyright (c) 2010-2011 James Cooper &lt;james@bitmechanic.com&gt;
+Copyright (c) 2010-2012 James Cooper &lt;james@bitmechanic.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
