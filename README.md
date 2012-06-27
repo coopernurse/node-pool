@@ -10,6 +10,9 @@
     
 ## History
 
+    1.0.12 - June 27 2012
+       - Merged #37 (Clear remove idle timer after destroyAllNow - contributed by dougwilson)
+
     1.0.11 - June 17 2012
        - Merged #36 ("pooled" method to perform function decoration for pooled methods - contributed by cosbynator)
 
