@@ -7,7 +7,8 @@
     { "name": "James Cooper", "email": "james@bitmechanic.com" },
     { "name": "Peter Galiba", "email": "poetro@poetro.hu", "url": "http://poetro.hu/" },
     { "name": "Gary Dusbabek" },
-    { "name": "Tom MacWright", "url" : "http://www.developmentseed.org/" }
+    { "name": "Tom MacWright", "url" : "http://www.developmentseed.org/" },
+    { "name": "Douglas Christopher Wilson", "email": "doug@somethingdoug.com", "url" : "http://somethingdoug.com/" }
   ],
   "keywords": ["pool", "pooling", "throttle"],
   "main": "lib/generic-pool.js",
