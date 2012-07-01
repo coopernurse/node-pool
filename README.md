@@ -59,8 +59,10 @@
 
 ## Example
 
+### Step 1 - Create pool using a factory object
+
     // Create a MySQL connection pool with
-    // a max of 10 connections and a 30 second max idle time
+    // a max of 10 connections, a min of 2, and a 30 second max idle time
     var poolModule = require('generic-pool');
     var pool = poolModule.Pool({
         name     : 'mysql',
@@ -78,9 +80,15 @@
         },
         destroy  : function(client) { client.end(); },
         max      : 10,
+        // optional. if you set this, make sure to drain() (see step 3)
+        min      : 2, 
+        // specifies how long a resource can stay idle in pool before being removed
         idleTimeoutMillis : 30000,
-        log : true
+         // if true, logs via console.log - can also be a function
+        log : true 
     });
+    
+### Step 2 - Use pool in your code to acquire/release resources
 
     // acquire connection - callback function is called
     // once a resource becomes available
@@ -91,6 +99,32 @@
         });
     });
     
+### Step 3 - Drain pool during shutdown (optional)
+    
+If you are shutting down a long-lived process, you may notice
+that node fails to exit for 30 seconds or so.  This is a side
+effect of the idleTimeoutMillis behavior -- the pool has a 
+setTimeout() call registered that is in the event loop queue, so
+node won't terminate until all resources have timed out, and the pool
+stops trying to manage them.  
+
+This behavior will be more problematic when you set factory.min > 0,
+as the pool will never become empty, and the setTimeout calls will
+never end.  
+
+In these cases, use the pool.drain() function.  This sets the pool
+into a "draining" state which will gracefully wait until all 
+idle resources have timed out.  For example, you can call:
+    
+    // Only call this once in your application -- at the point you want
+    // to shutdown and stop using this pool.
+    pool.drain(function() {
+	    pool.destroyAllNow();
+    });
+    
+If you do this, your node process will exit gracefully.
+    
+    
 ## Documentation
 
     Pool() accepts an object with these slots:
@@ -100,6 +134,11 @@
                            should call callback() with the created resource
                destroy : function that accepts a resource and destroys it
                    max : maximum number of resources to create at any given time
+                         optional (default=1)
+                   min : minimum number of resources to keep in pool at any given time
+                         if this is set > max, the pool will silently set the min
+                         to factory.max - 1
+                         optional (default=0)
      idleTimeoutMillis : max milliseconds a resource can go unused before it should be destroyed
                          (default 30000)
     reapIntervalMillis : frequency to check for idle resources (default 1000),
@@ -153,8 +192,8 @@ specifies the caller's relative position in the queue.
 
 ## Draining
 
-If you know would like to terminate all the resources in your queue before
-their timeouts have been reached, you can use `shutdownNow()` in conjunction
+If you know would like to terminate all the resources in your pool before
+their timeouts have been reached, you can use `destroyAllNow()` in conjunction
 with `drain()`:
 
     pool.drain(function() {

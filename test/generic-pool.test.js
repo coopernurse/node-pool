@@ -64,6 +64,56 @@ module.exports = {
             assert.equal(1, destroyCount);
         });
     },
+    
+    'min and max limit defaults' : function (beforeExit) {
+      var factory = {
+        name    : "test-limit-defaults",
+        create  : function(callback) { callback(null, {}); },
+        destroy : function(client) { },
+        idleTimeoutMillis: 100
+      };
+      var pool = poolModule.Pool(factory);
+      
+      beforeExit(function() {
+        assert.equal(1, factory.max);
+        assert.equal(0, factory.min);
+      });
+    },
+    
+    'malformed min and max limits are ignored' : function (beforeExit) {
+      var factory = {
+        name    : "test-limit-defaults2",
+        create  : function(callback) { callback(null, {}); },
+        destroy : function(client) { },
+        idleTimeoutMillis: 100,
+        min : "asf",
+        max : [ ]
+      };
+      var pool = poolModule.Pool(factory);
+      
+      beforeExit(function() {
+        assert.equal(1, factory.max);
+        assert.equal(0, factory.min);
+      });
+    },
+    
+    'min greater than max sets to max minus one' : function (beforeExit) {
+      var factory = {
+        name    : "test-limit-defaults3",
+        create  : function(callback) { callback(null, {}); },
+        destroy : function(client) { },
+        idleTimeoutMillis: 100,
+        min : 5,
+        max : 3
+      };
+      var pool = poolModule.Pool(factory);
+      pool.drain();
+      
+      beforeExit(function() {
+        assert.equal(3, factory.max);
+        assert.equal(2, factory.min);
+      });
+    },
 
     'supports priority on borrow' : function(beforeExit) {
         var borrowTimeLow  = 0;
@@ -463,8 +513,8 @@ module.exports = {
         var destroyCalled = false;
         var factory = {
             name: 'test',
-            create: function(callback) {callback(null, {})},
-            destroy: function(client) {destroyCalled = true},
+            create: function(callback) {callback(null, {}); },
+            destroy: function(client) {destroyCalled = true; },
             max: 2,
             idleTimeoutMillis: 100
         };
