@@ -7,8 +7,8 @@ module.exports = {
         var createCount  = 0;
         var destroyCount = 0;
         var borrowCount  = 0;
-
-        var pool = poolModule.Pool({
+        
+        var factory = {
             name     : 'test1',
             create   : function(callback) {
                 callback(null, { count: ++createCount });
@@ -16,7 +16,9 @@ module.exports = {
             destroy  : function(client) { destroyCount++; },
             max : 2,
             idleTimeoutMillis : 100
-        });
+        };
+
+        var pool = poolModule.Pool(factory);
 
         for (var i = 0; i < 10; i++) {
             var full = !pool.acquire(function(err, obj) {
@@ -32,9 +34,34 @@ module.exports = {
         }
 
         beforeExit(function() {
+            assert.equal(0, factory.min);
             assert.equal(2, createCount);
             assert.equal(2, destroyCount);
             assert.equal(10, borrowCount);
+        });
+    },
+    
+    'respects min limit' : function (beforeExit) {
+        var createCount  = 0;
+        var destroyCount = 0;
+        var borrowCount  = 0;
+
+        var pool = poolModule.Pool({
+            name     : 'test-min',
+            create   : function(callback) {
+                callback(null, { count: ++createCount });
+            },
+            destroy  : function(client) { destroyCount++; },
+            min : 1,
+            max : 2,
+            idleTimeoutMillis : 100
+        });
+        pool.drain();
+
+        beforeExit(function() {
+            assert.equal(0, pool.availableObjectsCount());
+            assert.equal(1, createCount);
+            assert.equal(1, destroyCount);
         });
     },
 
@@ -420,7 +447,7 @@ module.exports = {
 
         pool.acquire(function(err, obj){
           if (err) {throw err;}
-          assert.equal(logmessages.verbose[0], 'dispense() - creating obj - count=1');
+          assert.equal(logmessages.verbose[0], 'createResource() - creating obj - count=1 min=0 max=2');
           assert.equal(logmessages.info[0], 'dispense() clients=1 available=0');
           logmessages.info = [];
           logmessages.verbose = [];
