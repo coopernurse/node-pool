@@ -229,20 +229,6 @@ module.exports = {
         }, Error);
     },
 
-    'supports single arg callbacks' : function (beforeExit) {
-        var pool = poolModule.Pool({
-            name     : 'test5',
-            create   : function(callback) { callback({ id : 1 }); },
-            destroy  : function(client) { destroyed.push(client.id); },
-            max : 2,
-            idleTimeoutMillis : 100
-        });
-
-        pool.acquire(function(client) {
-            assert.equal(client.id, 1);
-        });
-    },
-
     'handle creation errors' : function (beforeExit) {
         var created = 0;
         var pool = poolModule.Pool({
