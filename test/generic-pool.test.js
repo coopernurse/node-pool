@@ -229,67 +229,6 @@ module.exports = {
         }, Error);
     },
 
-    'supports single arg callbacks' : function (beforeExit) {
-        var pool = poolModule.Pool({
-            name     : 'test5',
-            create   : function(callback) { callback({ id : 1 }); },
-            destroy  : function(client) { destroyed.push(client.id); },
-            max : 2,
-            idleTimeoutMillis : 100
-        });
-
-        pool.acquire(function(client) {
-            assert.equal(client.id, 1);
-        });
-    },
-
-    'ignore callback arguments length when "adjustCallback" option set to false': function () {
-        var pool = poolModule.Pool({
-            name          : 'test1',
-            create        : function(callback) { callback ({id: 2}) },
-            adjustCallback: false
-        });
-
-        pool.acquire(function() {
-            var error = arguments[0],
-                client = arguments[1];
-            assert.equal(error, undefined);
-            assert.equal(client.id, 2);
-        });
-    },
-
-    'ignore callback arguments length when global "adjustCallback" option set to false': function(beforeExit) {
-        poolModule.Pool.adjustCallback(false);
-        var pool = poolModule.Pool({
-            name     : 'test1',
-            create   : function(callback) { callback ({id: 2}) }
-        });
-
-        pool.acquire(function() {
-            var error = arguments[0],
-                client = arguments[1];
-            assert.equal(error, undefined);
-            assert.equal(client.id, 2);
-        });
-        beforeExit(function() {
-            poolModule.Pool.adjustCallback(true);
-        });
-    },
-
-    'global "adjustCallback" can be overwritten by local pool option "adjustCallback"': function() {
-        poolModule.Pool.adjustCallback(false);
-        var pool = poolModule.Pool({
-            name          : 'test1',
-            create        : function(callback) { callback ({id: 2}) },
-            adjustCallback: true
-        });
-
-        pool.acquire(function() {
-            var client = arguments[0];
-            assert.equal(client.id, 2);
-        });
-    },
-
     'handle creation errors' : function (beforeExit) {
         var created = 0;
         var pool = poolModule.Pool({
