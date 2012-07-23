@@ -3,6 +3,15 @@
 
   Generic resource pool.  Can be used to reuse or throttle expensive resources such as
   database connections.
+  
+## 2.0 Release Warning
+
+The next npm release will remove support for variable argument callbacks.  When you acquire
+a resource from the pool, your callback *must* accept two arguments: (err, obj)
+
+Previously this library attempted to determine the arity of the callback, but this resulted
+in a variety of issues.  This change eliminates these issues, and makes the acquire callback
+parameter order consistent with the factory.create callback.
 
 ## Installation
 
@@ -93,10 +102,16 @@
     // acquire connection - callback function is called
     // once a resource becomes available
     pool.acquire(function(err, client) {
-        client.query("select * from foo", [], function() {
-            // return object back to pool
-            pool.release(client);
-        });
+        if (err) {
+            // handle error - this is generally the err from your
+            // factory.create function  
+        }
+        else {
+            client.query("select * from foo", [], function() {
+                // return object back to pool
+                pool.release(client);
+            });
+        }
     });
     
 ### Step 3 - Drain pool during shutdown (optional)
