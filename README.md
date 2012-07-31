@@ -6,7 +6,7 @@
   
 ## 2.0 Release Warning
 
-The next npm release will remove support for variable argument callbacks.  When you acquire
+The 2.0.0 release removed support for variable argument callbacks.  When you acquire
 a resource from the pool, your callback *must* accept two arguments: (err, obj)
 
 Previously this library attempted to determine the arity of the callback, but this resulted
@@ -18,6 +18,13 @@ parameter order consistent with the factory.create callback.
     $ npm install generic-pool
     
 ## History
+
+    2.0.0 - July 31 2012
+       - Non-backwards compatible change: remove adjustCallback
+          - acquire() callback must accept two params: (err, obj)
+       - Add optional 'min' param to factory object that specifies minimum number of
+         resources to keep in pool
+       - Merged #38 (package.json/Makefile changes - contributed by strk)
 
     1.0.12 - June 27 2012
        - Merged #37 (Clear remove idle timer after destroyAllNow - contributed by dougwilson)
