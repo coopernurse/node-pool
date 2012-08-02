@@ -1,5 +1,6 @@
 var assert     = require('assert');
 var poolModule = require('..');
+var EventEmitter = require('events').EventEmitter;
 
 module.exports = {
 
@@ -255,6 +256,41 @@ module.exports = {
         pool.acquire(function(err, client) {
             assert.ok(err === null);
             assert.equal(typeof client.id, 'number');
+        });
+    },
+
+    'handle runtime errors' : function (beforeExit) {
+        var count = 0,
+            errors = 0;
+        var pool = poolModule.Pool({
+            name     : 'test7',
+            create   : function(callback) {
+
+                var emitter = function() {
+
+                    if(count % 2)
+                        setTimeout(function() {
+                            this.emit('error', new Error(count))
+                        }.bind(this), 0);
+
+                    count++;
+
+                };
+                emitter.prototype.__proto__ = EventEmitter.prototype;
+                callback(null, new emitter());
+
+            },
+            destroy  : function(client) {},
+            error    : function(error, client) {
+                assert.ok(count % 2);
+                errors++;
+            },
+            max : 5,
+            idleTimeoutMillis : 1000
+        });
+
+        beforeExit(function() {
+            assert.equal(2, errors)
         });
     },
 
