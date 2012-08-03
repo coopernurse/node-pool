@@ -289,8 +289,15 @@ module.exports = {
             idleTimeoutMillis : 1000
         });
 
+        for (var i = 0; i < 5; i++) {
+            pool.acquire(function(err, client) {
+                assert.ok(!(err instanceof Error));
+                assert.ok(!!client);
+            });
+        }
+
         beforeExit(function() {
-            assert.equal(2, errors)
+            assert.equal(2, errors);
         });
     },
 
@@ -519,8 +526,8 @@ module.exports = {
 
         pool.acquire(function(err, obj){
           if (err) {throw err;}
-          assert.equal(logmessages.verbose[0], 'createResource() - creating obj - count=1 min=0 max=2');
-          assert.equal(logmessages.info[0], 'dispense() clients=1 available=0');
+          assert.equal(logmessages.verbose[0], ' [test1] createResource() - creating obj - count=1 min=0 max=2');
+          assert.equal(logmessages.info[0], ' [test1] dispense() clients=1 available=0');
           logmessages.info = [];
           logmessages.verbose = [];
           pool2.borrow(function(err, obj){
