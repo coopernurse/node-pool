@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/coopernurse/node-pool.png)](http://travis-ci.org/coopernurse/node-pool)
 
 # About
 
