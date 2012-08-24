@@ -16,6 +16,9 @@
     "type": "git",
     "url": "http://github.com/coopernurse/node-pool.git"
   },
+  "devDependencies": {
+      "expresso": ">0.0.0"
+  },
   "engines": { "node": ">= 0.2.0" },
   "scripts": {
      "test": "expresso -I lib test/*.js"
