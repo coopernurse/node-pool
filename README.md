@@ -20,6 +20,11 @@ parameter order consistent with the factory.create callback.
     
 ## History
 
+    2.0.1 - August 29 2012
+       - Fix #44 - leak of 'err' and 'obj' in createResource()
+       - Add devDependencies block to package.json
+       - Add travis-ci.org integration
+       
     2.0.0 - July 31 2012
        - Non-backwards compatible change: remove adjustCallback
           - acquire() callback must accept two params: (err, obj)
