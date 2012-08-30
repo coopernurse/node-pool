@@ -1,7 +1,7 @@
 {
   "name": "generic-pool",
   "description": "Generic resource pooling for Node.JS",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "James Cooper <james@bitmechanic.com>",
   "contributors": [
     { "name": "James Cooper", "email": "james@bitmechanic.com" },
@@ -15,6 +15,9 @@
   "repository": {
     "type": "git",
     "url": "http://github.com/coopernurse/node-pool.git"
+  },
+  "devDependencies": {
+      "expresso": ">0.0.0"
   },
   "engines": { "node": ">= 0.2.0" },
   "scripts": {
