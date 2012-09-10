@@ -1,5 +1,6 @@
 var assert     = require('assert');
 var poolModule = require('..');
+var EventEmitter = require('events').EventEmitter;
 
 module.exports = {
 
@@ -258,6 +259,48 @@ module.exports = {
         });
     },
 
+    'handle runtime errors' : function (beforeExit) {
+        var count = 0,
+            errors = 0;
+        var pool = poolModule.Pool({
+            name     : 'test7',
+            create   : function(callback) {
+
+                var emitter = function() {
+
+                    if(count % 2)
+                        setTimeout(function() {
+                            this.emit('error', new Error(count))
+                        }.bind(this), 0);
+
+                    count++;
+
+                };
+                emitter.prototype.__proto__ = EventEmitter.prototype;
+                callback(null, new emitter());
+
+            },
+            destroy  : function(client) {},
+            error    : function(error, client) {
+                assert.ok(count % 2);
+                errors++;
+            },
+            max : 5,
+            idleTimeoutMillis : 1000
+        });
+
+        for (var i = 0; i < 5; i++) {
+            pool.acquire(function(err, client) {
+                assert.ok(!(err instanceof Error));
+                assert.ok(!!client);
+            });
+        }
+
+        beforeExit(function() {
+            assert.equal(2, errors);
+        });
+    },
+
     'pooled decorator should acquire and release' : function (beforeExit) {
         var assertion_count = 0;
         var destroyed_count = 0;
@@ -483,8 +526,8 @@ module.exports = {
 
         pool.acquire(function(err, obj){
           if (err) {throw err;}
-          assert.equal(logmessages.verbose[0], 'createResource() - creating obj - count=1 min=0 max=2');
-          assert.equal(logmessages.info[0], 'dispense() clients=1 available=0');
+          assert.equal(logmessages.verbose[0], ' [test1] createResource() - creating obj - count=1 min=0 max=2');
+          assert.equal(logmessages.info[0], ' [test1] dispense() clients=1 available=0');
           logmessages.info = [];
           logmessages.verbose = [];
           pool2.borrow(function(err, obj){

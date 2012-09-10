@@ -179,6 +179,9 @@ If you do this, your node process will exit gracefully.
                                                     - log level ('verbose', 'info', 'warn', 'error')
                            Else if log is true, verbose log info will be sent to console.log()
                            Else internal log messages be ignored (this is the default)
+                 error : function that is called when an error event is emitted by a resource -
+                          If resources emits events and an error event is received and this is not set the resource will be destroyed.
+
 
 ## Priority Queueing
 
@@ -276,6 +279,21 @@ The following functions will let you get information about the pool:
 
     // returns number of callers waiting to acquire a resource
     pool.waitingClientsCount()
+
+## Pool grow and shrink
+
+The following functions allows you the adjust the maximum pool dynamically at run time:
+
+  // Grows the pool max size by amount
+  // If no parameter is given amount = 1
+  // returns new max size
+  pool.grow(amount)
+
+  // Shrinks the pool max size by amount
+  // If no parameter is given amount = 1
+  // Never exceeds minimum size, then max === min
+  // returns new max size
+  pool.shrink(amount)
 
 
 ## Run Tests
