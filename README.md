@@ -20,6 +20,11 @@ parameter order consistent with the factory.create callback.
     
 ## History
 
+    2.0.2 - October 22 2012
+       - Fix #51, #48 - createResource() should check for null clientCb in err case (contributed by pooyasencha)
+       - Merged #52 - fix bug of infinite wait when create object aync error (contributed by windyrobin)
+       - Merged #53 - change the position of dispense and callback to ensure the time order (contributed by windyrobin)
+    
     2.0.1 - August 29 2012
        - Fix #44 - leak of 'err' and 'obj' in createResource()
        - Add devDependencies block to package.json
