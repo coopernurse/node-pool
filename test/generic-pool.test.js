@@ -511,6 +511,34 @@ module.exports = {
         });
         assert.equal(destroyCalled, true);
         assert.equal(pool.availableObjectsCount(), 0);        
+    },
+
+    'do schedule again if error occured when creating new Objects async': function(beforeExit){
+        var factory = {
+            name: 'test',
+            create: function(callback) {
+              process.nextTick(function(){
+                var err = new Error('Create Error');
+                callback(err); 
+              })
+            },
+            destroy: function(client) {},
+            max: 1,
+            idleTimeoutMillis: 100
+        };
+
+        var getFlag = 0;
+        var pool = poolModule.Pool(factory);
+        pool.acquire(function(){});
+        pool.acquire(function(err, obj){
+           getFlag = 1;
+           assert(err);
+           assert.equal(pool.availableObjectsCount(), 0);        
+       });
+
+       beforeExit(function() {
+         assert.equal(getFlag, 1);   
+       });
     }
 
 
