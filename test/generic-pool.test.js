@@ -252,9 +252,55 @@ module.exports = {
                 assert.ok(client === null);
             });
         }
+
+        var called = false;
         pool.acquire(function(err, client) {
             assert.ok(err === null);
             assert.equal(typeof client.id, 'number');
+            called = true;
+        });
+        beforeExit(function() {
+            assert.ok(called);
+            assert.equal(pool.waitingClientsCount(), 0);
+        });
+    },
+
+    'handle creation errors for delayed creates' : function (beforeExit) {
+        var created = 0;
+        var pool = poolModule.Pool({
+            name     : 'test6',
+            create   : function(callback) {
+                if (created < 5) {
+                    setTimeout(function() {
+                        callback(new Error('Error occurred.'));
+                    }, 0);
+                } else {
+                    setTimeout(function() {
+                        callback({ id : created });
+                    }, 0);
+                }
+                created++;
+            },
+            destroy  : function(client) { },
+            max : 1,
+            idleTimeoutMillis : 1000
+        });
+        // ensure that creation errors do not populate the pool.
+        for (var i = 0; i < 5; i++) {
+            pool.acquire(function(err, client) {
+                assert.ok(err instanceof Error);
+                assert.ok(client === null);
+            });
+        }
+        var called = false;
+        pool.acquire(function(err, client) {
+            assert.ok(err === null);
+            assert.equal(typeof client.id, 'number');
+            called = true;
+        });
+        beforeExit(function() {
+            assert.ok(called);
+            assert.equal(pool.waitingClientsCount(), 0);
         });
     },
 
