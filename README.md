@@ -20,6 +20,11 @@ parameter order consistent with the factory.create callback.
     
 ## History
 
+    2.0.3 - January 16 2013
+       - Merged #56/#57 - Add optional refreshIdle flag. If false, idle resources at the pool minimum will not be
+         destroyed/re-created. (contributed by wshaver)
+       - Merged #54 - Factory can be asked to validate pooled objects (contributed by tikonen)
+
     2.0.2 - October 22 2012
        - Fix #51, #48 - createResource() should check for null clientCb in err case (contributed by pooyasencha)
        - Merged #52 - fix bug of infinite wait when create object aync error (contributed by windyrobin)
@@ -172,12 +177,18 @@ If you do this, your node process will exit gracefully.
                          if this is set > max, the pool will silently set the min
                          to factory.max - 1
                          optional (default=0)
+           refreshIdle : boolean that specifies whether idle resources at or below the min threshold
+                         should be destroyed/re-created.  optional (default=true)
      idleTimeoutMillis : max milliseconds a resource can go unused before it should be destroyed
                          (default 30000)
     reapIntervalMillis : frequency to check for idle resources (default 1000),
          priorityRange : int between 1 and x - if set, borrowers can specify their
                          relative priority in the queue if no resources are available.
                          see example.  (default 1)
+              validate : function that accepts a pooled resource and returns true if the resource
+                         is OK to use, or false if the object is invalid.  Invalid objects will be destroyed.
+                         This function is called in acquire() before returning a resource from the pool. 
+                         Optional.  Default function always returns true.
                    log : true/false or function -
                            If a log is a function, it will be called with two parameters:
                                                     - log string
@@ -292,7 +303,7 @@ The following functions will let you get information about the pool:
 
 (The MIT License)
 
-Copyright (c) 2010-2012 James Cooper &lt;james@bitmechanic.com&gt;
+Copyright (c) 2010-2013 James Cooper &lt;james@bitmechanic.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
