@@ -93,50 +93,54 @@ parameter order consistent with the factory.create callback.
 
 ### Step 1 - Create pool using a factory object
 
-    // Create a MySQL connection pool with
-    // a max of 10 connections, a min of 2, and a 30 second max idle time
-    var poolModule = require('generic-pool');
-    var pool = poolModule.Pool({
-        name     : 'mysql',
-        create   : function(callback) {
-            var Client = require('mysql').Client;
-            var c = new Client();
-            c.user     = 'scott';
-            c.password = 'tiger';
-            c.database = 'mydb';
-            c.connect();
-            
-            // parameter order: err, resource
-            // new in 1.0.6
-            callback(null, c);
-        },
-        destroy  : function(client) { client.end(); },
-        max      : 10,
-        // optional. if you set this, make sure to drain() (see step 3)
-        min      : 2, 
-        // specifies how long a resource can stay idle in pool before being removed
-        idleTimeoutMillis : 30000,
-         // if true, logs via console.log - can also be a function
-        log : true 
-    });
-    
+```js
+// Create a MySQL connection pool with
+// a max of 10 connections, a min of 2, and a 30 second max idle time
+var poolModule = require('generic-pool');
+var pool = poolModule.Pool({
+    name     : 'mysql',
+    create   : function(callback) {
+        var Client = require('mysql').Client;
+        var c = new Client();
+        c.user     = 'scott';
+        c.password = 'tiger';
+        c.database = 'mydb';
+        c.connect();
+        
+        // parameter order: err, resource
+        // new in 1.0.6
+        callback(null, c);
+    },
+    destroy  : function(client) { client.end(); },
+    max      : 10,
+    // optional. if you set this, make sure to drain() (see step 3)
+    min      : 2, 
+    // specifies how long a resource can stay idle in pool before being removed
+    idleTimeoutMillis : 30000,
+     // if true, logs via console.log - can also be a function
+    log : true 
+});
+```
+
 ### Step 2 - Use pool in your code to acquire/release resources
 
-    // acquire connection - callback function is called
-    // once a resource becomes available
-    pool.acquire(function(err, client) {
-        if (err) {
-            // handle error - this is generally the err from your
-            // factory.create function  
-        }
-        else {
-            client.query("select * from foo", [], function() {
-                // return object back to pool
-                pool.release(client);
-            });
-        }
-    });
-    
+```js
+// acquire connection - callback function is called
+// once a resource becomes available
+pool.acquire(function(err, client) {
+    if (err) {
+        // handle error - this is generally the err from your
+        // factory.create function  
+    }
+    else {
+        client.query("select * from foo", [], function() {
+            // return object back to pool
+            pool.release(client);
+        });
+    }
+});
+```
+
 ### Step 3 - Drain pool during shutdown (optional)
     
 If you are shutting down a long-lived process, you may notice
@@ -153,12 +157,14 @@ never end.
 In these cases, use the pool.drain() function.  This sets the pool
 into a "draining" state which will gracefully wait until all 
 idle resources have timed out.  For example, you can call:
-    
-    // Only call this once in your application -- at the point you want
-    // to shutdown and stop using this pool.
-    pool.drain(function() {
-	    pool.destroyAllNow();
-    });
+
+```js
+// Only call this once in your application -- at the point you want
+// to shutdown and stop using this pool.
+pool.drain(function() {
+    pool.destroyAllNow();
+});
+```
     
 If you do this, your node process will exit gracefully.
     
@@ -202,37 +208,39 @@ The pool now supports optional priority queueing.  This becomes relevant when no
 are available and the caller has to wait. `acquire()` accepts an optional priority int which 
 specifies the caller's relative position in the queue.
 
-     // create pool with priorityRange of 3
-     // borrowers can specify a priority 0 to 2
-     var pool = poolModule.Pool({
-         name     : 'mysql',
-         create   : function(callback) {
-             // do something
-         },
-         destroy  : function(client) { 
-             // cleanup.  omitted for this example
-         },
-         max      : 10,
-         idleTimeoutMillis : 30000,
-         priorityRange : 3
-     });
+```js
+ // create pool with priorityRange of 3
+ // borrowers can specify a priority 0 to 2
+ var pool = poolModule.Pool({
+     name     : 'mysql',
+     create   : function(callback) {
+         // do something
+     },
+     destroy  : function(client) { 
+         // cleanup.  omitted for this example
+     },
+     max      : 10,
+     idleTimeoutMillis : 30000,
+     priorityRange : 3
+ });
 
-     // acquire connection - no priority - will go at end of line
-     pool.acquire(function(err, client) {
-         pool.release(client);
-     });
+ // acquire connection - no priority - will go at end of line
+ pool.acquire(function(err, client) {
+     pool.release(client);
+ });
 
-     // acquire connection - high priority - will go into front slot
-     pool.acquire(function(err, client) {
-         pool.release(client);
-     }, 0);
+ // acquire connection - high priority - will go into front slot
+ pool.acquire(function(err, client) {
+     pool.release(client);
+ }, 0);
 
-     // acquire connection - medium priority - will go into middle slot
-     pool.acquire(function(err, client) {
-         pool.release(client);
-     }, 1);
+ // acquire connection - medium priority - will go into middle slot
+ pool.acquire(function(err, client) {
+     pool.release(client);
+ }, 1);
 
-     // etc..
+ // etc..
+```
 
 ## Draining
 
@@ -240,9 +248,11 @@ If you know would like to terminate all the resources in your pool before
 their timeouts have been reached, you can use `destroyAllNow()` in conjunction
 with `drain()`:
 
-    pool.drain(function() {
-	    pool.destroyAllNow();
-    });
+```js
+pool.drain(function() {
+    pool.destroyAllNow();
+});
+```
 
 One side-effect of calling `drain()` is that subsequent calls to `acquire()`
 will throw an Error.
@@ -252,47 +262,52 @@ will throw an Error.
 To transparently handle object acquisition for a function, 
 one can use `pooled()`:
 
-    var privateFn, publicFn;
-    publicFn = pool.pooled(privateFn = function(client, arg, cb) {
-        // Do something with the client and arg. Client is auto-released when cb is called
-        cb(null, arg);
-    });
+```js
+var privateFn, publicFn;
+publicFn = pool.pooled(privateFn = function(client, arg, cb) {
+    // Do something with the client and arg. Client is auto-released when cb is called
+    cb(null, arg);
+});
+```
 
 Keeping both private and public versions of each function allows for pooled 
 functions to call other pooled functions with the same member. This is a handy
 pattern for database transactions:
 
-    var privateTop, privateBottom, publicTop, publicBottom;
-    publicBottom = pool.pooled(privateBottom = function(client, arg, cb) {
-        //Use client, assumed auto-release 
-    });
+```js
+var privateTop, privateBottom, publicTop, publicBottom;
+publicBottom = pool.pooled(privateBottom = function(client, arg, cb) {
+    //Use client, assumed auto-release 
+});
 
-    publicTop = pool.pooled(privateTop = function(client, cb) {
-        // e.g., open a database transaction
-        privateBottom(client, "arg", function(err, retVal) {
-            if(err) { return cb(err); }
-            // e.g., close a transaction
-            cb();
-        });
+publicTop = pool.pooled(privateTop = function(client, cb) {
+    // e.g., open a database transaction
+    privateBottom(client, "arg", function(err, retVal) {
+        if(err) { return cb(err); }
+        // e.g., close a transaction
+        cb();
     });
+});
+```
 
 ## Pool info
 
 The following functions will let you get information about the pool:
 
-    // returns factory.name for this pool
-    pool.getName()
+```js
+// returns factory.name for this pool
+pool.getName()
 
-    // returns number of resources in the pool regardless of
-    // whether they are free or in use
-    pool.getPoolSize()
+// returns number of resources in the pool regardless of
+// whether they are free or in use
+pool.getPoolSize()
 
-    // returns number of unused resources in the pool
-    pool.availableObjectsCount()
+// returns number of unused resources in the pool
+pool.availableObjectsCount()
 
-    // returns number of callers waiting to acquire a resource
-    pool.waitingClientsCount()
-
+// returns number of callers waiting to acquire a resource
+pool.waitingClientsCount()
+```
 
 ## Run Tests
 
