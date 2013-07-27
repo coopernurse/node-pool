@@ -20,6 +20,9 @@ parameter order consistent with the factory.create callback.
     
 ## History
 
+    2.0.4 - July 27 2013
+       - Merged #64 - Fix for not removing idle objects (contributed by PiotrWpl)
+
     2.0.3 - January 16 2013
        - Merged #56/#57 - Add optional refreshIdle flag. If false, idle resources at the pool minimum will not be
          destroyed/re-created. (contributed by wshaver)
