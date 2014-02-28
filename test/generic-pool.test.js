@@ -188,8 +188,8 @@ module.exports = {
         setTimeout(function() { }, 102);
 
         beforeExit(function() {
-            assert.equal(2, destroyed[0]);
-            assert.equal(1, destroyed[1]);
+            assert.equal(2, destroyed[1]);
+            assert.equal(1, destroyed[0]);
         });
     },
 
