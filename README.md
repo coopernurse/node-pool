@@ -20,6 +20,10 @@ parameter order consistent with the factory.create callback.
     
 ## History
 
+    2.1.0 - June 19 2014
+       - Merged #72 - Add optional returnToHead flag, if true, resources are returned to head of queue (stack like 
+         behaviour) upon release (contributed by calibr), also see #68 for further discussion.
+
     2.0.4 - July 27 2013
        - Merged #64 - Fix for not removing idle objects (contributed by PiotrWpl)
 
@@ -191,6 +195,8 @@ If you do this, your node process will exit gracefully.
      idleTimeoutMillis : max milliseconds a resource can go unused before it should be destroyed
                          (default 30000)
     reapIntervalMillis : frequency to check for idle resources (default 1000),
+          returnToHead : boolean, if true the most recently released resources will be the first to be allocated.
+                         This in effect turns the pool's behaviour from a queue into a stack. optional (default false)
          priorityRange : int between 1 and x - if set, borrowers can specify their
                          relative priority in the queue if no resources are available.
                          see example.  (default 1)
@@ -321,7 +327,7 @@ pool.waitingClientsCount()
 
 (The MIT License)
 
-Copyright (c) 2010-2013 James Cooper &lt;james@bitmechanic.com&gt;
+Copyright (c) 2010-2014 James Cooper &lt;james@bitmechanic.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
