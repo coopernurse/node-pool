@@ -233,7 +233,7 @@ specifies the caller's relative position in the queue.
      priorityRange : 3
  });
 
- // acquire connection - no priority - will go at end of line
+ // acquire connection - no priority - will go at front of line (same as high priority)
  pool.acquire(function(err, client) {
      pool.release(client);
  });
