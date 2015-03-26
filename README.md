@@ -20,6 +20,12 @@ parameter order consistent with the factory.create callback.
     
 ## History
 
+    2.2.0 - March 26 2015
+        - Merged #92 - add getMaxPoolSize function (contributed by platypusMaximus)
+
+    2.1.1 - July 5 2015
+        - fix README error about priority queueing (spotted by @kmdm)
+
     2.1.0 - June 19 2014
        - Merged #72 - Add optional returnToHead flag, if true, resources are returned to head of queue (stack like 
          behaviour) upon release (contributed by calibr), also see #68 for further discussion.
@@ -316,6 +322,9 @@ pool.availableObjectsCount()
 
 // returns number of callers waiting to acquire a resource
 pool.waitingClientsCount()
+
+// returns number of maxixmum number of resources allowed by ppol
+pool.getMaxPoolSize()
 ```
 
 ## Run Tests

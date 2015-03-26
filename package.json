@@ -1,7 +1,7 @@
 {
   "name": "generic-pool",
   "description": "Generic resource pooling for Node.JS",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "author": "James Cooper <james@bitmechanic.com>",
   "contributors": [
     { "name": "James Cooper", "email": "james@bitmechanic.com" },
@@ -9,7 +9,8 @@
     { "name": "Gary Dusbabek" },
     { "name": "Tom MacWright", "url" : "http://www.developmentseed.org/" },
     { "name": "Douglas Christopher Wilson", "email": "doug@somethingdoug.com", "url" : "http://somethingdoug.com/" },
-    { "name": "calibr"}
+    { "name": "calibr"},
+    { "name": "Justin Robinson", "email":"jrobinson@redventures.com>"}
   ],
   "keywords": ["pool", "pooling", "throttle"],
   "main": "lib/generic-pool.js",
