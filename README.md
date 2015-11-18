@@ -4,7 +4,7 @@
 
   Generic resource pool.  Can be used to reuse or throttle expensive resources such as
   database connections.
-  
+
 ## 2.0 Release Warning
 
 The 2.0.0 release removed support for variable argument callbacks.  When you acquire
@@ -17,7 +17,7 @@ parameter order consistent with the factory.create callback.
 ## Installation
 
     $ npm install generic-pool
-    
+
 ## History
 
     2.2.0 - March 26 2015
@@ -27,7 +27,7 @@ parameter order consistent with the factory.create callback.
         - fix README error about priority queueing (spotted by @kmdm)
 
     2.1.0 - June 19 2014
-       - Merged #72 - Add optional returnToHead flag, if true, resources are returned to head of queue (stack like 
+       - Merged #72 - Add optional returnToHead flag, if true, resources are returned to head of queue (stack like
          behaviour) upon release (contributed by calibr), also see #68 for further discussion.
 
     2.0.4 - July 27 2013
@@ -42,12 +42,12 @@ parameter order consistent with the factory.create callback.
        - Fix #51, #48 - createResource() should check for null clientCb in err case (contributed by pooyasencha)
        - Merged #52 - fix bug of infinite wait when create object aync error (contributed by windyrobin)
        - Merged #53 - change the position of dispense and callback to ensure the time order (contributed by windyrobin)
-    
+
     2.0.1 - August 29 2012
        - Fix #44 - leak of 'err' and 'obj' in createResource()
        - Add devDependencies block to package.json
        - Add travis-ci.org integration
-       
+
     2.0.0 - July 31 2012
        - Non-backwards compatible change: remove adjustCallback
           - acquire() callback must accept two params: (err, obj)
@@ -71,20 +71,20 @@ parameter order consistent with the factory.create callback.
 
     1.0.8 - Nov 16 2011
        - Merged #21 (add getter methods to see pool size, etc. - contributed by BryanDonovan)
-       
+
     1.0.7 - Oct 17 2011
        - Merged #19 (prevent release on the same obj twice - contributed by tkrynski)
        - Merged #20 (acquire() returns boolean indicating whether pool is full - contributed by tilgovi)
 
     1.0.6 - May 23 2011
-       - Merged #13 (support error variable in acquire callback - contributed by tmcw) 
+       - Merged #13 (support error variable in acquire callback - contributed by tmcw)
           - Note: This change is backwards compatible.  But new code should use the two
                   parameter callback format in pool.create() functions from now on.
        - Merged #15 (variable scope issue in dispense() - contributed by eevans)
-       
+
     1.0.5 - Apr 20 2011
        - Merged #12 (ability to drain pool - contributed by gdusbabek)
-       
+
     1.0.4 - Jan 25 2011
        - Fixed #6 (objects reaped with undefined timeouts)
        - Fixed #7 (objectTimeout issue)
@@ -98,8 +98,8 @@ parameter order consistent with the factory.create callback.
          - destroy() removed from public interface
          - added JsDoc comments
          - Priority queueing enhancements
-       
-    1.0.2 - Nov 9 2010 
+
+    1.0.2 - Nov 9 2010
        - First NPM release
 
 ## Example
@@ -119,7 +119,7 @@ var pool = poolModule.Pool({
         c.password = 'tiger';
         c.database = 'mydb';
         c.connect();
-        
+
         // parameter order: err, resource
         // new in 1.0.6
         callback(null, c);
@@ -127,11 +127,11 @@ var pool = poolModule.Pool({
     destroy  : function(client) { client.end(); },
     max      : 10,
     // optional. if you set this, make sure to drain() (see step 3)
-    min      : 2, 
+    min      : 2,
     // specifies how long a resource can stay idle in pool before being removed
     idleTimeoutMillis : 30000,
      // if true, logs via console.log - can also be a function
-    log : true 
+    log : true
 });
 ```
 
@@ -155,10 +155,10 @@ pool.acquire(function(err, client) {
 ```
 
 ### Step 3 - Drain pool during shutdown (optional)
-    
+
 If you are shutting down a long-lived process, you may notice
 that node fails to exit for 30 seconds or so.  This is a side
-effect of the idleTimeoutMillis behavior -- the pool has a 
+effect of the idleTimeoutMillis behavior -- the pool has a
 setTimeout() call registered that is in the event loop queue, so
 node won't terminate until all resources have timed out, and the pool
 stops trying to manage them.  
@@ -168,7 +168,7 @@ as the pool will never become empty, and the setTimeout calls will
 never end.  
 
 In these cases, use the pool.drain() function.  This sets the pool
-into a "draining" state which will gracefully wait until all 
+into a "draining" state which will gracefully wait until all
 idle resources have timed out.  For example, you can call:
 
 ```js
@@ -178,10 +178,10 @@ pool.drain(function() {
     pool.destroyAllNow();
 });
 ```
-    
+
 If you do this, your node process will exit gracefully.
-    
-    
+
+
 ## Documentation
 
     Pool() accepts an object with these slots:
@@ -208,8 +208,10 @@ If you do this, your node process will exit gracefully.
                          see example.  (default 1)
               validate : function that accepts a pooled resource and returns true if the resource
                          is OK to use, or false if the object is invalid.  Invalid objects will be destroyed.
-                         This function is called in acquire() before returning a resource from the pool. 
+                         This function is called in acquire() before returning a resource from the pool.
                          Optional.  Default function always returns true.
+         validateAsync : true/false - Indicates whether the validate function is
+                         asynchronous. Default is false.
                    log : true/false or function -
                            If a log is a function, it will be called with two parameters:
                                                     - log string
@@ -219,8 +221,8 @@ If you do this, your node process will exit gracefully.
 
 ## Priority Queueing
 
-The pool now supports optional priority queueing.  This becomes relevant when no resources 
-are available and the caller has to wait. `acquire()` accepts an optional priority int which 
+The pool now supports optional priority queueing.  This becomes relevant when no resources
+are available and the caller has to wait. `acquire()` accepts an optional priority int which
 specifies the caller's relative position in the queue.
 
 ```js
@@ -231,7 +233,7 @@ specifies the caller's relative position in the queue.
      create   : function(callback) {
          // do something
      },
-     destroy  : function(client) { 
+     destroy  : function(client) {
          // cleanup.  omitted for this example
      },
      max      : 10,
@@ -274,7 +276,7 @@ will throw an Error.
 
 ## Pooled function decoration
 
-To transparently handle object acquisition for a function, 
+To transparently handle object acquisition for a function,
 one can use `pooled()`:
 
 ```js
@@ -285,14 +287,14 @@ publicFn = pool.pooled(privateFn = function(client, arg, cb) {
 });
 ```
 
-Keeping both private and public versions of each function allows for pooled 
+Keeping both private and public versions of each function allows for pooled
 functions to call other pooled functions with the same member. This is a handy
 pattern for database transactions:
 
 ```js
 var privateTop, privateBottom, publicTop, publicBottom;
 publicBottom = pool.pooled(privateBottom = function(client, arg, cb) {
-    //Use client, assumed auto-release 
+    //Use client, assumed auto-release
 });
 
 publicTop = pool.pooled(privateTop = function(client, cb) {
@@ -332,7 +334,7 @@ pool.getMaxPoolSize()
     $ npm install expresso
     $ expresso -I lib test/*.js
 
-## License 
+## License
 
 (The MIT License)
 

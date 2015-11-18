@@ -587,6 +587,35 @@ module.exports = {
         assert.equal(pool.availableObjectsCount(), 1);
     },
 
+    'removes from available objects on async validation failure': function(beforeExit){
+        var destroyCalled = false,
+            validateCalled = false,
+            count = 0;
+        var factory = {
+            name: 'test',
+            create: function(callback) {callback(null, {count: count++}); },
+            destroy: function(client) {destroyCalled = client.count; },
+            validate: function(client, callback) {validateCalled = true; callback( client.count != 0 );},
+            validateAsync: true,
+            max: 2,
+            idleTimeoutMillis: 100
+        };
+
+        var pool = poolModule.Pool(factory);
+        pool.acquire(function(err, obj){
+            pool.release(obj);
+            assert.equal(obj.count, 0);
+
+            pool.acquire(function(err, obj){
+                pool.release(obj);
+                assert.equal(obj.count, 1);
+            });
+        });
+        assert.equal(validateCalled, true);
+        assert.equal(destroyCalled, 0);
+        assert.equal(pool.availableObjectsCount(), 1);
+    },
+
     'do schedule again if error occured when creating new Objects async': function(beforeExit){
         var factory = {
             name: 'test',
