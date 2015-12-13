@@ -613,7 +613,34 @@ module.exports = {
        beforeExit(function() {
          assert.equal(getFlag, 1);   
        });
+    },
+
+    'returns only valid object to the pool': function(beforeExit){
+        var pool = poolModule.Pool({
+            name: 'test',
+            create: function(callback) {
+                process.nextTick(function(){
+                    callback(null, { id: 'validId' });
+                });
+            },
+            destroy: function(client) {},
+            max: 1,
+            idleTimeoutMillis: 100
+        });
+
+        pool.acquire(function(err, obj){
+            assert.equal(pool.availableObjectsCount(), 0);
+            assert.equal(pool.inUseObjectsCount(), 1);
+
+            // Invalid release
+            pool.release({});
+            assert.equal(pool.availableObjectsCount(), 0);
+            assert.equal(pool.inUseObjectsCount(), 1);
+
+            // Valid release
+            pool.release(obj);
+            assert.equal(pool.availableObjectsCount(), 1);
+            assert.equal(pool.inUseObjectsCount(), 0);
+        });
     }
-
-
 };
