@@ -595,8 +595,7 @@ module.exports = {
             name: 'test',
             create: function(callback) {callback(null, {count: count++}); },
             destroy: function(client) {destroyCalled = client.count; },
-            validate: function(client, callback) {validateCalled = true; callback( client.count != 0 );},
-            validateAsync: true,
+            validateAsync: function(client, callback) {validateCalled = true; callback( client.count != 0 );},
             max: 2,
             idleTimeoutMillis: 100
         };
@@ -614,6 +613,27 @@ module.exports = {
         assert.equal(validateCalled, true);
         assert.equal(destroyCalled, 0);
         assert.equal(pool.availableObjectsCount(), 1);
+    },
+
+    'error on setting both validate functions': function(beforeExit){
+        var destroyCalled = false,
+            validateCalled = false,
+            count = 0;
+        var factory = {
+            name: 'test',
+            create: function(callback) {callback(null, {count: count++}); },
+            destroy: function(client) {destroyCalled = client.count; },
+            validate: function(client) {validateCalled = true; return client.count != 0; },
+            validateAsync: function(client, callback) {validateCalled = true; callback( client.count != 0 );},
+            max: 2,
+            idleTimeoutMillis: 100
+        };
+
+        try {
+            var pool = poolModule.Pool(factory);
+        } catch ( err ) {
+            assert.equal(err.message, "Only one of validate or validateAsync may be specified");
+        }
     },
 
     'do schedule again if error occured when creating new Objects async': function(beforeExit){
