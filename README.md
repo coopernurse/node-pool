@@ -20,6 +20,12 @@ parameter order consistent with the factory.create callback.
 
 ## History
 
+    2.2.2 - December 13 2015
+        - Merged #106 - fix condition where non "resource pool" created objects could be returned to the pool. (contributed by @devzer01)
+
+    2.2.1 - October 30 2015
+        - Merged #104 - fix #103 - condition where pool can create > specified max number of connections (contributed by @devzer01)
+
     2.2.0 - March 26 2015
         - Merged #92 - add getMaxPoolSize function (contributed by platypusMaximus)
 
