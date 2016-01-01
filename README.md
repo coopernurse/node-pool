@@ -5,20 +5,14 @@
   Generic resource pool.  Can be used to reuse or throttle expensive resources such as
   database connections.
 
-## 2.0 Release Warning
-
-The 2.0.0 release removed support for variable argument callbacks.  When you acquire
-a resource from the pool, your callback *must* accept two arguments: (err, obj)
-
-Previously this library attempted to determine the arity of the callback, but this resulted
-in a variety of issues.  This change eliminates these issues, and makes the acquire callback
-parameter order consistent with the factory.create callback.
-
 ## Installation
 
     $ npm install generic-pool
 
 ## History
+
+    2.3.0 - January 1 2016
+        - Merged #105 - allow asynchronous validate functions (contributed by @felipou)
 
     2.2.2 - December 13 2015
         - Merged #106 - fix condition where non "resource pool" created objects could be returned to the pool. (contributed by @devzer01)
@@ -344,7 +338,7 @@ pool.getMaxPoolSize()
 
 (The MIT License)
 
-Copyright (c) 2010-2014 James Cooper &lt;james@bitmechanic.com&gt;
+Copyright (c) 2010-2016 James Cooper &lt;james@bitmechanic.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
