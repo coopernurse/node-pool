@@ -7,7 +7,7 @@ module.exports = {
         var createCount  = 0;
         var destroyCount = 0;
         var borrowCount  = 0;
-        
+
         var factory = {
             name     : 'test1',
             create   : function(callback) {
@@ -40,7 +40,7 @@ module.exports = {
             assert.equal(10, borrowCount);
         });
     },
-    
+
     'respects min limit' : function (beforeExit) {
         var createCount  = 0;
         var destroyCount = 0;
@@ -64,7 +64,7 @@ module.exports = {
             assert.equal(1, destroyCount);
         });
     },
-    
+
     'min and max limit defaults' : function (beforeExit) {
       var factory = {
         name    : "test-limit-defaults",
@@ -73,13 +73,13 @@ module.exports = {
         idleTimeoutMillis: 100
       };
       var pool = poolModule.Pool(factory);
-      
+
       beforeExit(function() {
         assert.equal(1, factory.max);
         assert.equal(0, factory.min);
       });
     },
-    
+
     'malformed min and max limits are ignored' : function (beforeExit) {
       var factory = {
         name    : "test-limit-defaults2",
@@ -90,13 +90,13 @@ module.exports = {
         max : [ ]
       };
       var pool = poolModule.Pool(factory);
-      
+
       beforeExit(function() {
         assert.equal(1, factory.max);
         assert.equal(0, factory.min);
       });
     },
-    
+
     'min greater than max sets to max minus one' : function (beforeExit) {
       var factory = {
         name    : "test-limit-defaults3",
@@ -108,7 +108,7 @@ module.exports = {
       };
       var pool = poolModule.Pool(factory);
       pool.drain();
-      
+
       beforeExit(function() {
         assert.equal(3, factory.max);
         assert.equal(2, factory.min);
@@ -333,10 +333,10 @@ module.exports = {
 
         beforeExit(function() {
           assert.equal(assertion_count, 4);
-          assert.equal(destroyed_count, 1); 
+          assert.equal(destroyed_count, 1);
         });
     },
-    
+
     'pooled decorator should pass arguments and return values' : function(beforeExit) {
         var assertion_count = 0;
         var pool = poolModule.Pool({
@@ -540,7 +540,7 @@ module.exports = {
           });
         });
     },
-    
+
     'removes from available objects on destroy': function(beforeExit){
         var destroyCalled = false;
         var factory = {
@@ -553,10 +553,10 @@ module.exports = {
 
         var pool = poolModule.Pool(factory);
         pool.acquire(function(err, obj){
-            pool.destroy(obj);            
+            pool.destroy(obj);
         });
         assert.equal(destroyCalled, true);
-        assert.equal(pool.availableObjectsCount(), 0);        
+        assert.equal(pool.availableObjectsCount(), 0);
     },
 
     'removes from available objects on validation failure': function(beforeExit){
@@ -587,13 +587,62 @@ module.exports = {
         assert.equal(pool.availableObjectsCount(), 1);
     },
 
+    'removes from available objects on async validation failure': function(beforeExit){
+        var destroyCalled = false,
+            validateCalled = false,
+            count = 0;
+        var factory = {
+            name: 'test',
+            create: function(callback) {callback(null, {count: count++}); },
+            destroy: function(client) {destroyCalled = client.count; },
+            validateAsync: function(client, callback) {validateCalled = true; callback( client.count != 0 );},
+            max: 2,
+            idleTimeoutMillis: 100
+        };
+
+        var pool = poolModule.Pool(factory);
+        pool.acquire(function(err, obj){
+            pool.release(obj);
+            assert.equal(obj.count, 0);
+
+            pool.acquire(function(err, obj){
+                pool.release(obj);
+                assert.equal(obj.count, 1);
+            });
+        });
+        assert.equal(validateCalled, true);
+        assert.equal(destroyCalled, 0);
+        assert.equal(pool.availableObjectsCount(), 1);
+    },
+
+    'error on setting both validate functions': function(beforeExit){
+        var destroyCalled = false,
+            validateCalled = false,
+            count = 0;
+        var factory = {
+            name: 'test',
+            create: function(callback) {callback(null, {count: count++}); },
+            destroy: function(client) {destroyCalled = client.count; },
+            validate: function(client) {validateCalled = true; return client.count != 0; },
+            validateAsync: function(client, callback) {validateCalled = true; callback( client.count != 0 );},
+            max: 2,
+            idleTimeoutMillis: 100
+        };
+
+        try {
+            var pool = poolModule.Pool(factory);
+        } catch ( err ) {
+            assert.equal(err.message, "Only one of validate or validateAsync may be specified");
+        }
+    },
+
     'do schedule again if error occured when creating new Objects async': function(beforeExit){
         var factory = {
             name: 'test',
             create: function(callback) {
               process.nextTick(function(){
                 var err = new Error('Create Error');
-                callback(err); 
+                callback(err);
               })
             },
             destroy: function(client) {},
@@ -607,11 +656,11 @@ module.exports = {
         pool.acquire(function(err, obj){
            getFlag = 1;
            assert(err);
-           assert.equal(pool.availableObjectsCount(), 0);        
+           assert.equal(pool.availableObjectsCount(), 0);
        });
 
        beforeExit(function() {
-         assert.equal(getFlag, 1);   
+         assert.equal(getFlag, 1);
        });
     },
 
