@@ -11,6 +11,9 @@
 
 ## History
 
+    2.3.1 - January 7 2016
+        - Documentation fixes and widened number of nodejs versions tested on travis
+
     2.3.0 - January 1 2016
         - Merged #105 - allow asynchronous validate functions (contributed by @felipou)
 
@@ -210,8 +213,10 @@ If you do this, your node process will exit gracefully.
                          is OK to use, or false if the object is invalid.  Invalid objects will be destroyed.
                          This function is called in acquire() before returning a resource from the pool.
                          Optional.  Default function always returns true.
-         validateAsync : true/false - Indicates whether the validate function is
-                         asynchronous. Default is false.
+         validateAsync : Asynchronous validate function. Receives a callback function as its second argument, 
+                         which should be called with a single boolean argument being true if the item is still 
+                         valid and false if it should be removed from the pool. Called before item is acquired 
+                         from pool. Default is undefined. Only one of validate/validateAsync may be specified
                    log : true/false or function -
                            If a log is a function, it will be called with two parameters:
                                                     - log string
