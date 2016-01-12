@@ -112,8 +112,8 @@
 ```js
 // Create a MySQL connection pool with
 // a max of 10 connections, a min of 2, and a 30 second max idle time
-var poolModule = require('generic-pool');
-var pool = poolModule.Pool({
+var Pool = require('generic-pool').Pool;
+var pool = new Pool({
     name     : 'mysql',
     create   : function(callback) {
         var Client = require('mysql').Client;
@@ -233,7 +233,7 @@ specifies the caller's relative position in the queue.
 ```js
  // create pool with priorityRange of 3
  // borrowers can specify a priority 0 to 2
- var pool = poolModule.Pool({
+ var pool = new Pool({
      name     : 'mysql',
      create   : function(callback) {
          // do something
