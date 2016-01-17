@@ -240,6 +240,10 @@ pool.waitingClientsCount()
 
 // returns number of maxixmum number of resources allowed by ppol
 pool.getMaxPoolSize()
+
+// returns number of minimum number of resources allowed by ppol
+pool.getMinPoolSize()
+
 ```
 
 ## Run Tests
