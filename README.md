@@ -240,12 +240,26 @@ pool.waitingClientsCount()
 
 // returns number of maxixmum number of resources allowed by ppol
 pool.getMaxPoolSize()
+
+// returns number of minimum number of resources allowed by ppol
+pool.getMinPoolSize()
+
 ```
 
 ## Run Tests
 
     $ npm install expresso
-    $ expresso -I lib test/*.js
+    $ npm test
+
+## Linting
+    
+We use eslint and the `standard` ruleset. At the moment linting is not done as part of the test suite but this will probably change in the future. You should ideally lint your code before making any PR's patches etc.
+
+Becuase the linting tools require nodejs >= `0.10` but we test against `0.8` and `0.6` installation of the tools is done via `npm run lint-install`. Some kind of optionalDevDependencies would be great!
+
+    $ npm run lint-install
+    $ npm run lint
+
 
 ## License
 
