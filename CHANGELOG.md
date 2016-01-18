@@ -1,6 +1,7 @@
 # Change Log
 
-## [unreleased] - unreleased
+## [2.4.0] - January 18 2016
+- Merged #118 - closes #110 - optional eslinting for test and lib using "standard" ruleset
 - Merged #114 - closes #113 - "classes" now used internally instead of object literals and exports support being called as a constructor (along with old factory behaviour) (contributed by @felixfbecker)
 - Move history from README.md to CHANGELOG.md and reformat
 
@@ -94,7 +95,8 @@
 ## [1.0.2] - Nov 9 2010
 - First NPM release
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.3.1...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/coopernurse/node-pool/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/coopernurse/node-pool/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/coopernurse/node-pool/compare/v2.2.2...v2.3.0
 [2.2.2]: https://github.com/coopernurse/node-pool/compare/v2.2.1...v2.2.2

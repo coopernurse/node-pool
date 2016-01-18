@@ -1,7 +1,7 @@
 {
   "name": "generic-pool",
   "description": "Generic resource pooling for Node.JS",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "author": "James Cooper <james@bitmechanic.com>",
   "contributors": [
     {
@@ -39,6 +39,14 @@
     {
       "name": "Felipe Machado",
       "email": "felipou@gmail.com"
+    },
+    {
+      "name": "Felix Becker",
+      "email": "felix.b@outlook.com"
+    },
+    {
+      "name": "sandfox",
+      "email": "james.butler@sandfox.co.uk"
     }
   ],
   "keywords": [
