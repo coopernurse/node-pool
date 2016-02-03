@@ -55,7 +55,10 @@ module.exports = {
       max: 2,
       idleTimeoutMillis: 100
     })
-    pool.drain()
+
+    pool.drain(function () {
+      pool.destroyAllNow()
+    })
 
     beforeExit(function () {
       assert.equal(0, pool.availableObjectsCount())
@@ -106,7 +109,9 @@ module.exports = {
       max: 3
     }
     var pool = poolModule.Pool(factory)
-    pool.drain()
+    pool.drain(function () {
+      pool.destroyAllNow();
+    })
 
     beforeExit(function () {
       assert.equal(3, pool.getMaxPoolSize())
