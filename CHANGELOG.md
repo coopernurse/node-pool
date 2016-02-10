@@ -4,6 +4,7 @@
 - Merged #118 - closes #110 - optional eslinting for test and lib using "standard" ruleset
 - Merged #114 - closes #113 - "classes" now used internally instead of object literals and exports support being called as a constructor (along with old factory behaviour) (contributed by @felixfbecker)
 - Move history from README.md to CHANGELOG.md and reformat
+- Closes #122 - fixes trapped connection bug when destroying a connection while others are in use
 
 ## [2.3.1] - January 7 2016
 - Documentation fixes and widened number of nodejs versions tested on travis
