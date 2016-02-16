@@ -461,6 +461,62 @@ module.exports = {
     })
   },
 
+  'block:false returns error if pool full': function (beforeExit) {
+    var assertion_count = 0
+    var pool = poolModule.Pool({
+      name: 'test1',
+      create: function (callback) { callback({id: Math.floor(Math.random() * 1000)}) },
+      destroy: function (client) {},
+      max: 2,
+      idleTimeoutMillis: 100
+    })
+    pool.acquire(function (err, obj1) {
+      if (err) { throw err }
+      pool.acquire(function (err, obj2) {
+        if (err) { throw err }
+        pool.acquire(function (err, obj3) {
+          assert.equal(err.message, 'Cannot acquire connection because the pool is full')
+          assertion_count += 1
+        }, 0, {block: false})
+      }, 0, {block: false})
+    })
+
+    beforeExit(function () {
+      assert.equal(assertion_count, 1)
+    })
+  },
+
+  // 0. Set poolSize to 2
+  // 1. Acquire an object
+  // 2. Acquire 2nd object (resource created)
+  // 3. Release one object (all resources created, only one live)
+  // 4. Acquire an object (should succeed despite resources being created)
+  'block:false returns error if all objects created, pool not full': function (beforeExit) {
+    var assertion_count = 0
+    var pool = poolModule.Pool({
+      name: 'test-object-created',
+      create: function (callback) { callback({id: Math.floor(Math.random() * 1000)}) },
+      destroy: function (client) {},
+      max: 2,
+      idleTimeoutMillis: 100
+    })
+    pool.acquire(function (err, obj1) {
+      if (err) { throw err }
+      pool.acquire(function (err, obj2) {
+        if (err) { throw err }
+        pool.release(obj1)
+        pool.acquire(function (err, obj3) {
+          assert.equal(err, null)
+          assertion_count += 1
+        }, 0, {block: false})
+      }, 0, {block: false})
+    })
+
+    beforeExit(function () {
+      assert.equal(assertion_count, 1)
+    })
+  },
+
   'availableObjectsCount': function (beforeExit) {
     var assertion_count = 0
     var pool = poolModule.Pool({
