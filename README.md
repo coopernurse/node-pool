@@ -54,7 +54,7 @@ var pool = new Pool({
 pool.acquire(function(err, client) {
     if (err) {
         // handle error - this is generally the err from your
-        // factory.create function  
+        // factory.create function
     }
     else {
         client.query("select * from foo", [], function() {
@@ -72,11 +72,11 @@ that node fails to exit for 30 seconds or so.  This is a side
 effect of the idleTimeoutMillis behavior -- the pool has a
 setTimeout() call registered that is in the event loop queue, so
 node won't terminate until all resources have timed out, and the pool
-stops trying to manage them.  
+stops trying to manage them.
 
 This behavior will be more problematic when you set factory.min > 0,
 as the pool will never become empty, and the setTimeout calls will
-never end.  
+never end.
 
 In these cases, use the pool.drain() function.  This sets the pool
 into a "draining" state which will gracefully wait until all
@@ -121,9 +121,9 @@ If you do this, your node process will exit gracefully.
                          is OK to use, or false if the object is invalid.  Invalid objects will be destroyed.
                          This function is called in acquire() before returning a resource from the pool.
                          Optional.  Default function always returns true.
-         validateAsync : Asynchronous validate function. Receives a callback function as its second argument, 
-                         which should be called with a single boolean argument being true if the item is still 
-                         valid and false if it should be removed from the pool. Called before item is acquired 
+         validateAsync : Asynchronous validate function. Receives a callback function as its second argument,
+                         which should be called with a single boolean argument being true if the item is still
+                         valid and false if it should be removed from the pool. Called before item is acquired
                          from pool. Default is undefined. Only one of validate/validateAsync may be specified
                    log : true/false or function -
                            If a log is a function, it will be called with two parameters:
@@ -251,8 +251,19 @@ pool.getMinPoolSize()
     $ npm install expresso
     $ npm test
 
+The test runner runs every test in parallel, so tests cannot safely share
+resources. If a test fails, its thrown assertion error may bubble up and halt
+execution/cause failures in other running tests; these are spurious. If you
+have a failing test, try running it in isolation until you get it to pass.
+
+The individual tests "wait" by repeatedly checking the condition in the
+`beforeExit` callback. The test is marked as "passed" if the `beforeExit`
+callback runs successfully. Generally, this is accomplished by counting the
+number of assertions and checking that all of the test's assertions have been
+asserted.
+
 ## Linting
-    
+
 We use eslint and the `standard` ruleset. At the moment linting is not done as part of the test suite but this will probably change in the future. You should ideally lint your code before making any PR's patches etc.
 
 Becuase the linting tools require nodejs >= `0.10` but we test against `0.8` and `0.6` installation of the tools is done via `npm run lint-install`. Some kind of optionalDevDependencies would be great!
