@@ -578,7 +578,8 @@ module.exports = {
         pool.acquire(function (err, obj3) {
           // time out times aren't exact, but let's check this is closer to
           // 5 than 50
-          assert((Date.now() - start) < 10)
+          var diff = Date.now() - start
+          assert(diff < 20, "expected time difference to be < 15, was " + diff)
           assertion_count += 1
           assert.equal(err, poolModule.full)
           assertion_count += 1
