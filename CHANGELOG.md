@@ -1,5 +1,10 @@
 # Change Log
 
+## [2.4.1] - February 20 2016
+- Documented previously created/fixed bug #122 (thanks @jasonrhodes)
+- Improved Makefile and test runner docs thanks (@kevinburke)
+- fixed bug documented in #121 where pool could make incorrect decisions about which resources were eligible for removal. (thanks @mikemorris)
+
 ## [2.4.0] - January 18 2016
 - Merged #118 - closes #110 - optional eslinting for test and lib using "standard" ruleset
 - Merged #114 - closes #113 - "classes" now used internally instead of object literals and exports support being called as a constructor (along with old factory behaviour) (contributed by @felixfbecker)
@@ -96,7 +101,8 @@
 ## [1.0.2] - Nov 9 2010
 - First NPM release
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.4.0...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.4.1...HEAD
+[2.4.1]: https://github.com/coopernurse/node-pool/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/coopernurse/node-pool/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/coopernurse/node-pool/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/coopernurse/node-pool/compare/v2.2.2...v2.3.0
