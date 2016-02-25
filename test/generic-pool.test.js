@@ -110,7 +110,7 @@ module.exports = {
     }
     var pool = poolModule.Pool(factory)
     pool.drain(function () {
-      pool.destroyAllNow();
+      pool.destroyAllNow()
     })
 
     beforeExit(function () {
