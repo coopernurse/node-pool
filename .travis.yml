@@ -7,6 +7,14 @@ node_js:
   - "4"
   - "5"
 
+install:
+  - make install
+  - make lint-install
+
+script:
+  - make lint
+  - make test
+
 sudo: false
 
 matrix:
