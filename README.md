@@ -21,18 +21,18 @@ The history has been moved to the [CHANGELOG](CHANGELOG.md)
 // Create a MySQL connection pool with
 // a max of 10 connections, a min of 2, and a 30 second max idle time
 var Pool = require('generic-pool').Pool;
+var mysql = require('mysql'); // v2.10.x
+
 var pool = new Pool({
     name     : 'mysql',
     create   : function(callback) {
-        var Client = require('mysql').Client;
-        var c = new Client();
-        c.user     = 'scott';
-        c.password = 'tiger';
-        c.database = 'mydb';
-        c.connect();
+        var c = mysql.createConnection({
+                user: 'scott',
+                password: 'tiger',
+                database:'mydb'
+        })
 
         // parameter order: err, resource
-        // new in 1.0.6
         callback(null, c);
     },
     destroy  : function(client) { client.end(); },
