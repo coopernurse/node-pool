@@ -701,5 +701,52 @@ module.exports = {
       assert.equal(pool.availableObjectsCount(), 1)
       assert.equal(pool.inUseObjectsCount(), 0)
     })
+  },
+
+  'validate acquires object from the pool': function (beforeExit) {
+    var pool = poolModule.Pool({
+      name: 'test',
+      create: function (callback) {
+        process.nextTick(function () {
+          callback(null, { id: 'validId' })
+        })
+      },
+      validate: function(resource){
+        return true
+      },		
+      destroy: function (client) {},
+      max: 1,
+      idleTimeoutMillis: 100
+    })
+
+    pool.acquire(function (err, obj) {
+      assert.ifError(err)
+      assert.equal(pool.availableObjectsCount(), 0)
+      assert.equal(pool.inUseObjectsCount(), 1)
+
+    })
+  },
+
+  'validateAsync acquires object from the pool': function (beforeExit) {
+    var pool = poolModule.Pool({
+      name: 'test',
+      create: function (callback) {
+        process.nextTick(function () {
+          callback(null, { id: 'validId' })
+        })
+      },
+      validateAsync: function(resource, callback){
+        callback(true);
+      },
+      destroy: function (client) {},
+      max: 1,
+      idleTimeoutMillis: 100
+    })
+
+    pool.acquire(function (err, obj) {
+      assert.ifError(err)
+      assert.equal(pool.availableObjectsCount(), 0)
+      assert.equal(pool.inUseObjectsCount(), 1)
+    })
   }
 }
