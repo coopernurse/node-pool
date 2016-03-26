@@ -1,5 +1,10 @@
 # Change Log
 
+## [2.4.2] - March 26 2016
+- Travis now runs and fails lint checks (@kevinburke)
+- fixed bug #128 where using async validation incorrectly tracked resource state (@johnjdooley and @robfyfe)
+- fixed broken readme example that had aged badly
+
 ## [2.4.1] - February 20 2016
 - Documented previously created/fixed bug #122 (thanks @jasonrhodes)
 - Improved Makefile and test runner docs thanks (@kevinburke)
@@ -101,7 +106,8 @@
 ## [1.0.2] - Nov 9 2010
 - First NPM release
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.4.1...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.4.2...HEAD
+[2.4.2]: https://github.com/coopernurse/node-pool/compare/v2.4.1...v2.4.2
 [2.4.1]: https://github.com/coopernurse/node-pool/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/coopernurse/node-pool/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/coopernurse/node-pool/compare/v2.3.0...v2.3.1
