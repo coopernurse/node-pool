@@ -711,9 +711,9 @@ module.exports = {
           callback(null, { id: 'validId' })
         })
       },
-      validate: function(resource){
+      validate: function (resource) {
         return true
-      },		
+      },
       destroy: function (client) {},
       max: 1,
       idleTimeoutMillis: 100
@@ -723,7 +723,6 @@ module.exports = {
       assert.ifError(err)
       assert.equal(pool.availableObjectsCount(), 0)
       assert.equal(pool.inUseObjectsCount(), 1)
-
     })
   },
 
@@ -735,8 +734,8 @@ module.exports = {
           callback(null, { id: 'validId' })
         })
       },
-      validateAsync: function(resource, callback){
-        callback(true);
+      validateAsync: function (resource, callback) {
+        callback(true)
       },
       destroy: function (client) {},
       max: 1,
