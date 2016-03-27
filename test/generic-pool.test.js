@@ -499,13 +499,13 @@ module.exports = {
       },
       destroy: function (client) {},
       max: 2,
-      idleTimeoutMillis: 100,
+      idleTimeoutMillis: 100
     })
     pool.acquire(function (err, obj1) {
       if (err) { throw err }
       pool.acquire(function (err, obj2) {
         if (err) { throw err }
-        setTimeout(function() {
+        setTimeout(function () {
           pool.release(obj1)
           released = true
         }, 10)
@@ -564,13 +564,13 @@ module.exports = {
       },
       destroy: function (client) {},
       max: 2,
-      idleTimeoutMillis: 100,
+      idleTimeoutMillis: 100
     })
     pool.acquire(function (err, obj1) {
       if (err) { throw err }
       pool.acquire(function (err, obj2) {
         if (err) { throw err }
-        setTimeout(function() {
+        setTimeout(function () {
           pool.release(obj1)
           released = true
         }, 50)
@@ -579,7 +579,7 @@ module.exports = {
           // time out times aren't exact, but let's check this is closer to
           // 5 than 50
           var diff = Date.now() - start
-          assert(diff < 20, "expected time difference to be < 15, was " + diff)
+          assert(diff < 25, 'expected time difference to be < 25, was ' + diff)
           assertion_count += 1
           assert.equal(err, poolModule.full)
           assertion_count += 1
@@ -604,13 +604,13 @@ module.exports = {
       },
       destroy: function (client) {},
       max: 2,
-      idleTimeoutMillis: 100,
+      idleTimeoutMillis: 100
     })
     pool.acquire(function (err, obj1) {
       if (err) { throw err }
       pool.acquire(function (err, obj2) {
         if (err) { throw err }
-        setTimeout(function() {
+        setTimeout(function () {
           pool.release(obj1)
           released = true
         }, 30)
@@ -635,38 +635,40 @@ module.exports = {
 
   'timeout: NaN returns an error': function (beforeExit) {
     var assertion_count = 0
+    var createCount = 0
     var pool = poolModule.Pool({
       name: 'timeout5',
       create: function (callback) {
         callback(null, { count: ++createCount })
       },
       destroy: function (client) {},
-      max: 2,
+      max: 2
     })
     pool.acquire(function (err, obj1) {
-      assert(err.message, "Timeout set to immediate or negative value: NaN")
+      assert(err.message, 'Timeout set to immediate or negative value: NaN')
       assertion_count++
     }, 0, {timeout: NaN})
-    beforeExit(function() {
+    beforeExit(function () {
       assert.equal(assertion_count, 1)
     })
   },
 
   'timeout: -1 returns an error': function (beforeExit) {
     var assertion_count = 0
+    var createCount = 0
     var pool = poolModule.Pool({
       name: 'timeout5',
       create: function (callback) {
         callback(null, { count: ++createCount })
       },
       destroy: function (client) {},
-      max: 2,
+      max: 2
     })
     pool.acquire(function (err, obj1) {
-      assert(err.message, "Timeout set to immediate or negative value: -1")
+      assert(err.message, 'Timeout set to immediate or negative value: -1')
       assertion_count++
     }, 0, {timeout: -1})
-    beforeExit(function() {
+    beforeExit(function () {
       assert.equal(assertion_count, 1)
     })
   },
@@ -716,7 +718,7 @@ module.exports = {
       if (err) { throw err }
       pool.acquire(function (err, obj2) {
         if (err) { throw err }
-        setTimeout(function() {
+        setTimeout(function () {
           pool.release(obj1)
           released = true
         }, 10)
