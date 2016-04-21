@@ -747,5 +747,94 @@ module.exports = {
       assert.equal(pool.availableObjectsCount(), 0)
       assert.equal(pool.inUseObjectsCount(), 1)
     })
+  },
+  'async destroy': function (beforeExit) {
+    var created = 0
+    var destroyed = 0
+    var count = 5
+    var acquired = 0
+    var destroyAllNowFired = false
+
+    var pool = poolModule.Pool({
+      name: 'test4',
+      create: function (callback) { callback(null, {id: ++created}) },
+      destroy: function (client, cb) {
+        setTimeout(function () {
+          destroyed += 1
+          cb()
+        }, 250)
+      },
+      max: 2,
+      idletimeoutMillis: 300000
+    })
+
+    for (var i = 0; i < count; i++) {
+      pool.acquire(function (err, client) {
+        assert.ifError(err)
+        acquired += 1
+        assert.equal(typeof client.id, 'number')
+        setTimeout(function () { pool.release(client) }, 250)
+      })
+    }
+    assert.notEqual(count, acquired)
+    pool.drain(function () {
+      var toDestroy = pool.availableObjectsCount()
+
+      assert.equal(count, acquired)
+      // short circuit the absurdly long timeouts above.
+      pool.destroyAllNow(function () {
+        destroyAllNowFired = true
+        assert.equal(toDestroy, destroyed)
+      })
+      assert.equal(destroyed, 0)
+    })
+
+    beforeExit(function () {
+      assert.equal(destroyAllNowFired, true)
+    })
+  },
+  'async destroy - no breaking change': function (beforeExit) {
+    var created = 0
+    var destroyed = 0
+    var max = 2
+    var count = 5
+    var acquired = 0
+    var destroyAllNowFired = false
+
+    var pool = poolModule.Pool({
+      name: 'test4',
+      create: function (callback) { callback(null, {id: ++created}) },
+      destroy: function (client) {
+        destroyed += 1
+      },
+      max: max,
+      idletimeoutMillis: 300000
+    })
+
+    for (var i = 0; i < count; i++) {
+      pool.acquire(function (err, client) {
+        assert.ifError(err)
+        acquired += 1
+        assert.equal(typeof client.id, 'number')
+        setTimeout(function () { pool.release(client) }, 250)
+      })
+    }
+
+    assert.notEqual(count, acquired)
+
+    pool.drain(function () {
+      var toDestroy = pool.availableObjectsCount()
+      assert.equal(count, acquired)
+      // short circuit the absurdly long timeouts above.
+      pool.destroyAllNow(function () {
+        destroyAllNowFired = true
+        assert.equal(toDestroy, destroyed)
+      })
+      assert.equal(toDestroy, destroyed)
+    })
+
+    beforeExit(function () {
+      assert.equal(destroyAllNowFired, true)
+    })
   }
 }
