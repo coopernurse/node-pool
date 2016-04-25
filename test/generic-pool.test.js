@@ -127,7 +127,7 @@ module.exports = {
 
     var pool = poolModule.Pool({
       name: 'test2',
-      create: function (callback) { callback() },
+      create: function (callback) { callback(null, {}) },
       destroy: function (client) {},
       max: 1,
       idleTimeoutMillis: 100,
@@ -135,11 +135,11 @@ module.exports = {
     })
 
     for (i = 0; i < 10; i++) {
-      pool.acquire((function (err, obj) {
-        return function () {
+      pool.acquire((function () {
+        return function (err, obj) {
+          assert.ifError(err)
           setTimeout(function () {
-            assert.ifError(err)
-            var t = new Date().getTime()
+            var t = Date.now()
             if (t > borrowTimeLow) { borrowTimeLow = t }
             borrowCount++
             pool.release(obj)
@@ -149,10 +149,11 @@ module.exports = {
     }
 
     for (i = 0; i < 10; i++) {
-      pool.acquire((function (obj) {
-        return function () {
+      pool.acquire((function () {
+        return function (err, obj) {
+          assert.ifError(err)
           setTimeout(function () {
-            var t = new Date().getTime()
+            var t = Date.now()
             if (t > borrowTimeHigh) { borrowTimeHigh = t }
             borrowCount++
             pool.release(obj)
