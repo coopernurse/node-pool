@@ -112,6 +112,7 @@ If you do this, your node process will exit gracefully.
      idleTimeoutMillis : max milliseconds a resource can go unused before it should be destroyed
                          (default 30000)
     reapIntervalMillis : frequency to check for idle resources (default 1000),
+  acquireTimeoutMillis : max milliseconds a acquire will wait for a resource before timing out. optional (default undefined), if supplied should non-zero positive integer
           returnToHead : boolean, if true the most recently released resources will be the first to be allocated.
                          This in effect turns the pool's behaviour from a queue into a stack. optional (default false)
          priorityRange : int between 1 and x - if set, borrowers can specify their
