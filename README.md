@@ -107,6 +107,7 @@ If you do this, your node process will exit gracefully.
                          if this is set >= max, the pool will silently set the min
                          to factory.max - 1 (Note: min==max case is expected to change in v3 release)
                          optional (default=0)
+     maxWaitingClients : maximum number of queued requests allowed, additional acquire calls will `cb(err)` in  a future cycle of the event loop.
            refreshIdle : boolean that specifies whether idle resources at or below the min threshold
                          should be destroyed/re-created.  optional (default=true)
      idleTimeoutMillis : max milliseconds a resource can go unused before it should be destroyed
