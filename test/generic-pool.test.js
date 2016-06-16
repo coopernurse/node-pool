@@ -750,7 +750,7 @@ module.exports = {
   },
 
   'validateAsync multiple calls': function (beforeExit) {
-    var create_count = 0;
+    var create_count = 0
 
     var pool = poolModule.Pool({
       name: 'test',
@@ -761,52 +761,52 @@ module.exports = {
         }, 50)
       },
       validateAsync: function (resource, callback) {
-          //console.log( "setTimeout Validate object count:", resource.count )
-          setTimeout(function () {
-              //console.log( "Validating object count:", resource.count )
-              callback(true)
-          }, 100)
+          // console.log( "setTimeout Validate object count:", resource.count )
+        setTimeout(function () {
+          // console.log( "Validating object count:", resource.count )
+          callback(true)
+        }, 100)
       },
       destroy: function (client) {},
       max: 3,
-      idleTimeoutMillis: 100,
-      //log: true
+      idleTimeoutMillis: 100
+      // log: true
     })
 
-    var acquire_release = function( num, in_use_count, available_count, release_timeout ) {
-        release_timeout = release_timeout || 500
-        in_use_count = in_use_count === undefined ? 3 : in_use_count
-        available_count = available_count === undefined ? 0 : available_count
+    var acquire_release = function (num, in_use_count, available_count, release_timeout) {
+      release_timeout = release_timeout || 500
+      in_use_count = in_use_count === undefined ? 3 : in_use_count
+      available_count = available_count === undefined ? 0 : available_count
 
-        pool.acquire(function (err, obj) {
-          //console.log( "Acquire " + num + " - object count:", obj.count )
-          assert.ifError(err)
-          assert.equal(pool.availableObjectsCount(), available_count)
-          assert.equal(pool.inUseObjectsCount(), in_use_count)
-          assert.ok(create_count <= 3)
+      pool.acquire(function (err, obj) {
+        // console.log( "Acquire " + num + " - object count:", obj.count )
+        assert.ifError(err)
+        assert.equal(pool.availableObjectsCount(), available_count)
+        assert.equal(pool.inUseObjectsCount(), in_use_count)
+        assert.ok(create_count <= 3)
 
-          setTimeout( function() {
-             //console.log( "Release " + num + " - object count:", obj.count )
-             pool.release(obj)
-          }, release_timeout )
-        })
-    };
+        setTimeout(function () {
+          // console.log( "Release " + num + " - object count:", obj.count )
+          pool.release(obj)
+        }, release_timeout)
+      })
+    }
 
-    acquire_release( 1, 1 )
-    acquire_release( 2, 2 )
-    acquire_release( 3 )
-    acquire_release( 4 )
+    acquire_release(1, 1)
+    acquire_release(2, 2)
+    acquire_release(3)
+    acquire_release(4)
 
-    setTimeout( function() {
-        acquire_release( 4 )
-        acquire_release( 5 )
-        acquire_release( 6 )
-        acquire_release( 7 )
-        acquire_release( 8, 3, 0, 50 )
-        acquire_release( 9, 3, 0, 50 )
-        acquire_release( 10, 3, 0, 50 )
-        acquire_release( 11 )
-        acquire_release( 12 )
-    }, 1000 )
+    setTimeout(function () {
+      acquire_release(4)
+      acquire_release(5)
+      acquire_release(6)
+      acquire_release(7)
+      acquire_release(8, 3, 0, 50)
+      acquire_release(9, 3, 0, 50)
+      acquire_release(10, 3, 0, 50)
+      acquire_release(11)
+      acquire_release(12)
+    }, 1000)
   }
 }
