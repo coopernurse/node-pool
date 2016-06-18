@@ -5,11 +5,11 @@
   Generic resource pool.  Can be used to reuse or throttle expensive resources such as
   database connections.
 
-  This is the legacy [v2.4 branch](https://github.com/coopernurse/node-pool/tree/v2.4). If possible it's recommended yo upgrade to the version 3 of generic pool as it's most likely that this branch will only be recieving bug fixes. Minor version upgrades are unlikely at this point.
+  This is the legacy [v2.5 branch](https://github.com/coopernurse/node-pool/tree/v2.5). If possible it's recommended yo upgrade to the version 3 of generic pool as it's most likely that this branch will only be recieving bug fixes. Minor version upgrades are unlikely at this point.
 
 ## Installation
 
-    $ npm install generic-pool@2.4
+    $ npm install generic-pool@2.5
 
 ## History
 
@@ -250,25 +250,16 @@ pool.getMinPoolSize()
 
 ## Run Tests
 
-    $ npm install expresso
+    $ npm install
     $ npm test
 
-The test runner runs every test in parallel, so tests cannot safely share
-resources. If a test fails, its thrown assertion error may bubble up and halt
-execution/cause failures in other running tests; these are spurious. If you
-have a failing test, try running it in isolation until you get it to pass.
-
-The individual tests "wait" by repeatedly checking the condition in the
-`beforeExit` callback. The test is marked as "passed" if the `beforeExit`
-callback runs successfully. Generally, this is accomplished by counting the
-number of assertions and checking that all of the test's assertions have been
-asserted.
+The tests are run/written using Tap. Most are ports from the old espresso tests and are not in great condition.
 
 ## Linting
 
 We use eslint and the `standard` ruleset. At the moment linting is not done as part of the test suite but this will probably change in the future. You should ideally lint your code before making any PR's patches etc.
 
-Becuase the linting tools require nodejs >= `0.10` but we test against `0.8` and `0.6` installation of the tools is done via `npm run lint-install`. Some kind of optionalDevDependencies would be great!
+Becuase the linting tools require nodejs >= `0.10` but we test against `0.8` installation of the tools is done via `npm run lint-install`.
 
     $ npm run lint-install
     $ npm run lint
