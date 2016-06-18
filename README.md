@@ -250,19 +250,10 @@ pool.getMinPoolSize()
 
 ## Run Tests
 
-    $ npm install expresso
+    $ npm install
     $ npm test
 
-The test runner runs every test in parallel, so tests cannot safely share
-resources. If a test fails, its thrown assertion error may bubble up and halt
-execution/cause failures in other running tests; these are spurious. If you
-have a failing test, try running it in isolation until you get it to pass.
-
-The individual tests "wait" by repeatedly checking the condition in the
-`beforeExit` callback. The test is marked as "passed" if the `beforeExit`
-callback runs successfully. Generally, this is accomplished by counting the
-number of assertions and checking that all of the test's assertions have been
-asserted.
+The tests are run/written using Tap. Most are ports from the old espresso tests and are not in great condition. Most cases are inside `test/generic-pool-test.js` with newer cases in their own files (legacy reasons).
 
 ## Linting
 
