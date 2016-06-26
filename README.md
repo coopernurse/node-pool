@@ -5,6 +5,8 @@
   Generic resource pool.  Can be used to reuse or throttle expensive resources such as
   database connections.
 
+  This module should work on any version of node from at least 0.6+, however the test and linting tools used only run on node >=10 so official support is for node 10 and up. All that said, if you find a bug on the older versions and can give us a test case we'll try to fix it.
+
 ## Installation
 
     $ npm install generic-pool
@@ -257,12 +259,7 @@ The tests are run/written using Tap. Most are ports from the old espresso tests 
 
 ## Linting
 
-We use eslint and the `standard` ruleset. At the moment linting is not done as part of the test suite but this will probably change in the future. You should ideally lint your code before making any PR's patches etc.
-
-Becuase the linting tools require nodejs >= `0.10` but we test against `0.8` and `0.6` installation of the tools is done via `npm run lint-install`. Some kind of optionalDevDependencies would be great!
-
-    $ npm run lint-install
-    $ npm run lint
+We use eslint and the `standard` ruleset.
 
 
 ## License
