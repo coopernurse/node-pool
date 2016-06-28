@@ -88,7 +88,7 @@ tap.test('malformed min and max limits are ignored', function (t) {
   t.end()
 })
 
-tap.test('min greater than max sets to max minus one', function (t) {
+tap.test('min greater than max sets to max', function (t) {
   var resourceFactory = new ResourceFactory()
   var factory = {
     name: 'test-limit-defaults3',
@@ -101,7 +101,7 @@ tap.test('min greater than max sets to max minus one', function (t) {
   var pool = Pool(factory)
 
   t.equal(3, pool.getMaxPoolSize())
-  t.equal(2, pool.getMinPoolSize())
+  t.equal(3, pool.getMinPoolSize())
   utils.stopPool(pool)
   t.end()
 })
