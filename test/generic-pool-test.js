@@ -552,7 +552,7 @@ tap.test('logPassesLogLevel', function (t) {
     t.equal(logmessages.info[0], 'dispense() clients=1 available=0')
     logmessages.info = []
     logmessages.verbose = []
-    pool2.borrow(function (err, obj) {
+    pool2.acquire(function (err, obj) {
       t.error(err)
       t.equal(logmessages.info.length, 0)
       t.equal(logmessages.verbose.length, 0)
