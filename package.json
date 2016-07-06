@@ -75,7 +75,7 @@
   },
   "scripts": {
     "lint": "eslint lib test",
-    "test": "tap test/*-test.js"
+    "test": "tap test/*-test.js --timeout 2"
   },
   "license": "MIT"
 }
