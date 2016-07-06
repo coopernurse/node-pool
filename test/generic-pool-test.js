@@ -546,7 +546,7 @@ tap.test('availableObjectsCount', function (t) {
 //     t.equal(logmessages.info[0], 'dispense() clients=1 available=0')
 //     logmessages.info = []
 //     logmessages.verbose = []
-    
+
 //     pool.release(objA)
 //     utils.stopPool(pool)
 //     t.end()
@@ -676,7 +676,7 @@ tap.test('do schedule again if error occured when creating new Objects async', f
   }
 
   var pool = Pool(factory)
-  //pool.acquire(function () {})
+  // pool.acquire(function () {})
   pool.acquire(function (err, obj) {
     t.error(err)
     t.equal(pool.availableObjectsCount(), 0)
