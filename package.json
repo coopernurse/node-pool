@@ -58,23 +58,24 @@
     "pooling",
     "throttle"
   ],
-  "main": "lib/generic-pool.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "http://github.com/coopernurse/node-pool.git"
   },
   "devDependencies": {
-    "tap": "^5.7.1",
     "eslint": "^2.13.1",
-    "eslint-config-standard": "^5.3.1", 
+    "eslint-config-standard": "^5.3.1",
+    "eslint-plugin-promise": "^1.0.8",
     "eslint-plugin-standard": "^1.3.1",
-    "eslint-plugin-promise": "^1.0.8"
+    "tap": "^5.7.1"
   },
   "engines": {
     "node": ">= 0.8.0"
   },
   "scripts": {
     "lint": "eslint lib test",
+    "lint-fix": "eslint --fix lib test",
     "test": "tap test/*-test.js --timeout 2"
   },
   "license": "MIT"

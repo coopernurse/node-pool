@@ -9,11 +9,12 @@ var ResourceFactory = function ResourceFactory () {
 }
 
 ResourceFactory.prototype.create = function (callback) {
+  var id = this.created++
   var resource = {
-    id: this.created++
+    id: id
   }
   setTimeout(function () {
-    callback(resource)
+    callback(null, resource)
   }, 1)
 }
 

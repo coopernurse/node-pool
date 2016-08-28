@@ -1,112 +1,107 @@
 var tap = require('tap')
-var Pool = require('../lib/generic-pool').Pool
+var Pool = require('../lib/Pool')
 var utils = require('./utils')
 var ResourceFactory = utils.ResourceFactory
 
-tap.test('Pool expands only to max limit', function (t) {
-  var resourceFactory = new ResourceFactory()
+// tap.test('Pool expands only to max limit', function (t) {
+//   var resourceFactory = new ResourceFactory()
 
-  var factory = {
-    name: 'test1',
-    create: resourceFactory.create.bind(resourceFactory),
-    destroy: resourceFactory.destroy.bind(resourceFactory),
-    max: 1,
-    refreshIdle: false
-  }
+//   var config = {
+//     max: 1,
+//     refreshIdle: false,
+//     name: 'test1'
+//   }
 
-  var pool = Pool(factory)
+//   var pool = Pool(resourceFactory, config)
 
-    // NOTES:
-    // - request a resource
-    // - once we have it, request another and check the pool is fool
-  pool.acquire(function (err, obj) {
-    t.error(err)
-    var poolIsFull = !pool.acquire(function (err, obj) {
-      t.error(err)
-      t.equal(1, resourceFactory.created)
-      pool.release(obj)
-      utils.stopPool(pool)
-      t.end()
-    })
-    t.ok(poolIsFull)
-    t.equal(1, resourceFactory.created)
-    pool.release(obj)
-  })
-})
+//     // NOTES:
+//     // - request a resource
+//     // - once we have it, request another and check the pool is fool
+//   pool.acquire(function (err, obj) {
+//     t.error(err)
+//     var poolIsFull = !pool.acquire(function (err, obj) {
+//       t.error(err)
+//       t.equal(1, resourceFactory.created)
+//       pool.release(obj)
+//       utils.stopPool(pool)
+//       t.end()
+//     })
+//     t.ok(poolIsFull)
+//     t.equal(1, resourceFactory.created)
+//     pool.release(obj)
+//   })
+// })
 
-tap.test('Pool respects min limit', function (t) {
-  var resourceFactory = new ResourceFactory()
+// tap.test('Pool respects min limit', function (t) {
+//   var resourceFactory = new ResourceFactory()
 
-  var pool = Pool({
-    name: 'test-min',
-    create: resourceFactory.create.bind(resourceFactory),
-    destroy: resourceFactory.destroy.bind(resourceFactory),
-    min: 1,
-    max: 2,
-    refreshIdle: false
-  })
+//   var config = {
+//     name: 'test-min',
+//     min: 1,
+//     max: 2,
+//     refreshIdle: false
+//   }
 
-    // FIXME: this logic only works because we know it takes ~1ms to create a resource
-    // we need better hooks into the pool probably to observe this...
-  setTimeout(function () {
-    t.equal(resourceFactory.created, 1)
-    utils.stopPool(pool)
-    t.end()
-  }, 10)
-})
+//   var pool = Pool(resourceFactory, config)
 
-tap.test('min and max limit defaults', function (t) {
-  var resourceFactory = new ResourceFactory()
+//     // FIXME: this logic only works because we know it takes ~1ms to create a resource
+//     // we need better hooks into the pool probably to observe this...
+//   setTimeout(function () {
+//     t.equal(resourceFactory.created, 1)
+//     utils.stopPool(pool)
+//     t.end()
+//   }, 10)
+// })
 
-  var factory = {
-    name: 'test-limit-defaults',
-    create: resourceFactory.create.bind(resourceFactory),
-    destroy: resourceFactory.destroy.bind(resourceFactory),
-    refreshIdle: false
-  }
-  var pool = Pool(factory)
+// tap.test('min and max limit defaults', function (t) {
+//   var resourceFactory = new ResourceFactory()
 
-  t.equal(1, pool.getMaxPoolSize())
-  t.equal(0, pool.getMinPoolSize())
-  utils.stopPool(pool)
-  t.end()
-})
+//   var config = {
+//     name: 'test-limit-defaults',
+//     refreshIdle: false
+//   }
 
-tap.test('malformed min and max limits are ignored', function (t) {
-  var resourceFactory = new ResourceFactory()
-  var factory = {
-    name: 'test-limit-defaults2',
-    create: resourceFactory.create.bind(resourceFactory),
-    destroy: resourceFactory.destroy.bind(resourceFactory),
-    refreshIdle: false,
-    min: 'asf',
-    max: []
-  }
-  var pool = Pool(factory)
+//   var pool = Pool(resourceFactory, config)
 
-  t.equal(1, pool.getMaxPoolSize())
-  t.equal(0, pool.getMinPoolSize())
-  utils.stopPool(pool)
-  t.end()
-})
+//   t.equal(1, pool.getMaxPoolSize())
+//   t.equal(0, pool.getMinPoolSize())
+//   utils.stopPool(pool)
+//   t.end()
+// })
 
-tap.test('min greater than max sets to max', function (t) {
-  var resourceFactory = new ResourceFactory()
-  var factory = {
-    name: 'test-limit-defaults3',
-    create: resourceFactory.create.bind(resourceFactory),
-    destroy: resourceFactory.destroy.bind(resourceFactory),
-    refreshIdle: false,
-    min: 5,
-    max: 3
-  }
-  var pool = Pool(factory)
+// tap.test('malformed min and max limits are ignored', function (t) {
+//   var resourceFactory = new ResourceFactory()
 
-  t.equal(3, pool.getMaxPoolSize())
-  t.equal(3, pool.getMinPoolSize())
-  utils.stopPool(pool)
-  t.end()
-})
+//   var config = {
+//     name: 'test-limit-defaults2',
+//     refreshIdle: false,
+//     min: 'asf',
+//     max: []
+//   }
+//   var pool = Pool(resourceFactory, config)
+
+//   t.equal(1, pool.getMaxPoolSize())
+//   t.equal(0, pool.getMinPoolSize())
+//   utils.stopPool(pool)
+//   t.end()
+// })
+
+// tap.test('min greater than max sets to max', function (t) {
+//   var resourceFactory = new ResourceFactory()
+
+//   var config = {
+//     name: 'test-limit-defaults3',
+//     refreshIdle: false,
+//     min: 5,
+//     max: 3
+//   }
+//   var pool = Pool(resourceFactory, config)
+
+//   t.equal(3, pool.getMaxPoolSize())
+//   t.equal(3, pool.getMinPoolSize())
+//   utils.stopPool(pool)
+//   t.end()
+// })
 
 tap.test('supports priority on borrow', function (t) {
   // NOTE: this test is pretty opaque about what it's really testing/expecting...
@@ -117,14 +112,14 @@ tap.test('supports priority on borrow', function (t) {
 
   var resourceFactory = new ResourceFactory()
 
-  var pool = Pool({
+  var config = {
     name: 'test2',
-    create: resourceFactory.create.bind(resourceFactory),
-    destroy: resourceFactory.destroy.bind(resourceFactory),
     max: 1,
     refreshIdle: false,
     priorityRange: 2
-  })
+  }
+
+  var pool = Pool(resourceFactory, config)
 
   for (i = 0; i < 10; i++) {
     pool.acquire(function (err, obj) {
@@ -159,13 +154,13 @@ tap.test('supports priority on borrow', function (t) {
 tap.test('removes correct object on reap', function (t) {
   var resourceFactory = new ResourceFactory()
 
-  var pool = Pool({
+  var config = {
     name: 'test3',
-    create: resourceFactory.create.bind(resourceFactory),
-    destroy: resourceFactory.destroy.bind(resourceFactory),
     max: 2,
     refreshIdle: false
-  })
+  }
+
+  var pool = Pool(resourceFactory, config)
 
   pool.acquire(function (err, client) {
     t.error(err)
@@ -191,14 +186,12 @@ tap.test('tests drain', function (t) {
   var acquired = 0
 
   var resourceFactory = new ResourceFactory()
-
-  var pool = Pool({
+  var config = {
     name: 'test4',
-    create: resourceFactory.create.bind(resourceFactory),
-    destroy: resourceFactory.destroy.bind(resourceFactory),
     max: 2,
     idletimeoutMillis: 300000
-  })
+  }
+  var pool = Pool(resourceFactory, config)
 
     // request 5 resources that release after 250ms
   for (var i = 0; i < count; i++) {
@@ -226,19 +219,23 @@ tap.test('tests drain', function (t) {
 
 tap.test('handle creation errors', function (t) {
   var created = 0
-  var pool = Pool({
-    name: 'test6',
+  var resourceFactory = {
     create: function (callback) {
+      created++
       if (created < 5) {
         callback(new Error('Error occurred.'))
       } else {
-        callback({ id: created })
+        callback(null, { id: created })
       }
-      created++
     },
-    destroy: function (client) {},
+    destroy: function (client) {}
+  }
+  var config = {
+    name: 'test6',
     max: 1
-  })
+  }
+
+  var pool = Pool(resourceFactory, config)
 
     // FIXME: this section no longer proves anything as factory
     // errors no longer bubble up through the acquire call
@@ -271,23 +268,29 @@ tap.test('handle creation errors', function (t) {
 
 tap.test('handle creation errors for delayed creates', function (t) {
   var created = 0
-  var pool = Pool({
-    name: 'test6',
+
+  var resourceFactory = {
     create: function (callback) {
+      created++
       if (created < 5) {
         setTimeout(function () {
           callback(new Error('Error occurred.'))
         }, 0)
       } else {
         setTimeout(function () {
-          callback({ id: created })
+          callback(null, { id: created })
         }, 0)
       }
-      created++
     },
-    destroy: function (client) {},
+    destroy: function (client) {}
+  }
+
+  var config = {
+    name: 'test6',
     max: 1
-  })
+  }
+
+  var pool = Pool(resourceFactory, config)
 
     // FIXME: this section no longer proves anything as factory
     // errors no longer bubble up through the acquire call
@@ -318,13 +321,13 @@ tap.test('handle creation errors for delayed creates', function (t) {
 tap.test('pooled decorator should acquire and release', function (t) {
     // FIXME: assertion count should probably be replaced with t.plan?
   var assertionCount = 0
-  var pool = Pool({
+  var resourceFactory = new ResourceFactory()
+  var config = {
     name: 'test1',
-    create: function (callback) { callback({id: Math.floor(Math.random() * 1000)}) },
-    destroy: function (client) {},
     max: 1,
     refreshIdle: false
-  })
+  }
+  var pool = Pool(resourceFactory, config)
 
   var pooledFn = pool.pooled(function (client, cb) {
     t.equal(typeof client.id, 'number')
@@ -354,12 +357,12 @@ tap.test('pooled decorator should acquire and release', function (t) {
 tap.test('pooled decorator should pass arguments and return values', function (t) {
     // FIXME: assertion count should probably be replaced with t.plan?
   var assertionCount = 0
-  var pool = Pool({
+  var resourceFactory = new ResourceFactory()
+  var config = {
     name: 'test1',
-    create: function (callback) { callback({id: Math.floor(Math.random() * 1000)}) },
-    destroy: function (client) {},
     max: 1
-  })
+  }
+  var pool = Pool(resourceFactory, config)
 
   var pooledFn = pool.pooled(function (client, arg1, arg2, cb) {
     t.equal(arg1, 'First argument')
@@ -385,12 +388,14 @@ tap.test('pooled decorator should pass arguments and return values', function (t
 // FIXME:  I'm not really sure what this testing...
 tap.test('pooled decorator should allow undefined callback', function (t) {
   var assertionCount = 0
-  var pool = Pool({
+  var resourceFactory = new ResourceFactory()
+  var config = {
     name: 'test1',
-    create: function (callback) { callback({id: Math.floor(Math.random() * 1000)}) },
-    destroy: function (client) {},
-    max: 1
-  })
+    max: 1,
+    refreshIdle: false
+  }
+
+  var pool = Pool(resourceFactory, config)
 
   var pooledFn = pool.pooled(function (client, arg, cb) {
     t.equal(arg, 'Arg!')
@@ -437,12 +442,13 @@ tap.test('pooled decorator should allow undefined callback', function (t) {
 
 tap.test('getPoolSize', function (t) {
   var assertionCount = 0
-  var pool = Pool({
+  var resourceFactory = new ResourceFactory()
+  var config = {
     name: 'test1',
-    create: function (callback) { callback({id: Math.floor(Math.random() * 1000)}) },
-    destroy: function (client) {},
-    max: 2
-  })
+    max: 2,
+    refreshIdle: false
+  }
+  var pool = Pool(resourceFactory, config)
 
   t.equal(pool.getPoolSize(), 0)
   assertionCount += 1
@@ -477,12 +483,13 @@ tap.test('getPoolSize', function (t) {
 
 tap.test('availableObjectsCount', function (t) {
   var assertionCount = 0
-  var pool = Pool({
+  var resourceFactory = new ResourceFactory()
+  var config = {
     name: 'test1',
-    create: function (callback) { callback({id: Math.floor(Math.random() * 1000)}) },
-    destroy: function (client) {},
-    max: 2
-  })
+    max: 2,
+    refreshIdle: false
+  }
+  var pool = Pool(resourceFactory, config)
 
   t.equal(pool.availableObjectsCount(), 0)
   assertionCount += 1
@@ -556,13 +563,17 @@ tap.test('availableObjectsCount', function (t) {
 tap.test('removes from available objects on destroy', function (t) {
   var destroyCalled = false
   var factory = {
-    name: 'test',
     create: function (callback) { callback(null, {}) },
-    destroy: function (client) { destroyCalled = true },
+    destroy: function (client) { destroyCalled = true }
+  }
+
+  var config = {
+    name: 'test',
     max: 2
   }
 
-  var pool = Pool(factory)
+  var pool = Pool(factory, config)
+
   pool.acquire(function (err, obj) {
     t.error(err)
     pool.destroy(obj)
@@ -580,23 +591,26 @@ tap.test('removes from available objects on validation failure', function (t) {
   var validateCalled = false
   var count = 0
   var factory = {
-    name: 'test',
     create: function (callback) { callback(null, {count: count++}) },
     destroy: function (client) { destroyCalled = client.count },
-    validate: function (client) { validateCalled = true; return client.count > 0 },
-    max: 2
+    validate: function (client) { validateCalled = true; return client.count > 0 }
+  }
+  var config = {
+    name: 'test',
+    max: 2,
+    testOnBorrow: true
   }
 
-  var pool = Pool(factory)
+  var pool = Pool(factory, config)
   pool.acquire(function (err, obj) {
     t.error(err)
     pool.release(obj)
     t.equal(obj.count, 0)
 
-    pool.acquire(function (err, obj) {
+    pool.acquire(function (err, obj2) {
       t.error(err)
-      pool.release(obj)
-      t.equal(obj.count, 1)
+      pool.release(obj2)
+      t.equal(obj2.count, 1)
     })
   })
   setTimeout(function () {
@@ -613,23 +627,33 @@ tap.test('removes from available objects on async validation failure', function 
   var validateCalled = false
   var count = 0
   var factory = {
-    name: 'test',
     create: function (callback) { callback(null, {count: count++}) },
     destroy: function (client) { destroyCalled = client.count },
-    validateAsync: function (client, callback) { validateCalled = true; callback(client.count > 0) },
-    max: 2
+    validateAsync: function (client, callback) {
+      validateCalled = true
+      setTimeout(function () {
+        callback(client.count > 0)
+      })
+    }
   }
 
-  var pool = Pool(factory)
+  var config = {
+    max: 1,
+    name: 'async-failure-test',
+    refreshIdle: false,
+    testOnBorrow: true
+  }
+
+  var pool = Pool(factory, config)
   pool.acquire(function (err, obj) {
     t.error(err)
-    pool.release(obj)
     t.equal(obj.count, 0)
+    pool.release(obj)
 
-    pool.acquire(function (err, obj) {
+    pool.acquire(function (err, obj2) {
       t.error(err)
-      pool.release(obj)
-      t.equal(obj.count, 1)
+      t.equal(obj2.count, 1)
+      pool.release(obj2)
     })
   })
   setTimeout(function () {
@@ -644,7 +668,6 @@ tap.test('removes from available objects on async validation failure', function 
 tap.test('error on setting both validate functions', function (t) {
   var noop = function () {}
   var factory = {
-    name: 'test',
     create: noop,
     destroy: noop,
     validate: noop,
@@ -660,7 +683,6 @@ tap.test('do schedule again if error occured when creating new Objects async', f
   var resourceCreationAttempts = 0
 
   var factory = {
-    name: 'test',
     create: function (callback) {
       setTimeout(function () {
         resourceCreationAttempts++
@@ -670,12 +692,16 @@ tap.test('do schedule again if error occured when creating new Objects async', f
         callback(null, {})
       }, 1)
     },
-    destroy: function (client) {},
-    max: 1,
-    refreshIdle: false
+    destroy: function (client) {}
   }
 
-  var pool = Pool(factory)
+  var config = {
+    max: 1,
+    refreshIdle: false,
+    name: 'test'
+  }
+
+  var pool = Pool(factory, config)
   // pool.acquire(function () {})
   pool.acquire(function (err, obj) {
     t.error(err)

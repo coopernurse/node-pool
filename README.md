@@ -1,59 +1,67 @@
 [![build status](https://secure.travis-ci.org/coopernurse/node-pool.png)](http://travis-ci.org/coopernurse/node-pool)
 
-# About
+# Generic Pool
+
+## About
 
   Generic resource pool.  Can be used to reuse or throttle expensive resources such as
   database connections.
 
   This module should work on any version of node from at least 0.6+, however the test and linting tools used only run on node >=10 so official support is for node 10 and up. All that said, if you find a bug on the older versions and can give us a test case we'll try to fix it.
 
-## Installation
+**Future Versions Warning**
 
-    $ npm install generic-pool
+Generic Pool v3 will most likely be the last version to support any versions of nodejs prior to v4. It is planned for Generic Pool v4 to only support nodejs v4 and above (this may change however!)
 
 ## History
 
 The history has been moved to the [CHANGELOG](CHANGELOG.md)
 
-## Example
 
-### Step 1 - Create pool using a factory object
+## Installation
 
-```js
-// Create a MySQL connection pool with
-// a max of 10 connections, a min of 2, and a 30 second max idle time
-var Pool = require('generic-pool').Pool;
-var mysql = require('mysql'); // v2.10.x
-
-var pool = new Pool({
-    name     : 'mysql',
-    create   : function(callback) {
-        var c = mysql.createConnection({
-                user: 'scott',
-                password: 'tiger',
-                database:'mydb'
-        })
-
-        // parameter order: err, resource
-        callback(null, c);
-    },
-    destroy  : function(client) { client.end(); },
-    max      : 10,
-    // optional. if you set this, make sure to drain() (see step 3)
-    min      : 2,
-    // specifies how long a resource can stay idle in pool before being removed
-    idleTimeoutMillis : 30000,
-     // if true, logs via console.log - can also be a function
-    log : true
-});
+```sh
+$ npm install generic-pool [--save]
 ```
 
-### Step 2 - Use pool in your code to acquire/release resources
+
+## Example
+
+Here is an example using a fictional generic database driver that doesn't implement any pooling whatsoever itself.
 
 ```js
+var Pool = require('generic-pool').Pool;
+var DbDriver = require('some-db-driver');
+
+/**
+ * Step 1 - Create pool using a factory object
+ */
+var factory = {
+    create: function(callback){
+        var client = DbDriver.createClient()
+        client.on('connected', function(){
+            callback(null, client)
+        })
+    }
+    destroy: function(client){
+        client.disconnect()
+    }
+}
+
+var opts = {
+    max: 10, // maximum size of the pool
+    min: 2 // minimum size of the pool
+}
+
+var myPool = new Pool(factory, opts)
+
+/**
+ * Step 2 - Use pool in your code to acquire/release resources
+ */
+
 // acquire connection - callback function is called
 // once a resource becomes available
-pool.acquire(function(err, client) {
+myPool.acquire(function(err, client) {
     if (err) {
         // handle error - this is generally the err from your
         // factory.create function
@@ -65,9 +73,19 @@ pool.acquire(function(err, client) {
         });
     }
 });
+
+/**
+ * Step 3 - Drain pool during shutdown (optional)
+ */
+// Only call this once in your application -- at the point you want
+// to shutdown and stop using this pool.
+pool.drain(function() {
+    pool.destroyAllNow();
+});
+
 ```
 
-### Step 3 - Drain pool during shutdown (optional)
+## Draining (move me!)
 
 If you are shutting down a long-lived process, you may notice
 that node fails to exit for 30 seconds or so.  This is a side
@@ -84,103 +102,136 @@ In these cases, use the pool.drain() function.  This sets the pool
 into a "draining" state which will gracefully wait until all
 idle resources have timed out.  For example, you can call:
 
-```js
-// Only call this once in your application -- at the point you want
-// to shutdown and stop using this pool.
-pool.drain(function() {
-    pool.destroyAllNow();
-});
-```
-
 If you do this, your node process will exit gracefully.
 
 
 ## Documentation
 
-    Pool() accepts an object with these slots:
+### Constructor
 
-                  name : name of pool (string, optional)
-                create : function that returns a new resource
-                           should call callback() with the created resource
-               destroy : function that accepts a resource and destroys it
-                   max : maximum number of resources to create at any given time
-                         optional (default=1)
-                   min : minimum number of resources to keep in pool at any given time
-                         if this is set >= max, the pool will silently set the min
-                         to equal factory.max
-                         optional (default=0)
-     maxWaitingClients : maximum number of queued requests allowed, additional acquire calls will `cb(err)` in  a future cycle of the event loop.
-           refreshIdle : boolean that specifies whether idle resources at or below the min threshold
-                         should be destroyed/re-created.  optional (default=true)
-     idleTimeoutMillis : max milliseconds a resource can go unused before it should be destroyed
-                         (default 30000)
-    reapIntervalMillis : frequency to check for idle resources (default 1000),
-  acquireTimeoutMillis : max milliseconds a acquire will wait for a resource before timing out. optional (default undefined), if supplied should non-zero positive integer
-          returnToHead : boolean, if true the most recently released resources will be the first to be allocated.
-                         This in effect turns the pool's behaviour from a queue into a stack. optional (default false)
-         priorityRange : int between 1 and x - if set, borrowers can specify their
-                         relative priority in the queue if no resources are available.
+The `Pool` constructor takes two arguments:
+
+- `factory` :  an object containing functions to create/destroy/test resources for the `Pool`
+- `opts` : an optional object/dictonary to allow configuring/altering behaviour the of the `Pool`
+
+```js
+var pool = new Pool(factory, opts)
+```
+
+**factory**
+
+Can be any object/instance but must have the following properties:
+
+- `create` : a function that the pool will call when it wants a new resource. It should accept one argument `callback` where `callback` is a function with 2 args `err` and `resource`. If the `create` function is unable to create a resourse for whatever reason it should call `callback(err)` otherwise it should call `callback(null, resource)`.
+- `destroy`: a function that the pool will call when it wants to destroy a resource. It should accept one argument `callback` where `callback` is a function with 0 args. The `destroy` function should call `callback` once it has destroyed the resource.
+
+optionally it can also have one of the following properties, (if both are supplied the constructor will throw an error):
+
+- `validate`: a function that the pool will call if it wants to validate a resource. Should return a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid. _Note: `validate` functions are converted into an asynchronous equivalents automatically by the pool._
+- `validateAsync`: a function that pool will call if it wants to calidate a resource. It should accept one argument `callback` where `callback` is a function with 1 arg. The callback should be called in a later eventloop with a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid.
+
+
+**opts**
+
+An optional object/dictionary with the any of the following properties: 
+
+- `name`: name of pool (string) (not really used for much)
+- `max`: maximum number of resources to create at any given time. (default=1)
+- `min`: minimum number of resources to keep in pool at any given time. If this is set >= max, the pool will silently set the min to equal `max`. (default=0)
+- `maxWaitingClients`: maximum number of queued requests allowed, additional `acquire` calls will be callback with an `err` in a future cycle of the event loop.
+- `testOnBorrow`: `boolean`: should the pool validate resources before giving them to clients. Requires that either `factory.validate` or `factory.validateAsync` to be specified.
+- `refreshIdle`: `boolean` that specifies whether idle resources at or below the min threshold should be destroyed/re-created. (default=true)
+- `idleTimeoutMillis`: max milliseconds a resource can stay unused in the pool without being borrowed before it should be destroyed (default 30000)
+- `reapIntervalMillis`: interval to check for idle resources (default 1000). (remove me!)
+- `acquireTimeoutMillis`: max milliseconds an `acquire` call will wait for a resource before timing out. (default no limit), if supplied should non-zero positive integer.
+- `returnToHead` : if true the most recently released resources will be the first to be allocated. This in effect turns the pool's behaviour from a queue into a stack. `boolean`, (default false)
+- `priorityRange`: int between 1 and x - if set, borrowers can specify their relative priority in the queue if no resources are available.
                          see example.  (default 1)
-              validate : function that accepts a pooled resource and returns true if the resource
-                         is OK to use, or false if the object is invalid.  Invalid objects will be destroyed.
-                         This function is called in acquire() before returning a resource from the pool.
-                         Optional.  Default function always returns true.
-         validateAsync : Asynchronous validate function. Receives a callback function as its second argument,
-                         which should be called with a single boolean argument being true if the item is still
-                         valid and false if it should be removed from the pool. Called before item is acquired
-                         from pool. Default is undefined. Only one of validate/validateAsync may be specified
-                   log : true/false or function -
-                           If a log is a function, it will be called with two parameters:
-                                                    - log string
-                                                    - log level ('verbose', 'info', 'warn', 'error')
-                           Else if log is true, verbose log info will be sent to console.log()
-                           Else internal log messages be ignored (this is the default)
+- `log` : true/false or function - If a log is a function, it will be called with two parameters:
+	- log string
+	- log level ('verbose', 'info', 'warn', 'error')
+	
+	Else if log is true, verbose log info will be sent to console.log().
+	Else internal log messages be ignored (this is the default)
+
+### pool.acquire
+
+```js
+var cb = function(err, resource){
+	// userland error handling
+	resource.doStuff()
+	// release/destroy/etc
+}
+
+pool.acquire(cb)
+//or
+var priority = 2
+pool.acquire(cb, priority) 
+```
+
+This function is for when you want to "borrow" a resource from the pool.
+
+`acquire` takes one required and one optional argument:
+
+- `callback`: required, a function with 2 args `err` and `resource`. Once a resource in the pool is available, `callback` will be called and `resource` will be whatever `factory.create` makes for you. If the Pool is unable to give a resource (e.g timeout) then `callback` will called and `err` will be an `Error`
+- `priority`: optional, number, see **Priority Queueing** below.
+
+### pool.release
+
+```js
+pool.release(resource)
+```
+
+This function is for when you want to return a resource to the pool.
+
+`release` takes one required argument:
+
+- `resource`: a previously borrowed resource
+
+### pool.destroy
+
+This function is for when you want to return a resource to the pool but want it destroyed rather than being made available to other resources. E.g you may know the resource has timed out or crashed.
+
+`destroy` takes one required argument:
+
+- `resource`: a previously borrow resource
 
 ## Priority Queueing
 
-The pool now supports optional priority queueing.  This becomes relevant when no resources
-are available and the caller has to wait. `acquire()` accepts an optional priority int which
-specifies the caller's relative position in the queue.
+The pool supports optional priority queueing.  This becomes relevant when no resources are available and the caller has to wait. `acquire()` accepts an optional priority int which
+specifies the caller's relative position in the queue. Each priority slot has it's own internal queue created for it. When a resource is available for borrowing, the first request in the highest priority queue will be given it.
+
+Specifying a `priority` to `acquire` that is outside the `priorityRange` set at `Pool` creation time will result in the `priority` being converted the lowest possible `priority` 
 
 ```js
- // create pool with priorityRange of 3
- // borrowers can specify a priority 0 to 2
- var pool = new Pool({
-     name     : 'mysql',
-     create   : function(callback) {
-         // do something
-     },
-     destroy  : function(client) {
-         // cleanup.  omitted for this example
-     },
-     max      : 10,
-     idleTimeoutMillis : 30000,
-     priorityRange : 3
- });
+// create pool with priorityRange of 3
+// borrowers can specify a priority 0 to 2
+var opts = {
+  priorityRange : 3
+}
+var pool = new Pool(someFactory,opts);
 
- // acquire connection - no priority - will go onto end of line
- pool.acquire(function(err, client) {
-     pool.release(client);
- });
+// acquire connection - no priority specified - will go onto lowest priority queue
+pool.acquire(function(err, client) {
+    pool.release(client);
+});
 
- // acquire connection - high priority - will go into front slot
- pool.acquire(function(err, client) {
-     pool.release(client);
- }, 0);
+// acquire connection - high priority - will go into highest priority queue
+pool.acquire(function(err, client) {
+    pool.release(client);
+}, 0);
 
- // acquire connection - medium priority - will go into middle slot
- pool.acquire(function(err, client) {
-     pool.release(client);
- }, 1);
+// acquire connection - medium priority - will go into 'mid' priority queue
+pool.acquire(function(err, client) {
+    pool.release(client);
+}, 1);
 
- // etc..
+// etc..
 ```
 
 ## Draining
 
-If you know would like to terminate all the resources in your pool before
-their timeouts have been reached, you can use `destroyAllNow()` in conjunction
-with `drain()`:
+If you know you would like to terminate all the resources in your pool before any timeouts they might have, have been reached, you can use `destroyAllNow()` in conjunction with `drain()`:
 
 ```js
 pool.drain(function() {

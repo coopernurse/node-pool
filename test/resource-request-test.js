@@ -1,5 +1,5 @@
 var tap = require('tap')
-var ResourceRequest = require('../lib/generic-pool').ResourceRequest
+var ResourceRequest = require('../lib/ResourceRequest')
 
 var noop = function () {}
 
@@ -27,7 +27,7 @@ tap.test('times out when created with a ttl', function (t) {
   var request = new ResourceRequest(cb, 10) // eslint-disable-line no-unused-vars
 })
 
-tap.test('calls requestCallback when fulfilled', function (t) {
+tap.test('calls requestCallback when resolved', function (t) {
   var resource = {}
   var cb = function (err, r) {
     t.error(err)
@@ -35,7 +35,7 @@ tap.test('calls requestCallback when fulfilled', function (t) {
     t.end()
   }
   var request = new ResourceRequest(cb)
-  request.fulfill(null, resource)
+  request.resolve(resource)
 })
 
 tap.test('removeTimeout removes the timeout', function (t) {
@@ -49,13 +49,13 @@ tap.test('removeTimeout removes the timeout', function (t) {
   }, 20)
 })
 
-tap.test('throw if fulfilled more than once', function (t) {
+tap.test('throw if resolved more than once', function (t) {
   var request = new ResourceRequest(noop)
   t.doesNotThrow(function () {
-    request.fulfill(null, {})
+    request.resolve({})
   })
   t.throws(function () {
-    request.fulfill(null, {})
+    request.resolve({})
   }, /ResourceRequest already fulfilled/)
   t.end()
 })
