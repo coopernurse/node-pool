@@ -12,7 +12,7 @@ var ResourceFactory = utils.ResourceFactory
 //     name: 'test1'
 //   }
 
-//   var pool = Pool(resourceFactory, config)
+//   var pool = new Pool(resourceFactory, config)
 
 //     // NOTES:
 //     // - request a resource
@@ -42,7 +42,7 @@ var ResourceFactory = utils.ResourceFactory
 //     refreshIdle: false
 //   }
 
-//   var pool = Pool(resourceFactory, config)
+//   var pool = new Pool(resourceFactory, config)
 
 //     // FIXME: this logic only works because we know it takes ~1ms to create a resource
 //     // we need better hooks into the pool probably to observe this...
@@ -61,7 +61,7 @@ var ResourceFactory = utils.ResourceFactory
 //     refreshIdle: false
 //   }
 
-//   var pool = Pool(resourceFactory, config)
+//   var pool = new Pool(resourceFactory, config)
 
 //   t.equal(1, pool.getMaxPoolSize())
 //   t.equal(0, pool.getMinPoolSize())
@@ -78,7 +78,7 @@ var ResourceFactory = utils.ResourceFactory
 //     min: 'asf',
 //     max: []
 //   }
-//   var pool = Pool(resourceFactory, config)
+//   var pool = new Pool(resourceFactory, config)
 
 //   t.equal(1, pool.getMaxPoolSize())
 //   t.equal(0, pool.getMinPoolSize())
@@ -95,7 +95,7 @@ var ResourceFactory = utils.ResourceFactory
 //     min: 5,
 //     max: 3
 //   }
-//   var pool = Pool(resourceFactory, config)
+//   var pool = new Pool(resourceFactory, config)
 
 //   t.equal(3, pool.getMaxPoolSize())
 //   t.equal(3, pool.getMinPoolSize())
@@ -119,7 +119,7 @@ tap.test('supports priority on borrow', function (t) {
     priorityRange: 2
   }
 
-  var pool = Pool(resourceFactory, config)
+  var pool = new Pool(resourceFactory, config)
 
   for (i = 0; i < 10; i++) {
     pool.acquire(function (err, obj) {
@@ -160,7 +160,7 @@ tap.test('removes correct object on reap', function (t) {
     refreshIdle: false
   }
 
-  var pool = Pool(resourceFactory, config)
+  var pool = new Pool(resourceFactory, config)
 
   pool.acquire(function (err, client) {
     t.error(err)
@@ -191,7 +191,7 @@ tap.test('tests drain', function (t) {
     max: 2,
     idletimeoutMillis: 300000
   }
-  var pool = Pool(resourceFactory, config)
+  var pool = new Pool(resourceFactory, config)
 
     // request 5 resources that release after 250ms
   for (var i = 0; i < count; i++) {
@@ -235,7 +235,7 @@ tap.test('handle creation errors', function (t) {
     max: 1
   }
 
-  var pool = Pool(resourceFactory, config)
+  var pool = new Pool(resourceFactory, config)
 
     // FIXME: this section no longer proves anything as factory
     // errors no longer bubble up through the acquire call
@@ -290,7 +290,7 @@ tap.test('handle creation errors for delayed creates', function (t) {
     max: 1
   }
 
-  var pool = Pool(resourceFactory, config)
+  var pool = new Pool(resourceFactory, config)
 
     // FIXME: this section no longer proves anything as factory
     // errors no longer bubble up through the acquire call
@@ -327,7 +327,7 @@ tap.test('pooled decorator should acquire and release', function (t) {
     max: 1,
     refreshIdle: false
   }
-  var pool = Pool(resourceFactory, config)
+  var pool = new Pool(resourceFactory, config)
 
   var pooledFn = pool.pooled(function (client, cb) {
     t.equal(typeof client.id, 'number')
@@ -362,7 +362,7 @@ tap.test('pooled decorator should pass arguments and return values', function (t
     name: 'test1',
     max: 1
   }
-  var pool = Pool(resourceFactory, config)
+  var pool = new Pool(resourceFactory, config)
 
   var pooledFn = pool.pooled(function (client, arg1, arg2, cb) {
     t.equal(arg1, 'First argument')
@@ -395,7 +395,7 @@ tap.test('pooled decorator should allow undefined callback', function (t) {
     refreshIdle: false
   }
 
-  var pool = Pool(resourceFactory, config)
+  var pool = new Pool(resourceFactory, config)
 
   var pooledFn = pool.pooled(function (client, arg, cb) {
     t.equal(arg, 'Arg!')
@@ -417,7 +417,7 @@ tap.test('pooled decorator should allow undefined callback', function (t) {
 // only thing like resourceRequest timeouts etc
 // tap.test('pooled decorator should forward pool errors', function (t) {
 //   var assertionCount = 0
-//   var pool = Pool({
+//   var pool = new Pool({
 //     name: 'test1',
 //     create: function (callback) { callback(new Error('Pool error')) },
 //     destroy: function (client) {},
@@ -448,7 +448,7 @@ tap.test('getPoolSize', function (t) {
     max: 2,
     refreshIdle: false
   }
-  var pool = Pool(resourceFactory, config)
+  var pool = new Pool(resourceFactory, config)
 
   t.equal(pool.getPoolSize(), 0)
   assertionCount += 1
@@ -489,7 +489,7 @@ tap.test('availableObjectsCount', function (t) {
     max: 2,
     refreshIdle: false
   }
-  var pool = Pool(resourceFactory, config)
+  var pool = new Pool(resourceFactory, config)
 
   t.equal(pool.availableObjectsCount(), 0)
   assertionCount += 1
@@ -545,7 +545,7 @@ tap.test('availableObjectsCount', function (t) {
 //     t.ok(level in loglevels)
 //     logmessages[level].push(msg)
 //   }
-//   var pool = Pool(factory)
+//   var pool = new Pool(factory)
 
 //   pool.acquire(function (err, objA) {
 //     t.error(err)
@@ -572,7 +572,7 @@ tap.test('removes from available objects on destroy', function (t) {
     max: 2
   }
 
-  var pool = Pool(factory, config)
+  var pool = new Pool(factory, config)
 
   pool.acquire(function (err, obj) {
     t.error(err)
@@ -601,7 +601,7 @@ tap.test('removes from available objects on validation failure', function (t) {
     testOnBorrow: true
   }
 
-  var pool = Pool(factory, config)
+  var pool = new Pool(factory, config)
   pool.acquire(function (err, obj) {
     t.error(err)
     pool.release(obj)
@@ -644,7 +644,7 @@ tap.test('removes from available objects on async validation failure', function 
     testOnBorrow: true
   }
 
-  var pool = Pool(factory, config)
+  var pool = new Pool(factory, config)
   pool.acquire(function (err, obj) {
     t.error(err)
     t.equal(obj.count, 0)
@@ -701,7 +701,7 @@ tap.test('do schedule again if error occured when creating new Objects async', f
     name: 'test'
   }
 
-  var pool = Pool(factory, config)
+  var pool = new Pool(factory, config)
   // pool.acquire(function () {})
   pool.acquire(function (err, obj) {
     t.error(err)
@@ -713,7 +713,7 @@ tap.test('do schedule again if error occured when creating new Objects async', f
 })
 
 tap.test('returns only valid object to the pool', function (t) {
-  var pool = Pool({
+  var pool = new Pool({
     name: 'test',
     create: function (callback) {
       setTimeout(function () {
@@ -744,7 +744,7 @@ tap.test('returns only valid object to the pool', function (t) {
 })
 
 tap.test('validate acquires object from the pool', function (t) {
-  var pool = Pool({
+  var pool = new Pool({
     name: 'test',
     create: function (callback) {
       process.nextTick(function () {
@@ -769,7 +769,7 @@ tap.test('validate acquires object from the pool', function (t) {
 })
 
 tap.test('validateAsync acquires object from the pool', function (t) {
-  var pool = Pool({
+  var pool = new Pool({
     name: 'test',
     create: function (callback) {
       process.nextTick(function () {

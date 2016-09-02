@@ -1,5 +1,5 @@
-var Pool = require('./lib/Pool')
-var PoolDefaults = require('./lib/PoolDefaults')
+const Pool = require('./lib/Pool')
+const PoolDefaults = require('./lib/PoolDefaults')
 
 module.exports = {
   Pool: Pool,
