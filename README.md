@@ -59,19 +59,19 @@ var myPool = new Pool(factory, opts)
  * Step 2 - Use pool in your code to acquire/release resources
  */
 
-// acquire connection - callback function is called
+// acquire connection - Promise is resolved
 // once a resource becomes available
-myPool.acquire(function(err, client) {
-    if (err) {
-        // handle error - this is generally the err from your
-        // factory.create function
-    }
-    else {
-        client.query("select * from foo", [], function() {
-            // return object back to pool
-            pool.release(client);
-        });
-    }
+const resourcePromise = myPool.acquire()
+
+resourcePromise.then(function(client) {
+	client.query("select * from foo", [], function() {
+	    // return object back to pool
+	    pool.release(client);
+	});
+})
+.catch(function(err){
+   // handle error - this is generally the err from your
+   // factory.create function
 });
 
 /**
@@ -156,24 +156,25 @@ An optional object/dictionary with the any of the following properties:
 ### pool.acquire
 
 ```js
-var cb = function(err, resource){
-	// userland error handling
+const onfulfilled = function(resource){
 	resource.doStuff()
 	// release/destroy/etc
 }
 
-pool.acquire(cb)
+pool.acquire().then(onfulfilled)
 //or
-var priority = 2
-pool.acquire(cb, priority) 
+const priority = 2
+pool.acquire(priority).then(onfulfilled)
 ```
 
 This function is for when you want to "borrow" a resource from the pool.
 
-`acquire` takes one required and one optional argument:
+`acquire` takes one optional argument:
 
-- `callback`: required, a function with 2 args `err` and `resource`. Once a resource in the pool is available, `callback` will be called and `resource` will be whatever `factory.create` makes for you. If the Pool is unable to give a resource (e.g timeout) then `callback` will called and `err` will be an `Error`
 - `priority`: optional, number, see **Priority Queueing** below.
+
+and returns a `Promise`
+Once a resource in the pool is available, the promise will be resolved with a `resource` (whatever `factory.create` makes for you). If the Pool is unable to give a resource (e.g timeout) then the promise will be rejected with an `Error`
 
 ### pool.release
 
@@ -211,19 +212,19 @@ var opts = {
 var pool = new Pool(someFactory,opts);
 
 // acquire connection - no priority specified - will go onto lowest priority queue
-pool.acquire(function(err, client) {
+pool.acquire().thenfunction(client) {
     pool.release(client);
 });
 
 // acquire connection - high priority - will go into highest priority queue
-pool.acquire(function(err, client) {
+pool.acquire(0).then(function(client) {
     pool.release(client);
-}, 0);
+});
 
 // acquire connection - medium priority - will go into 'mid' priority queue
-pool.acquire(function(err, client) {
+pool.acquire(1).then(function(client) {
     pool.release(client);
-}, 1);
+});
 
 // etc..
 ```

@@ -1,3 +1,5 @@
+'use strict'
+
 var tap = require('tap')
 var Pool = require('../lib/Pool')
 var utils = require('./utils')
@@ -105,121 +107,146 @@ var ResourceFactory = utils.ResourceFactory
 
 tap.test('supports priority on borrow', function (t) {
   // NOTE: this test is pretty opaque about what it's really testing/expecting...
-  var borrowTimeLow = 0
-  var borrowTimeHigh = 0
-  var borrowCount = 0
-  var i
+  let borrowTimeLow = 0
+  let borrowTimeHigh = 0
+  let borrowCount = 0
 
-  var resourceFactory = new ResourceFactory()
+  const resourceFactory = new ResourceFactory()
 
-  var config = {
+  const config = {
     name: 'test2',
     max: 1,
     refreshIdle: false,
     priorityRange: 2
   }
 
-  var pool = new Pool(resourceFactory, config)
+  const pool = new Pool(resourceFactory, config)
 
-  for (i = 0; i < 10; i++) {
-    pool.acquire(function (err, obj) {
-      t.error(err)
-      var time = Date.now()
-      if (time > borrowTimeLow) { borrowTimeLow = time }
-      borrowCount++
-      pool.release(obj)
-    }, 1)
+  function lowPriorityOnFulfilled (obj) {
+    const time = Date.now()
+    if (time > borrowTimeLow) { borrowTimeLow = time }
+    borrowCount++
+    pool.release(obj)
   }
 
-  for (i = 0; i < 10; i++) {
-    pool.acquire(function (err, obj) {
-      t.error(err)
-      var time = Date.now()
-      if (time > borrowTimeHigh) { borrowTimeHigh = time }
-      borrowCount++
-      pool.release(obj)
-    }, 0)
+  function highPriorityOnFulfilled (obj) {
+    const time = Date.now()
+    if (time > borrowTimeHigh) { borrowTimeHigh = time }
+    borrowCount++
+    pool.release(obj)
   }
 
-    // FIXME: another terrible set timeout hack to make the test pass
-    // we should wait till all 20 resources are returned/destroyed
-  setTimeout(function () {
+  const operations = []
+
+  for (let i = 0; i < 10; i++) {
+    const op = pool.acquire(1).then(lowPriorityOnFulfilled)
+    operations.push(op)
+  }
+
+  for (let i = 0; i < 10; i++) {
+    const op = pool.acquire(0).then(highPriorityOnFulfilled)
+    operations.push(op)
+  }
+
+  Promise.all(operations).then(function () {
     t.equal(20, borrowCount)
     t.equal(true, borrowTimeLow > borrowTimeHigh)
     utils.stopPool(pool)
     t.end()
-  }, 200)
+  })
+  .catch(t.error)
 })
 
 tap.test('removes correct object on reap', function (t) {
-  var resourceFactory = new ResourceFactory()
+  const resourceFactory = new ResourceFactory()
 
-  var config = {
+  const config = {
     name: 'test3',
     max: 2,
     refreshIdle: false
   }
 
-  var pool = new Pool(resourceFactory, config)
+  const pool = new Pool(resourceFactory, config)
 
-  pool.acquire(function (err, client) {
-    t.error(err)
+  const op1 = pool.acquire()
+  .then(function (client) {
+    return new Promise(function (resolve, reject) {
       // should be removed second
-    setTimeout(function () { pool.destroy(client) }, 5)
+      setTimeout(function () {
+        pool.destroy(client)
+        resolve()
+      }, 5)
+    })
   })
-  pool.acquire(function (err, client) {
-    t.error(err)
-      // should be removed first
+
+  const op2 = pool.acquire()
+  .then(function (client) {
     pool.destroy(client)
   })
 
-  setTimeout(function () {
+  Promise.all([op1, op2]).then(function () {
     t.equal(1, resourceFactory.bin[0].id)
     t.equal(0, resourceFactory.bin[1].id)
     utils.stopPool(pool)
     t.end()
-  }, 100)
+  })
+  .catch(t.error)
 })
 
 tap.test('tests drain', function (t) {
-  var count = 5
-  var acquired = 0
+  const count = 5
+  let acquired = 0
 
-  var resourceFactory = new ResourceFactory()
-  var config = {
+  const resourceFactory = new ResourceFactory()
+  const config = {
     name: 'test4',
     max: 2,
     idletimeoutMillis: 300000
   }
-  var pool = new Pool(resourceFactory, config)
+  const pool = new Pool(resourceFactory, config)
+
+  const operations = []
+
+  function onAcquire (client) {
+    acquired += 1
+    t.equal(typeof client.id, 'number')
+    setTimeout(function () {
+      pool.release(client)
+    }, 250)
+  }
 
     // request 5 resources that release after 250ms
-  for (var i = 0; i < count; i++) {
-    pool.acquire(function (err, client) {
-      t.error(err)
-      acquired += 1
-      t.equal(typeof client.id, 'number')
-      setTimeout(function () { pool.release(client) }, 250)
-    })
+  for (let i = 0; i < count; i++) {
+    const op = pool.acquire().then(onAcquire)
+    operations.push(op)
   }
     // FIXME: what does this assertion prove?
   t.notEqual(count, acquired)
-  pool.drain(function () {
+
+  Promise.all(operations)
+  .then(function () {
+    return new Promise(function (resolve) {
+      pool.drain(resolve)
+    })
+  })
+  .then(function () {
     t.equal(count, acquired)
-      // short circuit the absurdly long timeouts above.
+    // short circuit the absurdly long timeouts above.
     pool.destroyAllNow()
+  })
+  .then(function () {
+    // subsequent calls to acquire should return an error.
+    t.throws(function () {
+      pool.acquire(function (client) {})
+    }, Error)
+  }).then(function () {
     t.end()
   })
-
-    // subsequent calls to acquire should return an error.
-  t.throws(function () {
-    pool.acquire(function (client) {})
-  }, Error)
 })
 
 tap.test('handle creation errors', function (t) {
-  var created = 0
-  var resourceFactory = {
+  let created = 0
+  const resourceFactory = {
     create: function (callback) {
       created++
       if (created < 5) {
@@ -230,18 +257,18 @@ tap.test('handle creation errors', function (t) {
     },
     destroy: function (client) {}
   }
-  var config = {
+  const config = {
     name: 'test6',
     max: 1
   }
 
-  var pool = new Pool(resourceFactory, config)
+  const pool = new Pool(resourceFactory, config)
 
-    // FIXME: this section no longer proves anything as factory
-    // errors no longer bubble up through the acquire call
-    // we need to make the Pool an Emitter
+  // FIXME: this section no longer proves anything as factory
+  // errors no longer bubble up through the acquire call
+  // we need to make the Pool an Emitter
 
-    // ensure that creation errors do not populate the pool.
+  // ensure that creation errors do not populate the pool.
   // for (var i = 0; i < 5; i++) {
   //   pool.acquire(function (err, client) {
   //     t.ok(err instanceof Error)
@@ -249,87 +276,87 @@ tap.test('handle creation errors', function (t) {
   //   })
   // }
 
-  var called = false
-  pool.acquire(function (err, client) {
-    t.ok(err === null)
+  let called = false
+  pool.acquire()
+  .then(function (client) {
     t.equal(typeof client.id, 'number')
     called = true
     pool.release(client)
   })
-
-    // FIXME: arbitary timeout
-  setTimeout(function () {
+  .then(function () {
     t.ok(called)
     t.equal(pool.waitingClientsCount(), 0)
     utils.stopPool(pool)
     t.end()
-  }, 50)
+  })
+  .catch(t.error)
 })
 
 tap.test('handle creation errors for delayed creates', function (t) {
-  var created = 0
+  let created = 0
 
-  var resourceFactory = {
+  const resourceFactory = {
     create: function (callback) {
       created++
       if (created < 5) {
-        setTimeout(function () {
+        setImmediate(function () {
           callback(new Error('Error occurred.'))
-        }, 0)
+        })
       } else {
-        setTimeout(function () {
+        setImmediate(function () {
           callback(null, { id: created })
-        }, 0)
+        })
       }
     },
     destroy: function (client) {}
   }
 
-  var config = {
+  const config = {
     name: 'test6',
     max: 1
   }
 
-  var pool = new Pool(resourceFactory, config)
+  const pool = new Pool(resourceFactory, config)
 
-    // FIXME: this section no longer proves anything as factory
-    // errors no longer bubble up through the acquire call
-    // we need to make the Pool an Emitter
+  // FIXME: this section no longer proves anything as factory
+  // errors no longer bubble up through the acquire call
+  // we need to make the Pool an Emitter
 
-    // ensure that creation errors do not populate the pool.
+  // ensure that creation errors do not populate the pool.
   // for (var i = 0; i < 5; i++) {
   //   pool.acquire(function (err, client) {
   //     t.ok(err instanceof Error)
   //     t.ok(client === null)
   //   })
   // }
-  var called = false
-  pool.acquire(function (err, client) {
-    t.ok(err === null)
+  let called = false
+  pool.acquire()
+  .then(function (client) {
     t.equal(typeof client.id, 'number')
     called = true
     pool.release(client)
   })
-  setTimeout(function () {
+  .then(function () {
     t.ok(called)
     t.equal(pool.waitingClientsCount(), 0)
     utils.stopPool(pool)
     t.end()
-  }, 50)
+  })
+  .catch(t.error)
 })
 
 tap.test('pooled decorator should acquire and release', function (t) {
-    // FIXME: assertion count should probably be replaced with t.plan?
-  var assertionCount = 0
-  var resourceFactory = new ResourceFactory()
-  var config = {
+  // FIXME: assertion count should probably be replaced with t.plan?
+  let assertionCount = 0
+  const resourceFactory = new ResourceFactory()
+  const config = {
     name: 'test1',
     max: 1,
     refreshIdle: false
   }
-  var pool = new Pool(resourceFactory, config)
+  const pool = new Pool(resourceFactory, config)
 
-  var pooledFn = pool.pooled(function (client, cb) {
+  const pooledFn = pool.pooled(function (client, cb) {
     t.equal(typeof client.id, 'number')
     t.equal(pool.getPoolSize(), 1)
     assertionCount += 2
@@ -356,15 +383,15 @@ tap.test('pooled decorator should acquire and release', function (t) {
 
 tap.test('pooled decorator should pass arguments and return values', function (t) {
     // FIXME: assertion count should probably be replaced with t.plan?
-  var assertionCount = 0
-  var resourceFactory = new ResourceFactory()
-  var config = {
+  let assertionCount = 0
+  const resourceFactory = new ResourceFactory()
+  const config = {
     name: 'test1',
     max: 1
   }
-  var pool = new Pool(resourceFactory, config)
+  const pool = new Pool(resourceFactory, config)
 
-  var pooledFn = pool.pooled(function (client, arg1, arg2, cb) {
+  const pooledFn = pool.pooled(function (client, arg1, arg2, cb) {
     t.equal(arg1, 'First argument')
     t.equal(arg2, 'Second argument')
     assertionCount += 2
@@ -387,17 +414,17 @@ tap.test('pooled decorator should pass arguments and return values', function (t
 
 // FIXME:  I'm not really sure what this testing...
 tap.test('pooled decorator should allow undefined callback', function (t) {
-  var assertionCount = 0
-  var resourceFactory = new ResourceFactory()
-  var config = {
+  let assertionCount = 0
+  const resourceFactory = new ResourceFactory()
+  const config = {
     name: 'test1',
     max: 1,
     refreshIdle: false
   }
 
-  var pool = new Pool(resourceFactory, config)
+  const pool = new Pool(resourceFactory, config)
 
-  var pooledFn = pool.pooled(function (client, arg, cb) {
+  const pooledFn = pool.pooled(function (client, arg, cb) {
     t.equal(arg, 'Arg!')
     assertionCount += 1
     cb()
@@ -441,93 +468,112 @@ tap.test('pooled decorator should allow undefined callback', function (t) {
 // })
 
 tap.test('getPoolSize', function (t) {
-  var assertionCount = 0
-  var resourceFactory = new ResourceFactory()
-  var config = {
+  let assertionCount = 0
+  const resourceFactory = new ResourceFactory()
+  const config = {
     name: 'test1',
     max: 2,
     refreshIdle: false
   }
-  var pool = new Pool(resourceFactory, config)
+
+  const pool = new Pool(resourceFactory, config)
+
+  const borrowedResources = []
 
   t.equal(pool.getPoolSize(), 0)
   assertionCount += 1
-  pool.acquire(function (err, obj1) {
-    if (err) { throw err }
+
+  pool.acquire()
+  .then(function (obj) {
+    borrowedResources.push(obj)
     t.equal(pool.getPoolSize(), 1)
     assertionCount += 1
-    pool.acquire(function (err, obj2) {
-      if (err) { throw err }
-      t.equal(pool.getPoolSize(), 2)
-      assertionCount += 1
-
-      pool.release(obj1)
-      pool.release(obj2)
-
-      pool.acquire(function (err, obj3) {
-        if (err) { throw err }
-          // should still be 2
-        t.equal(pool.getPoolSize(), 2)
-        assertionCount += 1
-        pool.release(obj3)
-      })
-    })
   })
-
-  setTimeout(function () {
+  .then(function(){
+    return pool.acquire()
+  })
+  .then(function (obj) {
+    borrowedResources.push(obj)
+    t.equal(pool.getPoolSize(), 2)
+    assertionCount += 1
+  })
+  .then(function(){
+    pool.release(borrowedResources.shift())
+    pool.release(borrowedResources.shift())
+  })
+  .then(function(){
+    return pool.acquire()
+  })
+  .then(function (obj) {
+    // should still be 2
+    t.equal(pool.getPoolSize(), 2)
+    assertionCount += 1
+    pool.release(obj)
+  })
+  .then(function(){
     t.equal(assertionCount, 4)
     utils.stopPool(pool)
-    t.end()
-  }, 40)
+    t.end()    
+  })
+  .catch(t.error)
+
 })
 
 tap.test('availableObjectsCount', function (t) {
-  var assertionCount = 0
-  var resourceFactory = new ResourceFactory()
-  var config = {
+  let assertionCount = 0
+  const resourceFactory = new ResourceFactory()
+  const config = {
     name: 'test1',
     max: 2,
     refreshIdle: false
   }
-  var pool = new Pool(resourceFactory, config)
+
+  const pool = new Pool(resourceFactory, config)
+
+  const borrowedResources = []
 
   t.equal(pool.availableObjectsCount(), 0)
   assertionCount += 1
-  pool.acquire(function (err, obj1) {
-    if (err) { throw err }
+
+  pool.acquire()
+  .then(function (obj) {
+    borrowedResources.push(obj)
     t.equal(pool.availableObjectsCount(), 0)
     assertionCount += 1
-
-    pool.acquire(function (err, obj2) {
-      if (err) { throw err }
-      t.equal(pool.availableObjectsCount(), 0)
-      assertionCount += 1
-
-      pool.release(obj1)
-      t.equal(pool.availableObjectsCount(), 1)
-      assertionCount += 1
-
-      pool.release(obj2)
-      t.equal(pool.availableObjectsCount(), 2)
-      assertionCount += 1
-
-      pool.acquire(function (err, obj3) {
-        if (err) { throw err }
-        t.equal(pool.availableObjectsCount(), 1)
-        assertionCount += 1
-        pool.release(obj3)
-
-        t.equal(pool.availableObjectsCount(), 2)
-        assertionCount += 1
-      })
-    })
+  }).then(function () {
+    return pool.acquire()
   })
+  .then(function (obj) {
+    borrowedResources.push(obj)
+    t.equal(pool.availableObjectsCount(), 0)
+    assertionCount += 1
+  })
+  .then(function () {
+    pool.release(borrowedResources.shift())
+    t.equal(pool.availableObjectsCount(), 1)
+    assertionCount += 1
 
-  setTimeout(function () {
+    pool.release(borrowedResources.shift())
+    t.equal(pool.availableObjectsCount(), 2)
+    assertionCount += 1
+  })
+  .then(function () {
+    return pool.acquire()
+  })
+  .then(function (obj) {
+    t.equal(pool.availableObjectsCount(), 1)
+    assertionCount += 1
+    pool.release(obj)
+
+    t.equal(pool.availableObjectsCount(), 2)
+    assertionCount += 1
+  })
+  .then(function () {
     t.equal(assertionCount, 7)
     utils.stopPool(pool)
     t.end()
-  }, 30)
+  })
+  .catch(t.error)
 })
 
 // FIXME: remove completely when we scrap logging
@@ -561,29 +607,29 @@ tap.test('availableObjectsCount', function (t) {
 // })
 
 tap.test('removes from available objects on destroy', function (t) {
-  var destroyCalled = false
-  var factory = {
+  let destroyCalled = false
+  const factory = {
     create: function (callback) { callback(null, {}) },
     destroy: function (client) { destroyCalled = true }
   }
 
-  var config = {
+  const config = {
     name: 'test',
     max: 2
   }
 
-  var pool = new Pool(factory, config)
+  const pool = new Pool(factory, config)
 
-  pool.acquire(function (err, obj) {
-    t.error(err)
+  pool.acquire().then(function (obj) {
     pool.destroy(obj)
   })
-  setTimeout(function () {
+  .then(function(){
     t.equal(destroyCalled, true)
     t.equal(pool.availableObjectsCount(), 0)
     utils.stopPool(pool)
-    t.end()
-  }, 20)
+    t.end()    
+  })
+  .catch(t.error)
 })
 
 tap.test('removes from available objects on validation failure', function (t) {
@@ -595,11 +641,10 @@ tap.test('removes from available objects on validation failure', function (t) {
     destroy: function (client) { destroyCalled = client.count },
     validate: function (client) {
       validateCalled = true
-      return new Promise(function (resolve) {
-        resolve(client.count > 0)
-      })
+      return Promise.resolve(client.count > 0)
     }
   }
+
   var config = {
     name: 'test',
     max: 2,
@@ -607,24 +652,27 @@ tap.test('removes from available objects on validation failure', function (t) {
   }
 
   var pool = new Pool(factory, config)
-  pool.acquire(function (err, obj) {
-    t.error(err)
+
+  pool.acquire()
+  .then(function (obj) {
     pool.release(obj)
     t.equal(obj.count, 0)
-
-    pool.acquire(function (err, obj2) {
-      t.error(err)
-      pool.release(obj2)
-      t.equal(obj2.count, 1)
-    })
   })
-  setTimeout(function () {
+  .then(function () {
+    return pool.acquire()
+  })
+  .then(function (obj2) {
+    pool.release(obj2)
+    t.equal(obj2.count, 1)
+  })
+  .then(function () {
     t.equal(validateCalled, true)
     t.equal(destroyCalled, 0)
     t.equal(pool.availableObjectsCount(), 1)
     utils.stopPool(pool)
     t.end()
-  }, 20)
+  })
+  .catch(t.error)
 })
 
 tap.test('do schedule again if error occured when creating new Objects async', function (t) {
@@ -652,13 +700,12 @@ tap.test('do schedule again if error occured when creating new Objects async', f
 
   var pool = new Pool(factory, config)
   // pool.acquire(function () {})
-  pool.acquire(function (err, obj) {
-    t.error(err)
+  pool.acquire().then(function (obj) {
     t.equal(pool.availableObjectsCount(), 0)
     pool.release(obj)
     utils.stopPool(pool)
     t.end()
-  })
+  }).catch(t.error)
 })
 
 tap.test('returns only valid object to the pool', function (t) {
@@ -673,8 +720,7 @@ tap.test('returns only valid object to the pool', function (t) {
     max: 1
   })
 
-  pool.acquire(function (err, obj) {
-    t.error(err)
+  pool.acquire().then(function (obj) {
     t.equal(pool.availableObjectsCount(), 0)
     t.equal(pool.inUseObjectsCount(), 1)
 
@@ -689,14 +735,14 @@ tap.test('returns only valid object to the pool', function (t) {
     t.equal(pool.inUseObjectsCount(), 0)
     utils.stopPool(pool)
     t.end()
-  })
+  }).catch(t.error)
 })
 
 tap.test('validate acquires object from the pool', function (t) {
   var pool = new Pool({
     name: 'test',
     create: function (callback) {
-      process.nextTick(function () {
+      setImmediate(function () {
         callback(null, { id: 'validId' })
       })
     },
@@ -707,12 +753,13 @@ tap.test('validate acquires object from the pool', function (t) {
     max: 1
   })
 
-  pool.acquire(function (err, obj) {
-    t.error(err)
+  pool.acquire()
+  .then(function (obj) {
     t.equal(pool.availableObjectsCount(), 0)
     t.equal(pool.inUseObjectsCount(), 1)
     pool.release(obj)
     utils.stopPool(pool)
     t.end()
   })
+  .catch(t.error)
 })
