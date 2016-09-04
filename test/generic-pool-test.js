@@ -593,7 +593,12 @@ tap.test('removes from available objects on validation failure', function (t) {
   var factory = {
     create: function (callback) { callback(null, {count: count++}) },
     destroy: function (client) { destroyCalled = client.count },
-    validate: function (client) { validateCalled = true; return client.count > 0 }
+    validate: function (client) {
+      validateCalled = true
+      return new Promise(function (resolve) {
+        resolve(client.count > 0)
+      })
+    }
   }
   var config = {
     name: 'test',
@@ -620,62 +625,6 @@ tap.test('removes from available objects on validation failure', function (t) {
     utils.stopPool(pool)
     t.end()
   }, 20)
-})
-
-tap.test('removes from available objects on async validation failure', function (t) {
-  var destroyCalled = false
-  var validateCalled = false
-  var count = 0
-  var factory = {
-    create: function (callback) { callback(null, {count: count++}) },
-    destroy: function (client) { destroyCalled = client.count },
-    validateAsync: function (client, callback) {
-      validateCalled = true
-      setTimeout(function () {
-        callback(client.count > 0)
-      })
-    }
-  }
-
-  var config = {
-    max: 1,
-    name: 'async-failure-test',
-    refreshIdle: false,
-    testOnBorrow: true
-  }
-
-  var pool = new Pool(factory, config)
-  pool.acquire(function (err, obj) {
-    t.error(err)
-    t.equal(obj.count, 0)
-    pool.release(obj)
-
-    pool.acquire(function (err, obj2) {
-      t.error(err)
-      t.equal(obj2.count, 1)
-      pool.release(obj2)
-    })
-  })
-  setTimeout(function () {
-    t.equal(validateCalled, true)
-    t.equal(destroyCalled, 0)
-    t.equal(pool.availableObjectsCount(), 1)
-    utils.stopPool(pool)
-    t.end()
-  }, 50)
-})
-
-tap.test('error on setting both validate functions', function (t) {
-  var noop = function () {}
-  var factory = {
-    create: noop,
-    destroy: noop,
-    validate: noop,
-    validateAsync: noop
-  }
-
-  t.throws(function () { Pool(factory) }, 'Only one of validate or validateAsync may be specified')
-  t.end()
 })
 
 tap.test('do schedule again if error occured when creating new Objects async', function (t) {
@@ -752,32 +701,7 @@ tap.test('validate acquires object from the pool', function (t) {
       })
     },
     validate: function (resource) {
-      return true
-    },
-    destroy: function (client) {},
-    max: 1
-  })
-
-  pool.acquire(function (err, obj) {
-    t.error(err)
-    t.equal(pool.availableObjectsCount(), 0)
-    t.equal(pool.inUseObjectsCount(), 1)
-    pool.release(obj)
-    utils.stopPool(pool)
-    t.end()
-  })
-})
-
-tap.test('validateAsync acquires object from the pool', function (t) {
-  var pool = new Pool({
-    name: 'test',
-    create: function (callback) {
-      process.nextTick(function () {
-        callback(null, { id: 'validId' })
-      })
-    },
-    validateAsync: function (resource, callback) {
-      callback(true)
+      return new Promise(function (resolve) { resolve(true) })
     },
     destroy: function (client) {},
     max: 1

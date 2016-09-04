@@ -127,8 +127,7 @@ Can be any object/instance but must have the following properties:
 
 optionally it can also have one of the following properties, (if both are supplied the constructor will throw an error):
 
-- `validate`: a function that the pool will call if it wants to validate a resource. Should return a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid. _Note: `validate` functions are converted into an asynchronous equivalents automatically by the pool._
-- `validateAsync`: a function that pool will call if it wants to calidate a resource. It should accept one argument `callback` where `callback` is a function with 1 arg. The callback should be called in a later eventloop with a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid.
+- `validate`: a function that the pool will call if it wants to validate a resource. Should return a `Promise` that resolves a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid. 
 
 
 **opts**
