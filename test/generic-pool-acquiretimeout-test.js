@@ -3,10 +3,12 @@ var Pool = require('../lib/Pool')
 
 tap.test('acquireTimeout handles timed out acquire calls', function (t) {
   var factory = {
-    create: function (callback) {
-      setTimeout(function () {
-        callback(null, {})
-      }, 100)
+    create: function () {
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          resolve({})
+        }, 100)
+      })
     },
     destroy: function () {}
   }
@@ -32,10 +34,12 @@ tap.test('acquireTimeout handles timed out acquire calls', function (t) {
 tap.test('acquireTimeout handles non timed out acquire calls', function (t) {
   var myResource = {}
   var factory = {
-    create: function (callback) {
-      setTimeout(function () {
-        callback(null, myResource)
-      }, 10)
+    create: function () {
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          resolve(myResource)
+        }, 10)
+      })
     },
     destroy: function () {}
   }

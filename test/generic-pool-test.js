@@ -150,11 +150,11 @@ tap.test('supports priority on borrow', function (t) {
 
   Promise.all(operations).then(function () {
     t.equal(20, borrowCount)
-    t.equal(true, borrowTimeLow > borrowTimeHigh)
+    t.equal(true, borrowTimeLow >= borrowTimeHigh)
     utils.stopPool(pool)
     t.end()
   })
-  .catch(t.error)
+  .catch(t.threw)
 })
 
 tap.test('removes correct object on reap', function (t) {
@@ -190,7 +190,7 @@ tap.test('removes correct object on reap', function (t) {
     utils.stopPool(pool)
     t.end()
   })
-  .catch(t.error)
+  .catch(t.threw)
 })
 
 tap.test('tests drain', function (t) {
@@ -247,12 +247,12 @@ tap.test('tests drain', function (t) {
 tap.test('handle creation errors', function (t) {
   let created = 0
   const resourceFactory = {
-    create: function (callback) {
+    create: function () {
       created++
       if (created < 5) {
-        callback(new Error('Error occurred.'))
+        return Promise.reject(new Error('Error occurred.'))
       } else {
-        callback(null, { id: created })
+        return Promise.resolve({ id: created })
       }
     },
     destroy: function (client) {}
@@ -289,23 +289,19 @@ tap.test('handle creation errors', function (t) {
     utils.stopPool(pool)
     t.end()
   })
-  .catch(t.error)
+  .catch(t.threw)
 })
 
 tap.test('handle creation errors for delayed creates', function (t) {
   let created = 0
 
   const resourceFactory = {
-    create: function (callback) {
+    create: function () {
       created++
       if (created < 5) {
-        setImmediate(function () {
-          callback(new Error('Error occurred.'))
-        })
+        return Promise.reject(new Error('Error occurred.'))
       } else {
-        setImmediate(function () {
-          callback(null, { id: created })
-        })
+        return Promise.resolve({ id: created })
       }
     },
     destroy: function (client) {}
@@ -342,7 +338,7 @@ tap.test('handle creation errors for delayed creates', function (t) {
     utils.stopPool(pool)
     t.end()
   })
-  .catch(t.error)
+  .catch(t.threw)
 })
 
 tap.test('pooled decorator should acquire and release', function (t) {
@@ -489,7 +485,7 @@ tap.test('getPoolSize', function (t) {
     t.equal(pool.getPoolSize(), 1)
     assertionCount += 1
   })
-  .then(function(){
+  .then(function () {
     return pool.acquire()
   })
   .then(function (obj) {
@@ -497,11 +493,11 @@ tap.test('getPoolSize', function (t) {
     t.equal(pool.getPoolSize(), 2)
     assertionCount += 1
   })
-  .then(function(){
+  .then(function () {
     pool.release(borrowedResources.shift())
     pool.release(borrowedResources.shift())
   })
-  .then(function(){
+  .then(function () {
     return pool.acquire()
   })
   .then(function (obj) {
@@ -510,13 +506,12 @@ tap.test('getPoolSize', function (t) {
     assertionCount += 1
     pool.release(obj)
   })
-  .then(function(){
+  .then(function () {
     t.equal(assertionCount, 4)
     utils.stopPool(pool)
-    t.end()    
+    t.end()
   })
-  .catch(t.error)
-
+  .catch(t.threw)
 })
 
 tap.test('availableObjectsCount', function (t) {
@@ -573,7 +568,7 @@ tap.test('availableObjectsCount', function (t) {
     utils.stopPool(pool)
     t.end()
   })
-  .catch(t.error)
+  .catch(t.threw)
 })
 
 // FIXME: remove completely when we scrap logging
@@ -609,7 +604,7 @@ tap.test('availableObjectsCount', function (t) {
 tap.test('removes from available objects on destroy', function (t) {
   let destroyCalled = false
   const factory = {
-    create: function (callback) { callback(null, {}) },
+    create: function () { return Promise.resolve({}) },
     destroy: function (client) { destroyCalled = true }
   }
 
@@ -623,13 +618,13 @@ tap.test('removes from available objects on destroy', function (t) {
   pool.acquire().then(function (obj) {
     pool.destroy(obj)
   })
-  .then(function(){
+  .then(function () {
     t.equal(destroyCalled, true)
     t.equal(pool.availableObjectsCount(), 0)
     utils.stopPool(pool)
-    t.end()    
+    t.end()
   })
-  .catch(t.error)
+  .catch(t.threw)
 })
 
 tap.test('removes from available objects on validation failure', function (t) {
@@ -637,7 +632,7 @@ tap.test('removes from available objects on validation failure', function (t) {
   var validateCalled = false
   var count = 0
   var factory = {
-    create: function (callback) { callback(null, {count: count++}) },
+    create: function () { return Promise.resolve({count: count++}) },
     destroy: function (client) { destroyCalled = client.count },
     validate: function (client) {
       validateCalled = true
@@ -672,7 +667,7 @@ tap.test('removes from available objects on validation failure', function (t) {
     utils.stopPool(pool)
     t.end()
   })
-  .catch(t.error)
+  .catch(t.threw)
 })
 
 tap.test('do schedule again if error occured when creating new Objects async', function (t) {
@@ -680,14 +675,12 @@ tap.test('do schedule again if error occured when creating new Objects async', f
   var resourceCreationAttempts = 0
 
   var factory = {
-    create: function (callback) {
-      setTimeout(function () {
-        resourceCreationAttempts++
-        if (resourceCreationAttempts < 2) {
-          return callback(new Error('Create Error'))
-        }
-        callback(null, {})
-      }, 1)
+    create: function () {
+      resourceCreationAttempts++
+      if (resourceCreationAttempts < 2) {
+        return Promise.reject(new Error('Create Error'))
+      }
+      return Promise.resolve({})
     },
     destroy: function (client) {}
   }
@@ -705,16 +698,14 @@ tap.test('do schedule again if error occured when creating new Objects async', f
     pool.release(obj)
     utils.stopPool(pool)
     t.end()
-  }).catch(t.error)
+  }).catch(t.threw)
 })
 
 tap.test('returns only valid object to the pool', function (t) {
   var pool = new Pool({
     name: 'test',
-    create: function (callback) {
-      setTimeout(function () {
-        callback(null, { id: 'validId' })
-      }, 10)
+    create: function () {
+      return Promise.resolve({ id: 'validId' })
     },
     destroy: function (client) {},
     max: 1
@@ -735,19 +726,17 @@ tap.test('returns only valid object to the pool', function (t) {
     t.equal(pool.inUseObjectsCount(), 0)
     utils.stopPool(pool)
     t.end()
-  }).catch(t.error)
+  }).catch(t.threw)
 })
 
 tap.test('validate acquires object from the pool', function (t) {
   var pool = new Pool({
     name: 'test',
-    create: function (callback) {
-      setImmediate(function () {
-        callback(null, { id: 'validId' })
-      })
+    create: function () {
+      return Promise.resolve({ id: 'validId' })
     },
     validate: function (resource) {
-      return new Promise(function (resolve) { resolve(true) })
+      return Promise.resolve(true)
     },
     destroy: function (client) {},
     max: 1
@@ -761,5 +750,5 @@ tap.test('validate acquires object from the pool', function (t) {
     utils.stopPool(pool)
     t.end()
   })
-  .catch(t.error)
+  .catch(t.threw)
 })

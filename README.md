@@ -122,7 +122,7 @@ var pool = new Pool(factory, opts)
 
 Can be any object/instance but must have the following properties:
 
-- `create` : a function that the pool will call when it wants a new resource. It should accept one argument `callback` where `callback` is a function with 2 args `err` and `resource`. If the `create` function is unable to create a resourse for whatever reason it should call `callback(err)` otherwise it should call `callback(null, resource)`.
+- `create` : a function that the pool will call when it wants a new resource. It should return a Promise that either resolves to a `resource` or rejects to an `Error` if it is unable to create a resourse for whatever.
 - `destroy`: a function that the pool will call when it wants to destroy a resource. It should accept one argument `callback` where `callback` is a function with 0 args. The `destroy` function should call `callback` once it has destroyed the resource.
 
 optionally it can also have one of the following properties, (if both are supplied the constructor will throw an error):

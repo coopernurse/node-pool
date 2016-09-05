@@ -8,14 +8,12 @@ var ResourceFactory = function ResourceFactory () {
   this.bin = []
 }
 
-ResourceFactory.prototype.create = function (callback) {
+ResourceFactory.prototype.create = function () {
   var id = this.created++
   var resource = {
     id: id
   }
-  setTimeout(function () {
-    callback(null, resource)
-  }, 1)
+  return Promise.resolve(resource)
 }
 
 ResourceFactory.prototype.destroy = function (resource) {
