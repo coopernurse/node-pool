@@ -19,6 +19,7 @@ ResourceFactory.prototype.create = function () {
 ResourceFactory.prototype.destroy = function (resource) {
   this.destroyed++
   this.bin.push(resource)
+  return Promise.resolve()
 }
 
 exports.ResourceFactory = ResourceFactory
@@ -30,8 +31,8 @@ exports.ResourceFactory = ResourceFactory
  * @return {[type]}      [description]
  */
 exports.stopPool = function (pool) {
-  pool.drain()
+  return pool.drain()
   .then(function () {
-    pool.destroyAllNow()
+    return pool.destroyAllNow()
   })
 }

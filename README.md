@@ -239,14 +239,15 @@ pool.acquire(1).then(function(client) {
 
 ## Draining
 
-If you know you would like to terminate all the resources in your pool before any timeouts they might have, have been reached, you can use `destroyAllNow()` in conjunction with `drain()`:
+If you know you would like to terminate all the available resources in your pool before any timeouts they might have, have been reached, you can use `destroyAllNow()` in conjunction with `drain()`:
 
 ```js
-pool.drain()
+const p = pool.drain()
 .then(function() {
-    pool.destroyAllNow();
+    return pool.destroyAllNow();
 });
 ```
+The `promise` returned will resolve once all waiting clients have acquired and return resources, and any available resources have been destroyed
 
 One side-effect of calling `drain()` is that subsequent calls to `acquire()`
 will throw an Error.
