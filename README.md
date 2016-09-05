@@ -36,15 +36,22 @@ var DbDriver = require('some-db-driver');
 /**
  * Step 1 - Create pool using a factory object
  */
-var factory = {
-    create: function(callback){
-        var client = DbDriver.createClient()
-        client.on('connected', function(){
-            callback(null, client)
-        })
+const factory = {
+    create: function(){
+		 return new Promise(function(resolve, reject{
+	        var client = DbDriver.createClient()
+	        client.on('connected', function(){
+	            resolve(client)
+	        })
+	    })
     }
     destroy: function(client){
-        client.disconnect()
+        return new Promise(function(resolve){
+          client.on('end', function(){
+            resolve()
+          })
+          client.disconnect()
+        })
     }
 }
 
@@ -70,8 +77,8 @@ resourcePromise.then(function(client) {
 	});
 })
 .catch(function(err){
-   // handle error - this is generally the err from your
-   // factory.create function
+   // handle error - this is generally a timeout or maxWaitingClients 
+   // error
 });
 
 /**
@@ -123,11 +130,12 @@ var pool = new Pool(factory, opts)
 Can be any object/instance but must have the following properties:
 
 - `create` : a function that the pool will call when it wants a new resource. It should return a Promise that either resolves to a `resource` or rejects to an `Error` if it is unable to create a resourse for whatever.
-- `destroy`: a function that the pool will call when it wants to destroy a resource. It should accept one argument `callback` where `callback` is a function with 0 args. The `destroy` function should call `callback` once it has destroyed the resource.
+- `destroy`: a function that the pool will call when it wants to destroy a resource. It should accept one argument `resource` where `resource` is whatever `factory.create` made. The `destroy` function should return a `Promise` that resolves once it has destroyed the resource.
 
-optionally it can also have one of the following properties, (if both are supplied the constructor will throw an error):
 
-- `validate`: a function that the pool will call if it wants to validate a resource. Should return a `Promise` that resolves a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid. 
+optionally it can also have the following property:
+
+- `validate`: a function that the pool will call if it wants to validate a resource. It should accept one argument `resource` where `resource` is whatever `factory.create` made. Should return a `Promise` that resolves a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid. 
 
 
 **opts**
