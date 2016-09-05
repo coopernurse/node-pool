@@ -30,7 +30,8 @@ exports.ResourceFactory = ResourceFactory
  * @return {[type]}      [description]
  */
 exports.stopPool = function (pool) {
-  pool.drain(function () {
+  pool.drain()
+  .then(function () {
     pool.destroyAllNow()
   })
 }

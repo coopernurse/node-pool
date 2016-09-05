@@ -242,7 +242,8 @@ pool.acquire(1).then(function(client) {
 If you know you would like to terminate all the resources in your pool before any timeouts they might have, have been reached, you can use `destroyAllNow()` in conjunction with `drain()`:
 
 ```js
-pool.drain(function() {
+pool.drain()
+.then(function() {
     pool.destroyAllNow();
 });
 ```

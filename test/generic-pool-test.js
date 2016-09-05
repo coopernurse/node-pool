@@ -225,9 +225,7 @@ tap.test('tests drain', function (t) {
 
   Promise.all(operations)
   .then(function () {
-    return new Promise(function (resolve) {
-      pool.drain(resolve)
-    })
+    return pool.drain()
   })
   .then(function () {
     t.equal(count, acquired)
