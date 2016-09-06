@@ -62,13 +62,13 @@ tap.test('removeTimeout removes the timeout', function (t) {
   }, 20)
 })
 
-tap.test('throw if resolved more than once', function (t) {
+tap.test('does nothing if resolved more than once', function (t) {
   var request = new ResourceRequest(noop, noop)
   t.doesNotThrow(function () {
     request.resolve({})
   })
-  t.throws(function () {
+  t.doesNotThrow(function () {
     request.resolve({})
-  }, /ResourceRequest already fulfilled/)
+  })
   t.end()
 })

@@ -236,11 +236,13 @@ tap.test('tests drain', function (t) {
     pool.destroyAllNow()
   })
   .then(function () {
-    // subsequent calls to acquire should return an error.
-    t.throws(function () {
-      pool.acquire(function (client) {})
-    }, Error)
-  }).then(function () {
+    // subsequent calls to acquire should resolve an error.
+    return pool.acquire().then(t.fail,
+      function(e){
+      t.type(e, Error)
+    })
+  })
+  .then(function () {
     t.end()
   })
 })
