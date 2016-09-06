@@ -238,9 +238,9 @@ tap.test('tests drain', function (t) {
   .then(function () {
     // subsequent calls to acquire should resolve an error.
     return pool.acquire().then(t.fail,
-      function(e){
-      t.type(e, Error)
-    })
+      function (e) {
+        t.type(e, Error)
+      })
   })
   .then(function () {
     t.end()
