@@ -10,7 +10,7 @@ tap.test('acquireTimeout handles timed out acquire calls', function (t) {
         }, 100)
       })
     },
-    destroy: function () {}
+    destroy: function () { return Promise.resolve() }
   }
   var config = {
     acquireTimeoutMillis: 20,
@@ -26,9 +26,9 @@ tap.test('acquireTimeout handles timed out acquire calls', function (t) {
     t.match(err, /ResourceRequest timed out/)
     pool.drain()
     .then(function () {
-      pool.destroyAllNow()
-      t.end()
+      return pool.destroyAllNow()
     })
+    .then(t.end)
   })
 })
 
@@ -42,7 +42,7 @@ tap.test('acquireTimeout handles non timed out acquire calls', function (t) {
         }, 10)
       })
     },
-    destroy: function () {}
+    destroy: function () { return Promise.resolve() }
   }
 
   var config = {
@@ -56,8 +56,8 @@ tap.test('acquireTimeout handles non timed out acquire calls', function (t) {
     pool.release(resource)
     pool.drain()
     .then(function () {
-      pool.destroyAllNow()
-      t.end()
+      return pool.destroyAllNow()
     })
+    .then(t.end)
   }).catch(t.error)
 })
