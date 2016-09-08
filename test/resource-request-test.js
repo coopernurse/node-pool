@@ -5,25 +5,9 @@ var noop = function () {}
 
 tap.test('can be created', function (t) {
   var create = function () {
-    var request = new ResourceRequest(noop, noop) // eslint-disable-line no-unused-vars
+    var request = new ResourceRequest() // eslint-disable-line no-unused-vars
   }
   t.doesNotThrow(create)
-  t.end()
-})
-
-tap.test('throws with no resolve', function (t) {
-  var create = function () {
-    var request = new ResourceRequest(undefined, noop) // eslint-disable-line no-unused-vars
-  }
-  t.throws(create, /resolve is required and must be of type function/)
-  t.end()
-})
-
-tap.test('throws with no reject', function (t) {
-  var create = function () {
-    var request = new ResourceRequest(noop) // eslint-disable-line no-unused-vars
-  }
-  t.throws(create, /reject is required and must be of type function/)
   t.end()
 })
 
@@ -35,7 +19,9 @@ tap.test('times out when created with a ttl', function (t) {
   var resolve = function (r) {
     t.fail('should not resolve')
   }
-  var request = new ResourceRequest(resolve, reject, 10) // eslint-disable-line no-unused-vars
+  var request = new ResourceRequest(10) // eslint-disable-line no-unused-vars
+
+  request.promise.then(resolve, reject)
 })
 
 tap.test('calls resolve when resolved', function (t) {
@@ -47,7 +33,8 @@ tap.test('calls resolve when resolved', function (t) {
   var reject = function (err) {
     t.error(err)
   }
-  var request = new ResourceRequest(resolve, reject)
+  var request = new ResourceRequest()
+  request.promise.then(resolve, reject)
   request.resolve(resource)
 })
 
@@ -55,7 +42,8 @@ tap.test('removeTimeout removes the timeout', function (t) {
   var reject = function (err) {
     t.error(err)
   }
-  var request = new ResourceRequest(noop, reject, 10)
+  var request = new ResourceRequest(10)
+  request.promise.then(undefined, reject)
   request.removeTimeout()
   setTimeout(function () {
     t.end()
@@ -63,7 +51,7 @@ tap.test('removeTimeout removes the timeout', function (t) {
 })
 
 tap.test('does nothing if resolved more than once', function (t) {
-  var request = new ResourceRequest(noop, noop)
+  var request = new ResourceRequest()
   t.doesNotThrow(function () {
     request.resolve({})
   })
