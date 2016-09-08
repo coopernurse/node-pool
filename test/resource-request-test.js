@@ -1,8 +1,6 @@
 var tap = require('tap')
 var ResourceRequest = require('../lib/ResourceRequest')
 
-var noop = function () {}
-
 tap.test('can be created', function (t) {
   var create = function () {
     var request = new ResourceRequest() // eslint-disable-line no-unused-vars
