@@ -33,6 +33,6 @@ exports.ResourceFactory = ResourceFactory
 exports.stopPool = function (pool) {
   return pool.drain()
   .then(function () {
-    return pool.destroyAllNow()
+    return pool.clear()
   })
 }

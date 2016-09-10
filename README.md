@@ -87,7 +87,7 @@ resourcePromise.then(function(client) {
 // Only call this once in your application -- at the point you want
 // to shutdown and stop using this pool.
 pool.drain(function() {
-    pool.destroyAllNow();
+    pool.clear();
 });
 
 ```
@@ -239,12 +239,12 @@ pool.acquire(1).then(function(client) {
 
 ## Draining
 
-If you know you would like to terminate all the available resources in your pool before any timeouts they might have, have been reached, you can use `destroyAllNow()` in conjunction with `drain()`:
+If you know you would like to terminate all the available resources in your pool before any timeouts they might have, have been reached, you can use `clear()` in conjunction with `drain()`:
 
 ```js
 const p = pool.drain()
 .then(function() {
-    return pool.destroyAllNow();
+    return pool.clear();
 });
 ```
 The `promise` returned will resolve once all waiting clients have acquired and return resources, and any available resources have been destroyed

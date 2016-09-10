@@ -26,7 +26,7 @@ tap.test('acquireTimeout handles timed out acquire calls', function (t) {
     t.match(err, /ResourceRequest timed out/)
     pool.drain()
     .then(function () {
-      return pool.destroyAllNow()
+      return pool.clear()
     })
     .then(t.end)
   })
@@ -56,7 +56,7 @@ tap.test('acquireTimeout handles non timed out acquire calls', function (t) {
     pool.release(resource)
     pool.drain()
     .then(function () {
-      return pool.destroyAllNow()
+      return pool.clear()
     })
     .then(t.end)
   }).catch(t.error)

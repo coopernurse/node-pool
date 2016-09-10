@@ -233,7 +233,7 @@ tap.test('tests drain', function (t) {
   .then(function () {
     t.equal(count, acquired)
     // short circuit the absurdly long timeouts above.
-    pool.destroyAllNow()
+    pool.clear()
   })
   .then(function () {
     // subsequent calls to acquire should resolve an error.
