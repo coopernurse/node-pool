@@ -296,18 +296,18 @@ tap.test('handle creation errors', function (t) {
 })
 
 tap.test('handle creation errors for delayed creates', function (t) {
-  let created = 0
+  let attempts = 0
 
   const resourceFactory = {
     create: function () {
-      created++
-      if (created < 5) {
+      attempts++
+      if (attempts <= 5) {
         return Promise.reject(new Error('Error occurred.'))
       } else {
-        return Promise.resolve({ id: created })
+        return Promise.resolve({ id: attempts })
       }
     },
-    destroy: function (client) {}
+    destroy: function (client) { return Promise.resolve() }
   }
 
   const config = {
@@ -317,17 +317,12 @@ tap.test('handle creation errors for delayed creates', function (t) {
 
   const pool = new Pool(resourceFactory, config)
 
-  // FIXME: this section no longer proves anything as factory
-  // errors no longer bubble up through the acquire call
-  // we need to make the Pool an Emitter
+  let errorCount = 0
+  pool.on('factoryCreateError', function (err) {
+    t.ok(err instanceof Error)
+    errorCount++
+  })
 
-  // ensure that creation errors do not populate the pool.
-  // for (var i = 0; i < 5; i++) {
-  //   pool.acquire(function (err, client) {
-  //     t.ok(err instanceof Error)
-  //     t.ok(client === null)
-  //   })
-  // }
   let called = false
   pool.acquire()
   .then(function (client) {
@@ -337,6 +332,7 @@ tap.test('handle creation errors for delayed creates', function (t) {
   })
   .then(function () {
     t.ok(called)
+    t.equal(errorCount, 5)
     t.equal(pool.waitingClientsCount(), 0)
     utils.stopPool(pool)
     t.end()
@@ -372,12 +368,11 @@ tap.test('pooled decorator should acquire and release', function (t) {
     assertionCount += 1
   })
 
-  setTimeout(function () {
+  utils.stopPool(pool)
+  .then(function () {
     t.equal(assertionCount, 4)
-    t.equal(pool.availableObjectsCount(), 1)
-    utils.stopPool(pool)
     t.end()
-  }, 10)
+  })
 })
 
 tap.test('pooled decorator should pass arguments and return values', function (t) {
@@ -404,11 +399,11 @@ tap.test('pooled decorator should pass arguments and return values', function (t
     assertionCount += 2
   })
 
-  setTimeout(function () {
+  utils.stopPool(pool)
+  .then(function () {
     t.equal(assertionCount, 4)
-    utils.stopPool(pool)
     t.end()
-  }, 20)
+  })
 })
 
 // FIXME:  I'm not really sure what this testing...
@@ -431,40 +426,91 @@ tap.test('pooled decorator should allow undefined callback', function (t) {
 
   pooledFn('Arg!')
 
-  setTimeout(function () {
-    t.equal(pool.getPoolSize(), 1)
+  t.equal(pool.getPoolSize(), 1)
+
+  utils.stopPool(pool)
+  .then(function () {
     t.equal(assertionCount, 1)
-    utils.stopPool(pool)
     t.end()
-  }, 20)
+  })
 })
 
-// FIXME: this test needs fixing since we no longer bubble up factory errors
-// only thing like resourceRequest timeouts etc
-// tap.test('pooled decorator should forward pool errors', function (t) {
-//   var assertionCount = 0
-//   var pool = new Pool({
-//     name: 'test1',
-//     create: function (callback) { callback(new Error('Pool error')) },
-//     destroy: function (client) {},
-//     max: 1
-//   })
+tap.test('pooled decorator should not forward pool factory errors', function (t) {
+  let assertionCount = 0
 
-//   var pooledFn = pool.pooled(function (cb) {
-//     t.ok(false, "Pooled function shouldn't be called due to a pool error")
-//   })
+  let attempts = 0
+  const resourceFactory = {
+    create: function () {
+      attempts++
+      if (attempts <= 1) {
+        return Promise.reject(new Error('Error occurred.'))
+      } else {
+        return Promise.resolve({ id: attempts })
+      }
+    },
+    destroy: function (client) { return Promise.resolve() }
+  }
 
-//   pooledFn(function (err, obj) {
-//     t.equal(err.message, 'Pool error')
-//     assertionCount += 1
-//   })
+  const pool = new Pool(resourceFactory,
+    {
+      max: 1,
+      name: 'test1'
+    })
 
-//   setTimeout(function () {
-//     t.equal(assertionCount, 1)
-//     utils.stopPool(pool)
-//     t.end()
-//   }, 20)
-// })
+  var pooledFn = pool.pooled(function (resource, cb) {
+    cb()
+  })
+
+  pooledFn(function (err, obj) {
+    t.error(err, 'Pool error was forwarded!')
+    assertionCount++
+  })
+
+  utils.stopPool(pool)
+  .then(function () {
+    t.equal(assertionCount, 1)
+    t.end()
+  })
+})
+
+tap.test('pooled decorator should forward pool acquire timeout errors', function (t) {
+  let assertionCount = 0
+
+  let attempts = 0
+  const resourceFactory = {
+    create: function () {
+      attempts++
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          resolve({ id: attempts })
+        }, 20)
+      })
+    },
+    destroy: function (client) { return Promise.resolve() }
+  }
+
+  const pool = new Pool(resourceFactory,
+    {
+      acquireTimeoutMillis: 10,
+      max: 1,
+      name: 'test1'
+    })
+
+  var pooledFn = pool.pooled(function (resource, cb) {
+    cb()
+  })
+
+  pooledFn(function (err, obj) {
+    t.match(err, /ResourceRequest timed out/)
+    assertionCount++
+  })
+
+  utils.stopPool(pool)
+  .then(function () {
+    t.equal(assertionCount, 1)
+    t.end()
+  })
+})
 
 tap.test('getPoolSize', function (t) {
   let assertionCount = 0

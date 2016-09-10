@@ -204,6 +204,14 @@ This function is for when you want to return a resource to the pool but want it 
 
 - `resource`: a previously borrow resource
 
+### pool.on
+
+The pool is an event emitter. Below are the events it emits and any args for those events
+
+`factoryCreateError` : emitted when a promise returned by `factory.create` is rejected. If this event has no listeners then the `error` will be silently discarded
+
+- `err`: whatever `reason` the promise was rejected with. 
+
 ## Priority Queueing
 
 The pool supports optional priority queueing.  This becomes relevant when no resources are available and the caller has to wait. `acquire()` accepts an optional priority int which
