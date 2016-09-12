@@ -1,27 +1,27 @@
 'use strict'
 
-var tap = require('tap')
-var Pool = require('../lib/Pool')
-var utils = require('./utils')
-var ResourceFactory = utils.ResourceFactory
+const tap = require('tap')
+const Pool = require('../lib/Pool')
+const utils = require('./utils')
+const ResourceFactory = utils.ResourceFactory
 
 // tap.test('Pool expands only to max limit', function (t) {
-//   var resourceFactory = new ResourceFactory()
+//   const resourceFactory = new ResourceFactory()
 
-//   var config = {
+//   const config = {
 //     max: 1,
 //     refreshIdle: false,
 //     name: 'test1'
 //   }
 
-//   var pool = new Pool(resourceFactory, config)
+//   const pool = new Pool(resourceFactory, config)
 
 //     // NOTES:
 //     // - request a resource
 //     // - once we have it, request another and check the pool is fool
 //   pool.acquire(function (err, obj) {
 //     t.error(err)
-//     var poolIsFull = !pool.acquire(function (err, obj) {
+//     const poolIsFull = !pool.acquire(function (err, obj) {
 //       t.error(err)
 //       t.equal(1, resourceFactory.created)
 //       pool.release(obj)
@@ -35,16 +35,16 @@ var ResourceFactory = utils.ResourceFactory
 // })
 
 // tap.test('Pool respects min limit', function (t) {
-//   var resourceFactory = new ResourceFactory()
+//   const resourceFactory = new ResourceFactory()
 
-//   var config = {
+//   const config = {
 //     name: 'test-min',
 //     min: 1,
 //     max: 2,
 //     refreshIdle: false
 //   }
 
-//   var pool = new Pool(resourceFactory, config)
+//   const pool = new Pool(resourceFactory, config)
 
 //     // FIXME: this logic only works because we know it takes ~1ms to create a resource
 //     // we need better hooks into the pool probably to observe this...
@@ -56,14 +56,14 @@ var ResourceFactory = utils.ResourceFactory
 // })
 
 // tap.test('min and max limit defaults', function (t) {
-//   var resourceFactory = new ResourceFactory()
+//   const resourceFactory = new ResourceFactory()
 
-//   var config = {
+//   const config = {
 //     name: 'test-limit-defaults',
 //     refreshIdle: false
 //   }
 
-//   var pool = new Pool(resourceFactory, config)
+//   const pool = new Pool(resourceFactory, config)
 
 //   t.equal(1, pool.getMaxPoolSize())
 //   t.equal(0, pool.getMinPoolSize())
@@ -72,15 +72,15 @@ var ResourceFactory = utils.ResourceFactory
 // })
 
 // tap.test('malformed min and max limits are ignored', function (t) {
-//   var resourceFactory = new ResourceFactory()
+//   const resourceFactory = new ResourceFactory()
 
-//   var config = {
+//   const config = {
 //     name: 'test-limit-defaults2',
 //     refreshIdle: false,
 //     min: 'asf',
 //     max: []
 //   }
-//   var pool = new Pool(resourceFactory, config)
+//   const pool = new Pool(resourceFactory, config)
 
 //   t.equal(1, pool.getMaxPoolSize())
 //   t.equal(0, pool.getMinPoolSize())
@@ -89,15 +89,15 @@ var ResourceFactory = utils.ResourceFactory
 // })
 
 // tap.test('min greater than max sets to max', function (t) {
-//   var resourceFactory = new ResourceFactory()
+//   const resourceFactory = new ResourceFactory()
 
-//   var config = {
+//   const config = {
 //     name: 'test-limit-defaults3',
 //     refreshIdle: false,
 //     min: 5,
 //     max: 3
 //   }
-//   var pool = new Pool(resourceFactory, config)
+//   const pool = new Pool(resourceFactory, config)
 
 //   t.equal(3, pool.getMaxPoolSize())
 //   t.equal(3, pool.getMinPoolSize())
@@ -272,7 +272,7 @@ tap.test('handle creation errors', function (t) {
   // we need to make the Pool an Emitter
 
   // ensure that creation errors do not populate the pool.
-  // for (var i = 0; i < 5; i++) {
+  // for (const i = 0; i < 5; i++) {
   //   pool.acquire(function (err, client) {
   //     t.ok(err instanceof Error)
   //     t.ok(client === null)
@@ -457,7 +457,7 @@ tap.test('pooled decorator should not forward pool factory errors', function (t)
       name: 'test1'
     })
 
-  var pooledFn = pool.pooled(function (resource, cb) {
+  const pooledFn = pool.pooled(function (resource, cb) {
     cb()
   })
 
@@ -496,7 +496,7 @@ tap.test('pooled decorator should forward pool acquire timeout errors', function
       name: 'test1'
     })
 
-  var pooledFn = pool.pooled(function (resource, cb) {
+  const pooledFn = pool.pooled(function (resource, cb) {
     cb()
   })
 
@@ -622,20 +622,20 @@ tap.test('availableObjectsCount', function (t) {
 
 // FIXME: remove completely when we scrap logging
 // tap.test('logPassesLogLevel', function (t) {
-//   var loglevels = {'verbose': 0, 'info': 1, 'warn': 2, 'error': 3}
-//   var logmessages = {verbose: [], info: [], warn: [], error: []}
-//   var factory = {
+//   const loglevels = {'verbose': 0, 'info': 1, 'warn': 2, 'error': 3}
+//   const logmessages = {verbose: [], info: [], warn: [], error: []}
+//   const factory = {
 //     name: 'test1',
 //     create: function (callback) { callback(null, {id: Math.floor(Math.random() * 1000)}) },
 //     destroy: function (client) {},
 //     max: 2,
 //     log: function (msg, level) { testlog(msg, level) }
 //   }
-//   var testlog = function (msg, level) {
+//   const testlog = function (msg, level) {
 //     t.ok(level in loglevels)
 //     logmessages[level].push(msg)
 //   }
-//   var pool = new Pool(factory)
+//   const pool = new Pool(factory)
 
 //   pool.acquire(function (err, objA) {
 //     t.error(err)
@@ -683,10 +683,10 @@ tap.test('availableObjectsCount', function (t) {
 // pool.destroy makes no obligations to user about when it will destroy the resource
 // we should test that "destroyed" objects are not acquired again instead
 // tap.test('removes from available objects on validation failure', function (t) {
-//   var destroyCalled = false
-//   var validateCalled = false
-//   var count = 0
-//   var factory = {
+//   const destroyCalled = false
+//   const validateCalled = false
+//   const count = 0
+//   const factory = {
 //     create: function () { return Promise.resolve({count: count++}) },
 //     destroy: function (client) { destroyCalled = client.count },
 //     validate: function (client) {
@@ -695,13 +695,13 @@ tap.test('availableObjectsCount', function (t) {
 //     }
 //   }
 
-//   var config = {
+//   const config = {
 //     name: 'test',
 //     max: 2,
 //     testOnBorrow: true
 //   }
 
-//   var pool = new Pool(factory, config)
+//   const pool = new Pool(factory, config)
 
 //   pool.acquire()
 //   .then(function (obj) {
@@ -727,9 +727,9 @@ tap.test('availableObjectsCount', function (t) {
 
 tap.test('do schedule again if error occured when creating new Objects async', function (t) {
   // NOTE: we're simulating the first few resource attempts failing
-  var resourceCreationAttempts = 0
+  let resourceCreationAttempts = 0
 
-  var factory = {
+  const factory = {
     create: function () {
       resourceCreationAttempts++
       if (resourceCreationAttempts < 2) {
@@ -740,13 +740,13 @@ tap.test('do schedule again if error occured when creating new Objects async', f
     destroy: function (client) {}
   }
 
-  var config = {
+  const config = {
     max: 1,
     refreshIdle: false,
     name: 'test'
   }
 
-  var pool = new Pool(factory, config)
+  const pool = new Pool(factory, config)
   // pool.acquire(function () {})
   pool.acquire().then(function (obj) {
     t.equal(pool.availableObjectsCount(), 0)
@@ -757,7 +757,7 @@ tap.test('do schedule again if error occured when creating new Objects async', f
 })
 
 tap.test('returns only valid object to the pool', function (t) {
-  var pool = new Pool({
+  const pool = new Pool({
     name: 'test',
     create: function () {
       return Promise.resolve({ id: 'validId' })
@@ -785,7 +785,7 @@ tap.test('returns only valid object to the pool', function (t) {
 })
 
 tap.test('validate acquires object from the pool', function (t) {
-  var pool = new Pool({
+  const pool = new Pool({
     name: 'test',
     create: function () {
       return Promise.resolve({ id: 'validId' })
