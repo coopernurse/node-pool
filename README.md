@@ -154,6 +154,7 @@ An optional object/dictionary with the any of the following properties:
 - `returnToHead` : if true the most recently released resources will be the first to be allocated. This in effect turns the pool's behaviour from a queue into a stack. `boolean`, (default false)
 - `priorityRange`: int between 1 and x - if set, borrowers can specify their relative priority in the queue if no resources are available.
                          see example.  (default 1)
+- `autostart`: boolean, should the pool start creating resources etc once the constructor is called, (default true) 
 - `log` : true/false or function - If a log is a function, it will be called with two parameters:
 	- log string
 	- log level ('verbose', 'info', 'warn', 'error')
