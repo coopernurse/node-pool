@@ -292,24 +292,22 @@ publicTop = pool.pooled(privateTop = function(client, cb) {
 The following functions will let you get information about the pool:
 
 ```js
-// returns factory.name for this pool
-pool.getName()
 
 // returns number of resources in the pool regardless of
 // whether they are free or in use
-pool.getPoolSize()
+pool.size
 
 // returns number of unused resources in the pool
-pool.availableObjectsCount()
+pool.available
 
 // returns number of callers waiting to acquire a resource
-pool.waitingClientsCount()
+pool.pending
 
 // returns number of maxixmum number of resources allowed by ppol
-pool.getMaxPoolSize()
+pool.max
 
 // returns number of minimum number of resources allowed by ppol
-pool.getMinPoolSize()
+pool.min
 
 ```
 

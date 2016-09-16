@@ -288,7 +288,7 @@ tap.test('handle creation errors', function (t) {
   })
   .then(function () {
     t.ok(called)
-    t.equal(pool.waitingClientsCount(), 0)
+    t.equal(pool.pending, 0)
     utils.stopPool(pool)
     t.end()
   })
@@ -333,7 +333,7 @@ tap.test('handle creation errors for delayed creates', function (t) {
   .then(function () {
     t.ok(called)
     t.equal(errorCount, 5)
-    t.equal(pool.waitingClientsCount(), 0)
+    t.equal(pool.pending, 0)
     utils.stopPool(pool)
     t.end()
   })
@@ -353,12 +353,12 @@ tap.test('pooled decorator should acquire and release', function (t) {
 
   const pooledFn = pool.pooled(function (client, cb) {
     t.equal(typeof client.id, 'number')
-    t.equal(pool.getPoolSize(), 1)
+    t.equal(pool.size, 1)
     assertionCount += 2
     cb()
   })
 
-  t.equal(pool.getPoolSize(), 0)
+  t.equal(pool.size, 0)
   assertionCount += 1
 
   pooledFn(function (err) {
@@ -426,7 +426,7 @@ tap.test('pooled decorator should allow undefined callback', function (t) {
 
   pooledFn('Arg!')
 
-  t.equal(pool.getPoolSize(), 1)
+  t.equal(pool.size, 1)
 
   utils.stopPool(pool)
   .then(function () {
@@ -525,13 +525,13 @@ tap.test('getPoolSize', function (t) {
 
   const borrowedResources = []
 
-  t.equal(pool.getPoolSize(), 0)
+  t.equal(pool.size, 0)
   assertionCount += 1
 
   pool.acquire()
   .then(function (obj) {
     borrowedResources.push(obj)
-    t.equal(pool.getPoolSize(), 1)
+    t.equal(pool.size, 1)
     assertionCount += 1
   })
   .then(function () {
@@ -539,7 +539,7 @@ tap.test('getPoolSize', function (t) {
   })
   .then(function (obj) {
     borrowedResources.push(obj)
-    t.equal(pool.getPoolSize(), 2)
+    t.equal(pool.size, 2)
     assertionCount += 1
   })
   .then(function () {
@@ -551,7 +551,7 @@ tap.test('getPoolSize', function (t) {
   })
   .then(function (obj) {
     // should still be 2
-    t.equal(pool.getPoolSize(), 2)
+    t.equal(pool.size, 2)
     assertionCount += 1
     pool.release(obj)
   })
@@ -576,40 +576,40 @@ tap.test('availableObjectsCount', function (t) {
 
   const borrowedResources = []
 
-  t.equal(pool.availableObjectsCount(), 0)
+  t.equal(pool.available, 0)
   assertionCount += 1
 
   pool.acquire()
   .then(function (obj) {
     borrowedResources.push(obj)
-    t.equal(pool.availableObjectsCount(), 0)
+    t.equal(pool.available, 0)
     assertionCount += 1
   }).then(function () {
     return pool.acquire()
   })
   .then(function (obj) {
     borrowedResources.push(obj)
-    t.equal(pool.availableObjectsCount(), 0)
+    t.equal(pool.available, 0)
     assertionCount += 1
   })
   .then(function () {
     pool.release(borrowedResources.shift())
-    t.equal(pool.availableObjectsCount(), 1)
+    t.equal(pool.available, 1)
     assertionCount += 1
 
     pool.release(borrowedResources.shift())
-    t.equal(pool.availableObjectsCount(), 2)
+    t.equal(pool.available, 2)
     assertionCount += 1
   })
   .then(function () {
     return pool.acquire()
   })
   .then(function (obj) {
-    t.equal(pool.availableObjectsCount(), 1)
+    t.equal(pool.available, 1)
     assertionCount += 1
     pool.release(obj)
 
-    t.equal(pool.availableObjectsCount(), 2)
+    t.equal(pool.available, 2)
     assertionCount += 1
   })
   .then(function () {
@@ -672,7 +672,7 @@ tap.test('availableObjectsCount', function (t) {
 //   })
 //   .then(function () {
 //     t.equal(destroyCalled, true)
-//     t.equal(pool.availableObjectsCount(), 0)
+//     t.equal(pool.available, 0)
 //     utils.stopPool(pool)
 //     t.end()
 //   })
@@ -718,7 +718,7 @@ tap.test('availableObjectsCount', function (t) {
 //   .then(function () {
 //     t.equal(validateCalled, true)
 //     t.equal(destroyCalled, 0)
-//     t.equal(pool.availableObjectsCount(), 1)
+//     t.equal(pool.available, 1)
 //     utils.stopPool(pool)
 //     t.end()
 //   })
@@ -749,7 +749,7 @@ tap.test('do schedule again if error occured when creating new Objects async', f
   const pool = new Pool(factory, config)
   // pool.acquire(function () {})
   pool.acquire().then(function (obj) {
-    t.equal(pool.availableObjectsCount(), 0)
+    t.equal(pool.available, 0)
     pool.release(obj)
     utils.stopPool(pool)
     t.end()
@@ -767,18 +767,18 @@ tap.test('returns only valid object to the pool', function (t) {
   })
 
   pool.acquire().then(function (obj) {
-    t.equal(pool.availableObjectsCount(), 0)
-    t.equal(pool.inUseObjectsCount(), 1)
+    t.equal(pool.available, 0)
+    t.equal(pool.borrowed, 1)
 
       // Invalid release
     pool.release({})
-    t.equal(pool.availableObjectsCount(), 0)
-    t.equal(pool.inUseObjectsCount(), 1)
+    t.equal(pool.available, 0)
+    t.equal(pool.borrowed, 1)
 
       // Valid release
     pool.release(obj)
-    t.equal(pool.availableObjectsCount(), 1)
-    t.equal(pool.inUseObjectsCount(), 0)
+    t.equal(pool.available, 1)
+    t.equal(pool.borrowed, 0)
     utils.stopPool(pool)
     t.end()
   }).catch(t.threw)
@@ -799,8 +799,8 @@ tap.test('validate acquires object from the pool', function (t) {
 
   pool.acquire()
   .then(function (obj) {
-    t.equal(pool.availableObjectsCount(), 0)
-    t.equal(pool.inUseObjectsCount(), 1)
+    t.equal(pool.available, 0)
+    t.equal(pool.borrowed, 1)
     pool.release(obj)
     utils.stopPool(pool)
     t.end()
