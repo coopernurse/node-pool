@@ -142,7 +142,6 @@ optionally it can also have the following property:
 
 An optional object/dictionary with the any of the following properties: 
 
-- `name`: name of pool (string) (not really used for much)
 - `max`: maximum number of resources to create at any given time. (default=1)
 - `min`: minimum number of resources to keep in pool at any given time. If this is set >= max, the pool will silently set the min to equal `max`. (default=0)
 - `maxWaitingClients`: maximum number of queued requests allowed, additional `acquire` calls will be callback with an `err` in a future cycle of the event loop.
@@ -155,12 +154,6 @@ An optional object/dictionary with the any of the following properties:
 - `priorityRange`: int between 1 and x - if set, borrowers can specify their relative priority in the queue if no resources are available.
                          see example.  (default 1)
 - `autostart`: boolean, should the pool start creating resources etc once the constructor is called, (default true) 
-- `log` : true/false or function - If a log is a function, it will be called with two parameters:
-	- log string
-	- log level ('verbose', 'info', 'warn', 'error')
-	
-	Else if log is true, verbose log info will be sent to console.log().
-	Else internal log messages be ignored (this is the default)
 
 ### pool.acquire
 
