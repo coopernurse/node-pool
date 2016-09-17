@@ -4,14 +4,11 @@
 
 ## About
 
-  Generic resource pool.  Can be used to reuse or throttle expensive resources such as
-  database connections.
+  Generic resource pool.  Can be used to reuse or throttle usage of expensive resources such as database connections.
 
-  This module should work on any version of node from at least 0.6+, however the test and linting tools used only run on node >=10 so official support is for node 10 and up. All that said, if you find a bug on the older versions and can give us a test case we'll try to fix it.
+**Node.js Version Warning**
 
-**Future Versions Warning**
-
-Generic Pool v3 will most likely be the last version to support any versions of nodejs prior to v4. It is planned for Generic Pool v4 to only support nodejs v4 and above (this may change however!)
+Generic-Pool v3 requires a nodejs version of at least 4
 
 ## History
 
@@ -91,25 +88,6 @@ pool.drain(function() {
 });
 
 ```
-
-## Draining (move me!)
-
-If you are shutting down a long-lived process, you may notice
-that node fails to exit for 30 seconds or so.  This is a side
-effect of the idleTimeoutMillis behavior -- the pool has a
-setTimeout() call registered that is in the event loop queue, so
-node won't terminate until all resources have timed out, and the pool
-stops trying to manage them.
-
-This behavior will be more problematic when you set factory.min > 0,
-as the pool will never become empty, and the setTimeout calls will
-never end.
-
-In these cases, use the pool.drain() function.  This sets the pool
-into a "draining" state which will gracefully wait until all
-idle resources have timed out.  For example, you can call:
-
-If you do this, your node process will exit gracefully.
 
 
 ## Documentation
@@ -206,6 +184,25 @@ The pool is an event emitter. Below are the events it emits and any args for tho
 
 - `err`: whatever `reason` the promise was rejected with. 
 
+## Draining
+
+If you are shutting down a long-lived process, you may notice
+that node fails to exit for 30 seconds or so.  This is a side
+effect of the idleTimeoutMillis behavior -- the pool has a
+setTimeout() call registered that is in the event loop queue, so
+node won't terminate until all resources have timed out, and the pool
+stops trying to manage them.
+
+This behavior will be more problematic when you set factory.min > 0,
+as the pool will never become empty, and the setTimeout calls will
+never end.
+
+In these cases, use the pool.drain() function.  This sets the pool
+into a "draining" state which will gracefully wait until all
+idle resources have timed out.  For example, you can call:
+
+If you do this, your node process will exit gracefully.
+
 ## Priority Queueing
 
 The pool supports optional priority queueing.  This becomes relevant when no resources are available and the caller has to wait. `acquire()` accepts an optional priority int which
@@ -241,7 +238,24 @@ pool.acquire(1).then(function(client) {
 
 ## Draining
 
-If you know you would like to terminate all the available resources in your pool before any timeouts they might have, have been reached, you can use `clear()` in conjunction with `drain()`:
+If you are shutting down a long-lived process, you may notice
+that node fails to exit for 30 seconds or so.  This is a side
+effect of the idleTimeoutMillis behavior -- the pool has a
+setTimeout() call registered that is in the event loop queue, so
+node won't terminate until all resources have timed out, and the pool
+stops trying to manage them.
+
+This behavior will be more problematic when you set factory.min > 0,
+as the pool will never become empty, and the setTimeout calls will
+never end.
+
+In these cases, use the pool.drain() function.  This sets the pool
+into a "draining" state which will gracefully wait until all
+idle resources have timed out.  For example, you can call:
+
+If you do this, your node process will exit gracefully.
+
+If you know you would like to terminate all the available resources in your pool before any timeouts they might have are reached, you can use `clear()` in conjunction with `drain()`:
 
 ```js
 const p = pool.drain()
