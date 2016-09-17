@@ -150,7 +150,7 @@ An optional object/dictionary with the any of the following properties:
 - `idleTimeoutMillis`: max milliseconds a resource can stay unused in the pool without being borrowed before it should be destroyed (default 30000)
 - `reapIntervalMillis`: interval to check for idle resources (default 1000). (remove me!)
 - `acquireTimeoutMillis`: max milliseconds an `acquire` call will wait for a resource before timing out. (default no limit), if supplied should non-zero positive integer.
-- `returnToHead` : if true the most recently released resources will be the first to be allocated. This in effect turns the pool's behaviour from a queue into a stack. `boolean`, (default false)
+- `lifo` : if true the oldest resources will be first to be allocated. If false the most recently released resources will be the first to be allocated. This in effect turns the pool's behaviour from a queue into a stack. `boolean`, (default true)
 - `priorityRange`: int between 1 and x - if set, borrowers can specify their relative priority in the queue if no resources are available.
                          see example.  (default 1)
 - `autostart`: boolean, should the pool start creating resources etc once the constructor is called, (default true) 
