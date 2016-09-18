@@ -132,6 +132,7 @@ An optional object/dictionary with the any of the following properties:
 - `priorityRange`: int between 1 and x - if set, borrowers can specify their relative priority in the queue if no resources are available.
                          see example.  (default 1)
 - `autostart`: boolean, should the pool start creating resources etc once the constructor is called, (default true) 
+- `Promise`: Promise lib, a Promises/A+ implementation that the pool should use. Defaults to whatever `global.Promise` is (usually native promises).
 
 ### pool.acquire
 
