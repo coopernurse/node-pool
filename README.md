@@ -169,21 +169,27 @@ This function is for when you want to return a resource to the pool.
 
 - `resource`: a previously borrowed resource
 
+and returns a `Promise`. This promise will resolve once the `resource` is accepted by the pool, or reject if the pool is unable to accept the `resource` for any reason (e.g `resource` is not a resource or object that came from the pool). If you do not care the outcome it is safe to ignore this promise.
+
 ### pool.destroy
 
 This function is for when you want to return a resource to the pool but want it destroyed rather than being made available to other resources. E.g you may know the resource has timed out or crashed.
 
 `destroy` takes one required argument:
 
-- `resource`: a previously borrow resource
+- `resource`: a previously borrowed resource
+
+and returns a `Promise`. This promise will resolve once the `resource` is accepted by the pool, or reject if the pool is unable to accept the `resource` for any reason (e.g `resource` is not a resource or object that came from the pool). If you do not care the outcome it is safe to ignore this promise.
 
 ### pool.on
 
 The pool is an event emitter. Below are the events it emits and any args for those events
 
-`factoryCreateError` : emitted when a promise returned by `factory.create` is rejected. If this event has no listeners then the `error` will be silently discarded
+- `factoryCreateError` : emitted when a promise returned by `factory.create` is rejected. If this event has no listeners then the `error` will be silently discarded
+  - `error`: whatever `reason` the promise was rejected with. 
 
-- `err`: whatever `reason` the promise was rejected with. 
+- `factoryDestroyError` : emitted when a promise returned by `factory.destroy` is rejected. If this event has no listeners then the `error` will be silently discarded
+  - `error`: whatever `reason` the promise was rejected with.
 
 ## Draining
 
