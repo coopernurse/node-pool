@@ -27,7 +27,7 @@ $ npm install generic-pool [--save]
 Here is an example using a fictional generic database driver that doesn't implement any pooling whatsoever itself.
 
 ```js
-var Pool = require('generic-pool').Pool;
+var genericPool = require('generic-pool');
 var DbDriver = require('some-db-driver');
 
 /**
@@ -57,7 +57,7 @@ var opts = {
     min: 2 // minimum size of the pool
 }
 
-var myPool = new Pool(factory, opts)
+var myPool = genericPool.createPool(factory, opts)
 
 /**
  * Step 2 - Use pool in your code to acquire/release resources
@@ -92,15 +92,22 @@ pool.drain(function() {
 
 ## Documentation
 
-### Constructor
 
-The `Pool` constructor takes two arguments:
+
+### Creating a pool
+
+Whilst it is possible to directly instantiate the Pool class directly, it is recommended to use the `createPool` function exported by module as the constructor method signature may change in the future.
+
+### createPool
+
+The createPool function takes two arguments:
 
 - `factory` :  an object containing functions to create/destroy/test resources for the `Pool`
 - `opts` : an optional object/dictonary to allow configuring/altering behaviour the of the `Pool`
 
 ```js
-var pool = new Pool(factory, opts)
+const genericPool = require('generic-pool')
+const pool = genericPool.createPool(factory, opts)
 ```
 
 **factory**
@@ -223,7 +230,7 @@ Specifying a `priority` to `acquire` that is outside the `priorityRange` set at 
 var opts = {
   priorityRange : 3
 }
-var pool = new Pool(someFactory,opts);
+var pool = genericPool.createPool(someFactory,opts);
 
 // acquire connection - no priority specified - will go onto lowest priority queue
 pool.acquire().thenfunction(client) {
@@ -310,7 +317,7 @@ publicTop = pool.pooled(privateTop = function(client, cb) {
 
 ## Pool info
 
-The following functions will let you get information about the pool:
+The following properties will let you get information about the pool:
 
 ```js
 

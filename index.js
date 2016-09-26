@@ -1,7 +1,8 @@
 const Pool = require('./lib/Pool')
-const PoolDefaults = require('./lib/PoolDefaults')
 
-module.exports = {
-  Pool: Pool,
-  PoolDefaults: PoolDefaults
+exports.Pool = Pool
+
+exports.createPool = function(factory, config){
+  return new Pool(factory, config)
 }
+
