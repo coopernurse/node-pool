@@ -122,6 +122,7 @@ optionally it can also have the following property:
 
 - `validate`: a function that the pool will call if it wants to validate a resource. It should accept one argument `resource` where `resource` is whatever `factory.create` made. Should return a `Promise` that resolves a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid. 
 
+_Note: The values returned from `create`, `destroy`, and `validate` are all wrapped in a `Promise.resolve` by the pool before being used internally._
 
 **opts**
 
