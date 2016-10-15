@@ -747,5 +747,51 @@ module.exports = {
       assert.equal(pool.availableObjectsCount(), 0)
       assert.equal(pool.inUseObjectsCount(), 1)
     })
+  },
+
+  'domain context is preserved on acquire callback': function (beforeExit) {
+    var assertion_count = 0
+    var pool = poolModule.Pool({
+      name: 'test',
+      create: function (cb) {
+        cb(null, {})
+      },
+      destroy: function (client) {},
+      max: 2,
+      idleTimeoutMillis: 1000
+    })
+
+    // bail on old node versions because domains didn't exist until v0.8
+    if (process.version < 'v0.8') {
+      return
+    }
+
+    var domain = require('domain')
+
+    function check (index) {
+      var wrapDomain = domain.create()
+      wrapDomain.index = index
+
+      wrapDomain.run(function () {
+        pool.acquire(function (err, client) {
+          assert.ifError(err)
+          assert.equal(domain.active.index, index)
+          assertion_count++
+          setTimeout(function () {
+            pool.release(client)
+          }, 50)
+        })
+      })
+    }
+
+    // first two will work even without domain binding
+    check(1)
+    check(2)
+    // third and on will fail without domain binding
+    check(3)
+
+    beforeExit(function () {
+      assert.equal(assertion_count, 3)
+    })
   }
 }
