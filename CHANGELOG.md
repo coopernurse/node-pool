@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.4.3] - October 15 2016
+- Use domain.bind to preserve domain context (@LewisJEllis)
+
 ## [2.4.2] - March 26 2016
 - Travis now runs and fails lint checks (@kevinburke)
 - fixed bug #128 where using async validation incorrectly tracked resource state (@johnjdooley and @robfyfe)
