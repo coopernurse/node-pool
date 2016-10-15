@@ -109,7 +109,8 @@
 ## [1.0.2] - Nov 9 2010
 - First NPM release
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.4.2...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.4.3...HEAD
+[2.4.3]: https://github.com/coopernurse/node-pool/compare/v2.4.2...v2.4.3
 [2.4.2]: https://github.com/coopernurse/node-pool/compare/v2.4.1...v2.4.2
 [2.4.1]: https://github.com/coopernurse/node-pool/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/coopernurse/node-pool/compare/v2.3.1...v2.4.0
