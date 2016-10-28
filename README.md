@@ -142,7 +142,11 @@ An optional object/dictionary with the any of the following properties:
 - `fifo` : if true the oldest resources will be first to be allocated. If false the most recently released resources will be the first to be allocated. This in effect turns the pool's behaviour from a queue into a stack. `boolean`, (default true)
 - `priorityRange`: int between 1 and x - if set, borrowers can specify their relative priority in the queue if no resources are available.
                          see example.  (default 1)
-- `autostart`: boolean, should the pool start creating resources etc once the constructor is called, (default true) 
+- `autostart`: boolean, should the pool start creating resources etc once the constructor is called, (default true)
+- `evictionRunIntervalMillis`: How often to run eviction checks. Default: 0 (does not run).
+- `numTestsPerRun`: Number of resources to check each eviction run.  Default: 3.
+- `softIdleTimeoutMillis`: amount of time an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any), with the extra condition that at least "min idle" object instances remain in the pool. Default -1 (nothing can get evicted)
+- `idleTimeoutMillis`: the minimum amount of time that an object may sit idle in the pool before it is eligible for eviction due to idle time. Supercedes `softIdleTimeoutMillis` Default: 30000
 - `Promise`: Promise lib, a Promises/A+ implementation that the pool should use. Defaults to whatever `global.Promise` is (usually native promises).
 
 ### pool.acquire
@@ -201,6 +205,10 @@ The pool is an event emitter. Below are the events it emits and any args for tho
 
 - `factoryDestroyError` : emitted when a promise returned by `factory.destroy` is rejected. If this event has no listeners then the `error` will be silently discarded
   - `error`: whatever `reason` the promise was rejected with.
+
+## Idle Object Eviction
+
+The pool has an evictor (off by default) which will inspect idle items in the pool and `destroy` them if they are too old
 
 ## Draining
 

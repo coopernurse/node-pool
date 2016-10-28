@@ -1,7 +1,7 @@
 {
   "name": "generic-pool",
   "description": "Generic resource pooling for Node.JS",
-  "version": "3.0.0-alpha.7",
+  "version": "3.0.0-alpha.8",
   "author": "James Cooper <james@bitmechanic.com>",
   "contributors": [
     {
@@ -66,9 +66,9 @@
   "devDependencies": {
     "eslint": "^3.4.0",
     "eslint-config-standard": "^6.0.0",
-    "eslint-plugin-promise": "^2.0.1",
+    "eslint-plugin-promise": "^3.3.0",
     "eslint-plugin-standard": "^2.0.0",
-    "tap": "^7.0.0"
+    "tap": "^8.0.0"
   },
   "engines": {
     "node": ">= 4"
@@ -76,7 +76,7 @@
   "scripts": {
     "lint": "eslint lib test",
     "lint-fix": "eslint --fix lib test",
-    "test": "tap test/*-test.js --timeout 2"
+    "test": "tap test/*-test.js "
   },
   "license": "MIT"
 }
