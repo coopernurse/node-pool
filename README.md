@@ -296,36 +296,7 @@ will throw an Error.
 
 ## Pooled function decoration
 
-To transparently handle object acquisition for a function,
-one can use `pooled()`:
-
-```js
-var privateFn, publicFn;
-publicFn = pool.pooled(privateFn = function(client, arg, cb) {
-    // Do something with the client and arg. Client is auto-released when cb is called
-    cb(null, arg);
-});
-```
-
-Keeping both private and public versions of each function allows for pooled
-functions to call other pooled functions with the same member. This is a handy
-pattern for database transactions:
-
-```js
-var privateTop, privateBottom, publicTop, publicBottom;
-publicBottom = pool.pooled(privateBottom = function(client, arg, cb) {
-    //Use client, assumed auto-release
-});
-
-publicTop = pool.pooled(privateTop = function(client, cb) {
-    // e.g., open a database transaction
-    privateBottom(client, "arg", function(err, retVal) {
-        if(err) { return cb(err); }
-        // e.g., close a transaction
-        cb();
-    });
-});
-```
+This has now been extracted out it's own module [generic-pool-decorator](https://github.com/sandfox/generic-pool-decorator)
 
 ## Pool info
 
