@@ -1,5 +1,15 @@
 # Change Log
 
+## [3.0.0] - October 30 2016
+- This is pretty big and the migration guide in the README has more detailed set of changes!
+- switch support to nodejs v4 and above
+- change external interfaces to use promises instead of callbacks
+- remove logging
+- decouple create/destroy operations from acquire/release operations
+- pool should now be created via `poolCreate` factory method instead of constructor.
+- huge internal rewrite and flow control changes
+- Pool is now an eventEmitter
+
 ## [2.4.3] - October 15 2016
 - Use domain.bind to preserve domain context (@LewisJEllis)
 
@@ -109,7 +119,11 @@
 ## [1.0.2] - Nov 9 2010
 - First NPM release
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.4.3...HEAD
+<<<<<<< HEAD
+
+=======
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/coopernurse/node-pool/compare/v2.4.1...v3.0.0
 [2.4.3]: https://github.com/coopernurse/node-pool/compare/v2.4.2...v2.4.3
 [2.4.2]: https://github.com/coopernurse/node-pool/compare/v2.4.1...v2.4.2
 [2.4.1]: https://github.com/coopernurse/node-pool/compare/v2.4.0...v2.4.1
