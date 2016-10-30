@@ -9,8 +9,7 @@ const ResourceFactory = utils.ResourceFactory
 //   const resourceFactory = new ResourceFactory()
 
 //   const config = {
-//     max: 1,
-//     refreshIdle: false,
+//     max: 1
 //   }
 
 //   const pool = new Pool(resourceFactory, config)
@@ -38,8 +37,7 @@ const ResourceFactory = utils.ResourceFactory
 
 //   const config
 //     min: 1,
-//     max: 2,
-//     refreshIdle: false
+//     max: 2
 //   }
 
 //   const pool = new Pool(resourceFactory, config)
@@ -56,11 +54,7 @@ const ResourceFactory = utils.ResourceFactory
 tap.test('min and max limit defaults', function (t) {
   const resourceFactory = new ResourceFactory()
 
-  const config = {
-    refreshIdle: false
-  }
-
-  const pool = new Pool(resourceFactory, config)
+  const pool = new Pool(resourceFactory)
 
   t.equal(1, pool.max)
   t.equal(0, pool.min)
@@ -72,7 +66,6 @@ tap.test('malformed min and max limits are ignored', function (t) {
   const resourceFactory = new ResourceFactory()
 
   const config = {
-    refreshIdle: false,
     min: 'asf',
     max: []
   }
@@ -88,7 +81,6 @@ tap.test('min greater than max sets to max', function (t) {
   const resourceFactory = new ResourceFactory()
 
   const config = {
-    refreshIdle: false,
     min: 5,
     max: 3
   }
@@ -110,7 +102,6 @@ tap.test('supports priority on borrow', function (t) {
 
   const config = {
     max: 1,
-    refreshIdle: false,
     priorityRange: 2
   }
 
@@ -158,8 +149,7 @@ tap.test('supports priority on borrow', function (t) {
 //   const resourceFactory = new ResourceFactory()
 
 //   const config
-//     max: 2,
-//     refreshIdle: false
+//     max: 2
 //   }
 
 //   const pool = new Pool(resourceFactory, config)
@@ -188,6 +178,29 @@ tap.test('supports priority on borrow', function (t) {
 //   })
 //   .catch(t.threw)
 // })
+
+tap.test('evictor removes instances on idletimeout', function (t) {
+  const resourceFactory = new ResourceFactory()
+  const config = {
+    min: 2,
+    max: 2,
+    idleTimeoutMillis: 50,
+    evictionRunIntervalMillis: 10
+  }
+  const pool = new Pool(resourceFactory, config)
+
+  setTimeout(function () {
+    pool.acquire()
+    .then((res) => {
+      t.ok(res.id > 1)
+      return pool.release(res)
+    })
+    .then(() => {
+      utils.stopPool(pool)
+      t.end()
+    })
+  }, 120)
+})
 
 tap.test('tests drain', function (t) {
   const count = 5
@@ -334,8 +347,7 @@ tap.test('getPoolSize', function (t) {
   let assertionCount = 0
   const resourceFactory = new ResourceFactory()
   const config = {
-    max: 2,
-    refreshIdle: false
+    max: 2
   }
 
   const pool = new Pool(resourceFactory, config)
@@ -384,8 +396,7 @@ tap.test('availableObjectsCount', function (t) {
   let assertionCount = 0
   const resourceFactory = new ResourceFactory()
   const config = {
-    max: 2,
-    refreshIdle: false
+    max: 2
   }
 
   const pool = new Pool(resourceFactory, config)
@@ -525,8 +536,7 @@ tap.test('do schedule again if error occured when creating new Objects async', f
   }
 
   const config = {
-    max: 1,
-    refreshIdle: false
+    max: 1
   }
 
   const pool = new Pool(factory, config)

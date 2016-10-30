@@ -134,8 +134,7 @@ An optional object/dictionary with the any of the following properties:
 - `max`: maximum number of resources to create at any given time. (default=1)
 - `min`: minimum number of resources to keep in pool at any given time. If this is set >= max, the pool will silently set the min to equal `max`. (default=0)
 - `maxWaitingClients`: maximum number of queued requests allowed, additional `acquire` calls will be callback with an `err` in a future cycle of the event loop.
-- `testOnBorrow`: `boolean`: should the pool validate resources before giving them to clients. Requires that either `factory.validate` or `factory.validateAsync` to be specified.
-- `refreshIdle`: `boolean` that specifies whether idle resources at or below the min threshold should be destroyed/re-created. (default=true)
+- `testOnBorrow`: `boolean`: should the pool validate resources before giving them to clients. Requires that either `factory.validate` or `factory.validateAsync` to be specified
 - `idleTimeoutMillis`: max milliseconds a resource can stay unused in the pool without being borrowed before it should be destroyed (default 30000)
 - `reapIntervalMillis`: interval to check for idle resources (default 1000). (remove me!)
 - `acquireTimeoutMillis`: max milliseconds an `acquire` call will wait for a resource before timing out. (default no limit), if supplied should non-zero positive integer.
@@ -208,7 +207,9 @@ The pool is an event emitter. Below are the events it emits and any args for tho
 
 ## Idle Object Eviction
 
-The pool has an evictor (off by default) which will inspect idle items in the pool and `destroy` them if they are too old
+The pool has an evictor (off by default) which will inspect idle items in the pool and `destroy` them if they are too old.
+
+By default the evictor does not run, to enable it you must set the `evictionRunIntervalMillis` option to a non-zero value. Once enable the evictor will check at most `numTestsPerEvictionRun` each time, this is to stop it blocking your application if you have lots of resources in the pool.
 
 ## Draining
 
