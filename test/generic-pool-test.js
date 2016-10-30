@@ -330,7 +330,6 @@ tap.test('handle creation errors for delayed creates', function (t) {
   .catch(t.threw)
 })
 
-
 tap.test('getPoolSize', function (t) {
   let assertionCount = 0
   const resourceFactory = new ResourceFactory()
