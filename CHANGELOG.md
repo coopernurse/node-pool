@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.0.1] - November 1 2016
+- Passthrough Pool's promise impl to deferreds so they are used internally and exposed correctly on pool.acquire (@eide)
+
 ## [3.0.0] - October 30 2016
 - This is pretty big and the migration guide in the README has more detailed set of changes!
 - switch support to nodejs v4 and above
@@ -119,11 +122,10 @@
 ## [1.0.2] - Nov 9 2010
 - First NPM release
 
-<<<<<<< HEAD
-
 =======
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.0.0...HEAD
-[3.0.0]: https://github.com/coopernurse/node-pool/compare/v2.4.1...v3.0.0
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.0.1...HEAD
+[3.0.1]: https://github.com/coopernurse/node-pool/compare/v3.0.0...v3.0.1
+[3.0.0]: https://github.com/coopernurse/node-pool/compare/v2.4.3...v3.0.0
 [2.4.3]: https://github.com/coopernurse/node-pool/compare/v2.4.2...v2.4.3
 [2.4.2]: https://github.com/coopernurse/node-pool/compare/v2.4.1...v2.4.2
 [2.4.1]: https://github.com/coopernurse/node-pool/compare/v2.4.0...v2.4.1
