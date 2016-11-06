@@ -1,13 +1,15 @@
-[![build status](https://secure.travis-ci.org/coopernurse/node-pool.png)](http://travis-ci.org/coopernurse/node-pool)
+[![Build Status](https://travis-ci.org/coopernurse/node-pool.svg?branch=v2.4)](https://travis-ci.org/coopernurse/node-pool)
 
 # About
 
   Generic resource pool.  Can be used to reuse or throttle expensive resources such as
   database connections.
 
+  This is the legacy [v2.4 branch](https://github.com/coopernurse/node-pool/tree/v2.4). If possible it's recommended yo upgrade to the version 3 of generic pool as it's most likely that this branch will only be recieving bug fixes. Minor version upgrades are unlikely at this point.
+
 ## Installation
 
-    $ npm install generic-pool
+    $ npm install generic-pool@2.4
 
 ## History
 
