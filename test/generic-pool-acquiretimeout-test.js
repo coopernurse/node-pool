@@ -1,8 +1,10 @@
-var tap = require('tap')
-var Pool = require('../lib/Pool')
+'use strict'
+
+const tap = require('tap')
+const createPool = require('../').createPool
 
 tap.test('acquireTimeout handles timed out acquire calls', function (t) {
-  var factory = {
+  const factory = {
     create: function () {
       return new Promise(function (resolve) {
         setTimeout(function () {
@@ -12,13 +14,13 @@ tap.test('acquireTimeout handles timed out acquire calls', function (t) {
     },
     destroy: function () { return Promise.resolve() }
   }
-  var config = {
+  const config = {
     acquireTimeoutMillis: 20,
     idleTimeoutMillis: 150,
     log: false
   }
 
-  var pool = new Pool(factory, config)
+  const pool = createPool(factory, config)
 
   pool.acquire()
   .then(function (resource) {
@@ -38,8 +40,8 @@ tap.test('acquireTimeout handles timed out acquire calls', function (t) {
 })
 
 tap.test('acquireTimeout handles non timed out acquire calls', function (t) {
-  var myResource = {}
-  var factory = {
+  const myResource = {}
+  const factory = {
     create: function () {
       return new Promise(function (resolve) {
         setTimeout(function () {
@@ -50,11 +52,11 @@ tap.test('acquireTimeout handles non timed out acquire calls', function (t) {
     destroy: function () { return Promise.resolve() }
   }
 
-  var config = {
+  const config = {
     acquireTimeoutMillis: 400
   }
 
-  var pool = new Pool(factory, config)
+  const pool = createPool(factory, config)
 
   pool.acquire()
   .then(function (resource) {

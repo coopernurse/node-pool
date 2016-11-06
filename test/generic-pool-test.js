@@ -1,7 +1,7 @@
 'use strict'
 
 const tap = require('tap')
-const Pool = require('../lib/Pool')
+const createPool = require('../').createPool
 const utils = require('./utils')
 const ResourceFactory = utils.ResourceFactory
 
@@ -12,7 +12,7 @@ const ResourceFactory = utils.ResourceFactory
 //     max: 1
 //   }
 
-//   const pool = new Pool(resourceFactory, config)
+//   const pool = createPool(resourceFactory, config)
 
 //     // NOTES:
 //     // - request a resource
@@ -40,7 +40,7 @@ const ResourceFactory = utils.ResourceFactory
 //     max: 2
 //   }
 
-//   const pool = new Pool(resourceFactory, config)
+//   const pool = createPool(resourceFactory, config)
 
 //     // FIXME: this logic only works because we know it takes ~1ms to create a resource
 //     // we need better hooks into the pool probably to observe this...
@@ -54,7 +54,7 @@ const ResourceFactory = utils.ResourceFactory
 tap.test('min and max limit defaults', function (t) {
   const resourceFactory = new ResourceFactory()
 
-  const pool = new Pool(resourceFactory)
+  const pool = createPool(resourceFactory)
 
   t.equal(1, pool.max)
   t.equal(0, pool.min)
@@ -69,7 +69,7 @@ tap.test('malformed min and max limits are ignored', function (t) {
     min: 'asf',
     max: []
   }
-  const pool = new Pool(resourceFactory, config)
+  const pool = createPool(resourceFactory, config)
 
   t.equal(1, pool.max)
   t.equal(0, pool.min)
@@ -84,7 +84,7 @@ tap.test('min greater than max sets to max', function (t) {
     min: 5,
     max: 3
   }
-  const pool = new Pool(resourceFactory, config)
+  const pool = createPool(resourceFactory, config)
 
   t.equal(3, pool.max)
   t.equal(3, pool.min)
@@ -105,7 +105,7 @@ tap.test('supports priority on borrow', function (t) {
     priorityRange: 2
   }
 
-  const pool = new Pool(resourceFactory, config)
+  const pool = createPool(resourceFactory, config)
 
   function lowPriorityOnFulfilled (obj) {
     const time = Date.now()
@@ -152,7 +152,7 @@ tap.test('supports priority on borrow', function (t) {
 //     max: 2
 //   }
 
-//   const pool = new Pool(resourceFactory, config)
+//   const pool = createPool(resourceFactory, config)
 
 //   const op1 = pool.acquire()
 //   .then(function (client) {
@@ -187,7 +187,7 @@ tap.test('evictor removes instances on idletimeout', function (t) {
     idleTimeoutMillis: 50,
     evictionRunIntervalMillis: 10
   }
-  const pool = new Pool(resourceFactory, config)
+  const pool = createPool(resourceFactory, config)
 
   setTimeout(function () {
     pool.acquire()
@@ -211,7 +211,7 @@ tap.test('tests drain', function (t) {
     max: 2,
     idletimeoutMillis: 300000
   }
-  const pool = new Pool(resourceFactory, config)
+  const pool = createPool(resourceFactory, config)
 
   const operations = []
 
@@ -269,7 +269,7 @@ tap.test('handle creation errors', function (t) {
     max: 1
   }
 
-  const pool = new Pool(resourceFactory, config)
+  const pool = createPool(resourceFactory, config)
 
   // FIXME: this section no longer proves anything as factory
   // errors no longer bubble up through the acquire call
@@ -318,7 +318,7 @@ tap.test('handle creation errors for delayed creates', function (t) {
     max: 1
   }
 
-  const pool = new Pool(resourceFactory, config)
+  const pool = createPool(resourceFactory, config)
 
   let errorCount = 0
   pool.on('factoryCreateError', function (err) {
@@ -350,7 +350,7 @@ tap.test('getPoolSize', function (t) {
     max: 2
   }
 
-  const pool = new Pool(resourceFactory, config)
+  const pool = createPool(resourceFactory, config)
 
   const borrowedResources = []
 
@@ -399,7 +399,7 @@ tap.test('availableObjectsCount', function (t) {
     max: 2
   }
 
-  const pool = new Pool(resourceFactory, config)
+  const pool = createPool(resourceFactory, config)
 
   const borrowedResources = []
 
@@ -461,7 +461,7 @@ tap.test('availableObjectsCount', function (t) {
 //     max: 2
 //   }
 
-//   const pool = new Pool(factory, config)
+//   const pool = createPool(factory, config)
 
 //   pool.acquire().then(function (obj) {
 //     pool.destroy(obj)
@@ -496,7 +496,7 @@ tap.test('availableObjectsCount', function (t) {
 //     testOnBorrow: true
 //   }
 
-//   const pool = new Pool(factory, config)
+//   const pool = createPool(factory, config)
 
 //   pool.acquire()
 //   .then(function (obj) {
@@ -539,7 +539,7 @@ tap.test('do schedule again if error occured when creating new Objects async', f
     max: 1
   }
 
-  const pool = new Pool(factory, config)
+  const pool = createPool(factory, config)
   // pool.acquire(function () {})
   pool.acquire().then(function (obj) {
     t.equal(pool.available, 0)
@@ -550,7 +550,7 @@ tap.test('do schedule again if error occured when creating new Objects async', f
 })
 
 tap.test('returns only valid object to the pool', function (t) {
-  const pool = new Pool({
+  const pool = createPool({
     create: function () {
       return Promise.resolve({ id: 'validId' })
     },
@@ -577,7 +577,7 @@ tap.test('returns only valid object to the pool', function (t) {
 })
 
 tap.test('validate acquires object from the pool', function (t) {
-  const pool = new Pool({
+  const pool = createPool({
     create: function () {
       return Promise.resolve({ id: 'validId' })
     },
