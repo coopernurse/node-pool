@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.4.6] - November 12 2016
+- linting fixes and pkg improvements
+
 ## [2.4.5] - November 12 2016
 - previously broken refreshIdle functionality is now unbroken (@sandfox)
 
@@ -115,7 +118,8 @@
 ## [1.0.2] - Nov 9 2010
 - First NPM release
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.4.5...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.4.6...HEAD
+[2.4.6]: https://github.com/coopernurse/node-pool/compare/v2.4.5...v2.4.6
 [2.4.5]: https://github.com/coopernurse/node-pool/compare/v2.4.4...v2.4.5
 [2.4.4]: https://github.com/coopernurse/node-pool/compare/v2.4.3...v2.4.4
 [2.4.3]: https://github.com/coopernurse/node-pool/compare/v2.4.2...v2.4.3
