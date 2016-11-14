@@ -75,7 +75,7 @@ const resourcePromise = myPool.acquire()
 resourcePromise.then(function(client) {
 	client.query("select * from foo", [], function() {
 	    // return object back to pool
-	    pool.release(client);
+	    myPool.release(client);
 	});
 })
 .catch(function(err){
@@ -88,8 +88,8 @@ resourcePromise.then(function(client) {
  */
 // Only call this once in your application -- at the point you want
 // to shutdown and stop using this pool.
-pool.drain(function() {
-    pool.clear();
+myPool.drain(function() {
+    myPool.clear();
 });
 
 ```
