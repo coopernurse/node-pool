@@ -12,7 +12,7 @@
 
 Version 3 contains many breaking changes. The differences are mostly minor and I hope easy to accomodate. There is a very rough and basic [upgrade guide](https://gist.github.com/sandfox/5ca20648b60a0cb959638c0cd6fcd02d) I've written, improvements and other attempts most welcome.
 
-If you are after the older version 2 of this library you should look at the [current github branch](https://github.com/coopernurse/node-pool/tree/v2.4) for it.
+If you are after the older version 2 of this library you should look at the [current github branch](https://github.com/coopernurse/node-pool/tree/v2.5) for it.
 
 
 ## History
