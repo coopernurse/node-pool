@@ -137,8 +137,6 @@ An optional object/dictionary with the any of the following properties:
 - `min`: minimum number of resources to keep in pool at any given time. If this is set >= max, the pool will silently set the min to equal `max`. (default=0)
 - `maxWaitingClients`: maximum number of queued requests allowed, additional `acquire` calls will be callback with an `err` in a future cycle of the event loop.
 - `testOnBorrow`: `boolean`: should the pool validate resources before giving them to clients. Requires that either `factory.validate` or `factory.validateAsync` to be specified
-- `idleTimeoutMillis`: max milliseconds a resource can stay unused in the pool without being borrowed before it should be destroyed (default 30000)
-- `reapIntervalMillis`: interval to check for idle resources (default 1000). (remove me!)
 - `acquireTimeoutMillis`: max milliseconds an `acquire` call will wait for a resource before timing out. (default no limit), if supplied should non-zero positive integer.
 - `fifo` : if true the oldest resources will be first to be allocated. If false the most recently released resources will be the first to be allocated. This in effect turns the pool's behaviour from a queue into a stack. `boolean`, (default true)
 - `priorityRange`: int between 1 and x - if set, borrowers can specify their relative priority in the queue if no resources are available.
@@ -189,6 +187,10 @@ and returns a `Promise`. This promise will resolve once the `resource` is accept
 
 ### pool.destroy
 
+```js
+pool.destroy(resource)
+```
+
 This function is for when you want to return a resource to the pool but want it destroyed rather than being made available to other resources. E.g you may know the resource has timed out or crashed.
 
 `destroy` takes one required argument:
@@ -198,6 +200,16 @@ This function is for when you want to return a resource to the pool but want it 
 and returns a `Promise`. This promise will resolve once the `resource` is accepted by the pool, or reject if the pool is unable to accept the `resource` for any reason (e.g `resource` is not a resource or object that came from the pool). If you do not care the outcome it is safe to ignore this promise.
 
 ### pool.on
+
+```js
+pool.on('factoryCreateError', function(err){
+  //log stuff maybe
+})
+
+pool.on('factoryDestroyError', function(err){
+  //log stuff maybe
+})
+```
 
 The pool is an event emitter. Below are the events it emits and any args for those events
 
@@ -213,24 +225,6 @@ The pool has an evictor (off by default) which will inspect idle items in the po
 
 By default the evictor does not run, to enable it you must set the `evictionRunIntervalMillis` option to a non-zero value. Once enable the evictor will check at most `numTestsPerEvictionRun` each time, this is to stop it blocking your application if you have lots of resources in the pool.
 
-## Draining
-
-If you are shutting down a long-lived process, you may notice
-that node fails to exit for 30 seconds or so.  This is a side
-effect of the idleTimeoutMillis behavior -- the pool has a
-setTimeout() call registered that is in the event loop queue, so
-node won't terminate until all resources have timed out, and the pool
-stops trying to manage them.
-
-This behavior will be more problematic when you set factory.min > 0,
-as the pool will never become empty, and the setTimeout calls will
-never end.
-
-In these cases, use the pool.drain() function.  This sets the pool
-into a "draining" state which will gracefully wait until all
-idle resources have timed out.  For example, you can call:
-
-If you do this, your node process will exit gracefully.
 
 ## Priority Queueing
 
@@ -242,13 +236,13 @@ Specifying a `priority` to `acquire` that is outside the `priorityRange` set at 
 ```js
 // create pool with priorityRange of 3
 // borrowers can specify a priority 0 to 2
-var opts = {
+const opts = {
   priorityRange : 3
 }
-var pool = genericPool.createPool(someFactory,opts);
+const pool = genericPool.createPool(someFactory,opts);
 
 // acquire connection - no priority specified - will go onto lowest priority queue
-pool.acquire().thenfunction(client) {
+pool.acquire().then(function(client) {
     pool.release(client);
 });
 
