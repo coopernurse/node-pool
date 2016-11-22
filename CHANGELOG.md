@@ -1,5 +1,13 @@
 # Change Log
 
+
+## [3.1.2] - November 22 2016
+- Readme tidy up
+- Add missing changelog entry
+
+## [3.1.1] - November 18 2016
+- Add Readme link for legacy branch
+
 ## [3.1.0] - November 6 2016
 - Inject dependencies into Pool to allow easier user extension
 
@@ -126,7 +134,9 @@
 - First NPM release
 
 =======
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.0...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.2...HEAD
+[3.1.2]: https://github.com/coopernurse/node-pool/compare/v3.1.1...v3.1.2
+[3.1.1]: https://github.com/coopernurse/node-pool/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/coopernurse/node-pool/compare/v3.0.1...v3.1.0
 [3.0.1]: https://github.com/coopernurse/node-pool/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/coopernurse/node-pool/compare/v2.4.3...v3.0.0
