@@ -40,13 +40,13 @@ var DbDriver = require('some-db-driver');
  */
 const factory = {
     create: function(){
-		 return new Promise(function(resolve, reject{
+		 return new Promise(function(resolve, reject){
 	        var client = DbDriver.createClient()
 	        client.on('connected', function(){
 	            resolve(client)
 	        })
 	    })
-    }
+    },
     destroy: function(client){
         return new Promise(function(resolve){
           client.on('end', function(){
