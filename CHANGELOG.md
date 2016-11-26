@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.1.3] - November 26 2016
+- internal refactoring and comment improvements
+- fix #159 so draining and closing don't leave resources behind
+- stop the evictor from keeping the event loop open after draining
 
 ## [3.1.2] - November 22 2016
 - Readme tidy up
@@ -135,6 +139,7 @@
 
 =======
 [unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.2...HEAD
+[3.1.3]: https://github.com/coopernurse/node-pool/compare/v3.1.2...v3.1.3
 [3.1.2]: https://github.com/coopernurse/node-pool/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/coopernurse/node-pool/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/coopernurse/node-pool/compare/v3.0.1...v3.1.0
