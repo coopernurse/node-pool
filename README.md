@@ -88,7 +88,7 @@ resourcePromise.then(function(client) {
  */
 // Only call this once in your application -- at the point you want
 // to shutdown and stop using this pool.
-myPool.drain(function() {
+myPool.drain().then(function() {
     myPool.clear();
 });
 
