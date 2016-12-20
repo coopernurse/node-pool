@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.1.5] - December 20 2016
+- fix drain code to correctly wait on borrowed resources (@drew-r)
+- fix drain example in readme (@watson)
+
 ## [3.1.4] - November 28 2016
 - fix faulty Promise detection where user supplied promise lib would be ignored
 
@@ -141,7 +145,8 @@
 - First NPM release
 
 =======
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.4...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.5...HEAD
+[3.1.5]: https://github.com/coopernurse/node-pool/compare/v3.1.4...v3.1.5
 [3.1.4]: https://github.com/coopernurse/node-pool/compare/v3.1.3...v3.1.4
 [3.1.3]: https://github.com/coopernurse/node-pool/compare/v3.1.2...v3.1.3
 [3.1.2]: https://github.com/coopernurse/node-pool/compare/v3.1.1...v3.1.2
