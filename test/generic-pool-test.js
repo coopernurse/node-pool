@@ -598,3 +598,69 @@ tap.test('validate acquires object from the pool', function (t) {
   })
   .catch(t.threw)
 })
+
+tap.test('release to pool should work', function(t) {
+  const pool = createPool({
+    create: function () {
+      return Promise.resolve({ id: 'validId' })
+    },
+    validate: function (resource) {
+      return Promise.resolve(true)
+    },
+    destroy: function (client) {},
+    max: 1
+  })
+
+  pool.acquire()
+  .then(function (obj) {
+    t.equal(pool.available, 0)
+    t.equal(pool.borrowed, 1)
+    t.equal(pool.pending, 1)
+    pool.release(obj)
+  })
+  .catch(t.threw)
+
+  pool.acquire()
+  .then(function (obj) {
+    t.equal(pool.available, 0)
+    t.equal(pool.borrowed, 1)
+    t.equal(pool.pending, 0)
+    pool.release(obj)
+    utils.stopPool(pool)
+    t.end()
+  })
+  .catch(t.threw)
+})
+
+tap.test('destroy should redispense', function(t) {
+  const pool = createPool({
+    create: function () {
+      return Promise.resolve({ id: 'validId' })
+    },
+    validate: function (resource) {
+      return Promise.resolve(true)
+    },
+    destroy: function (client) {},
+    max: 1
+  })
+
+  pool.acquire()
+  .then(function (obj) {
+    t.equal(pool.available, 0)
+    t.equal(pool.borrowed, 1)
+    t.equal(pool.pending, 1)
+    pool.destroy(obj)
+  })
+  .catch(t.threw)
+
+  pool.acquire()
+  .then(function (obj) {
+    t.equal(pool.available, 0)
+    t.equal(pool.borrowed, 1)
+    t.equal(pool.pending, 0)
+    pool.release(obj)
+    utils.stopPool(pool)
+    t.end()
+  })
+  .catch(t.threw)
+})
