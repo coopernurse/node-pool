@@ -599,7 +599,7 @@ tap.test('validate acquires object from the pool', function (t) {
   .catch(t.threw)
 })
 
-tap.test('release to pool should work', function(t) {
+tap.test('release to pool should work', function (t) {
   const pool = createPool({
     create: function () {
       return Promise.resolve({ id: 'validId' })
@@ -632,7 +632,7 @@ tap.test('release to pool should work', function(t) {
   .catch(t.threw)
 })
 
-tap.test('destroy should redispense', function(t) {
+tap.test('destroy should redispense', function (t) {
   const pool = createPool({
     create: function () {
       return Promise.resolve({ id: 'validId' })
