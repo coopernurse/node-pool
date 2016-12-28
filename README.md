@@ -301,12 +301,18 @@ The following properties will let you get information about the pool:
 
 ```js
 
+// How many many more resources can the pool manage/create
+pool.spareResourceCapacity
+
 // returns number of resources in the pool regardless of
 // whether they are free or in use
 pool.size
 
 // returns number of unused resources in the pool
 pool.available
+
+// number of resources that are currently acquired by userland code
+pool.borrowed
 
 // returns number of callers waiting to acquire a resource
 pool.pending

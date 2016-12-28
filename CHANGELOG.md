@@ -1,5 +1,10 @@
 # Change Log
 
+## [3.1.6] - December 28 2016
+- fix #173 where pool would not attempt to dispense reources upon `pool.destroy`
+- fix some out of date readme section
+- fix test warning for unhandled rejection on dispense
+
 ## [3.1.5] - December 20 2016
 - fix drain code to correctly wait on borrowed resources (@drew-r)
 - fix drain example in readme (@watson)
@@ -145,7 +150,8 @@
 - First NPM release
 
 =======
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.5...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.6...HEAD
+[3.1.6]: https://github.com/coopernurse/node-pool/compare/v3.1.5...v3.1.6
 [3.1.5]: https://github.com/coopernurse/node-pool/compare/v3.1.4...v3.1.5
 [3.1.4]: https://github.com/coopernurse/node-pool/compare/v3.1.3...v3.1.4
 [3.1.3]: https://github.com/coopernurse/node-pool/compare/v3.1.2...v3.1.3
