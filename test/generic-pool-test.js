@@ -563,16 +563,19 @@ tap.test('returns only valid object to the pool', function (t) {
     t.equal(pool.borrowed, 1)
 
       // Invalid release
-    pool.release({})
-    t.equal(pool.available, 0)
-    t.equal(pool.borrowed, 1)
+    pool.release({}).catch(function (err) {
+      t.match(err.message, /Resource not currently part of this pool/)
+    }).then(function () {
+      t.equal(pool.available, 0)
+      t.equal(pool.borrowed, 1)
 
-      // Valid release
-    pool.release(obj)
-    t.equal(pool.available, 1)
-    t.equal(pool.borrowed, 0)
-    utils.stopPool(pool)
-    t.end()
+        // Valid release
+      pool.release(obj).catch(t.error)
+      t.equal(pool.available, 1)
+      t.equal(pool.borrowed, 0)
+      utils.stopPool(pool)
+      t.end()
+    })
   }).catch(t.threw)
 })
 
