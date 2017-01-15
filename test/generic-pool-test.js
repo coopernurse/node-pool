@@ -245,7 +245,6 @@ tap.test('handle creation errors', function (t) {
     // ensure that creation errors do not populate the pool.
   for (var i = 0; i < 5; i++) {
     pool.acquire(function (err, client) {
-      console.log(err)
       t.ok(err instanceof Error)
       t.ok(client === null)
     })
