@@ -818,3 +818,84 @@ tap.test('domain context is preserved on acquire callback', function (t) {
 
     // third and on will fail without domain binding
 })
+
+tap.test('async destroy', function (t) {
+  var created = 0
+  var destroyed = 0
+  var count = 5
+  var acquired = 0
+
+  var pool = Pool({
+    name: 'test4',
+    create: function (callback) { callback(null, {id: ++created}) },
+    destroy: function (client, cb) {
+      setTimeout(function () {
+        destroyed += 1
+        cb()
+      }, 250)
+    },
+    max: 2,
+    idletimeoutMillis: 300000
+  })
+
+  for (var i = 0; i < count; i++) {
+    pool.acquire(function (err, client) {
+      t.error(err)
+      acquired += 1
+      t.equal(typeof client.id, 'number')
+      setTimeout(function () { pool.release(client) }, 250)
+    })
+  }
+  t.notEqual(count, acquired)
+  pool.drain(function () {
+    var toDestroy = pool.availableObjectsCount()
+
+    t.equal(count, acquired)
+      // short circuit the absurdly long timeouts above.
+    pool.destroyAllNow(function () {
+      t.equal(toDestroy, destroyed)
+      t.end()
+    })
+    t.equal(destroyed, 0)
+  })
+})
+
+tap.test('async destroy - no breaking change', function (t) {
+  var created = 0
+  var destroyed = 0
+  var max = 2
+  var count = 5
+  var acquired = 0
+
+  var pool = Pool({
+    name: 'test4',
+    create: function (callback) { callback(null, {id: ++created}) },
+    destroy: function (client) {
+      destroyed += 1
+    },
+    max: max,
+    idletimeoutMillis: 300000
+  })
+
+  for (var i = 0; i < count; i++) {
+    pool.acquire(function (err, client) {
+      t.error(err)
+      acquired += 1
+      t.equal(typeof client.id, 'number')
+      setTimeout(function () { pool.release(client) }, 250)
+    })
+  }
+
+  t.notEqual(count, acquired)
+
+  pool.drain(function () {
+    var toDestroy = pool.availableObjectsCount()
+    t.equal(count, acquired)
+      // short circuit the absurdly long timeouts above.
+    pool.destroyAllNow(function () {
+      t.equal(toDestroy, destroyed)
+      t.end()
+    })
+    t.equal(toDestroy, destroyed)
+  })
+})
