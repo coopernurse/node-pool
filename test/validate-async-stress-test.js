@@ -1,4 +1,3 @@
-var assert = require('assert')
 var tap = require('tap')
 
 var poolModule = require('..')
@@ -37,12 +36,12 @@ tap.test('validateAsync multiple calls', function (t) {
       // console.log("Request " + num + " - available " + pool.availableObjectsCount())
     pool.acquire(function (err, obj) {
         // check we haven't already borrowed this before:
-      assert.equal(borrowedObjects.indexOf(obj), -1, 'acquire returned an object is currently acquired')
+      t.equal(borrowedObjects.indexOf(obj), -1, 'acquire returned an object is currently acquired')
       borrowedObjects.push(obj)
 
         // console.log( "Acquire " + num + " - object id:", obj.id )
-      assert.ifError(err)
-      assert.ok(create_count <= 3)
+      t.error(err)
+      t.ok(create_count <= 3)
 
       setTimeout(function () {
         var pos = borrowedObjects.indexOf(obj)
