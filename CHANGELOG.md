@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.5.2] - January 20 2017
+- linting...
+
 ## [2.5.1] - January 20 2017
 - fix validateAsync logic to prevent duplicate object issuance under pressure (@felipou)
 
@@ -125,7 +128,8 @@
 ## [1.0.2] - Nov 9 2010
 - First NPM release
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.5.1...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.5.2...HEAD
+[2.5.2]: https://github.com/coopernurse/node-pool/compare/v2.5.1...v2.5.2
 [2.5.1]: https://github.com/coopernurse/node-pool/compare/v2.5.0...v2.5.1
 [2.5.0]: https://github.com/coopernurse/node-pool/compare/v2.4.6...v2.5.0
 [2.4.6]: https://github.com/coopernurse/node-pool/compare/v2.4.5...v2.4.6
