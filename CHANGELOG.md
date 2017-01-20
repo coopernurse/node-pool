@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.5.3] - January 20 2017
+- fixes #141 - destroyAllNow can now fire a callback when all resources are destroyed (@llafuente)
+
 ## [2.5.2] - January 20 2017
 - linting...
 
@@ -128,7 +131,8 @@
 ## [1.0.2] - Nov 9 2010
 - First NPM release
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.5.2...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.5.3...HEAD
+[2.5.3]: https://github.com/coopernurse/node-pool/compare/v2.5.2...v2.5.3
 [2.5.2]: https://github.com/coopernurse/node-pool/compare/v2.5.1...v2.5.2
 [2.5.1]: https://github.com/coopernurse/node-pool/compare/v2.5.0...v2.5.1
 [2.5.0]: https://github.com/coopernurse/node-pool/compare/v2.4.6...v2.5.0
