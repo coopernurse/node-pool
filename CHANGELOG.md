@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.5.4] - January 21 2017
+- Fix condition where destroyAllNow would never fire it's callback (@kevinwilson541)
+
 ## [2.5.3] - January 20 2017
 - fixes #141 - destroyAllNow can now fire a callback when all resources are destroyed (@llafuente)
 
@@ -131,7 +134,8 @@
 ## [1.0.2] - Nov 9 2010
 - First NPM release
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.5.3...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v2.5.4...HEAD
+[2.5.4]: https://github.com/coopernurse/node-pool/compare/v2.5.3...v2.5.4
 [2.5.3]: https://github.com/coopernurse/node-pool/compare/v2.5.2...v2.5.3
 [2.5.2]: https://github.com/coopernurse/node-pool/compare/v2.5.1...v2.5.2
 [2.5.1]: https://github.com/coopernurse/node-pool/compare/v2.5.0...v2.5.1
