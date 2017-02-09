@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.1.7] - Febuary 9 2017
+- fix warning when using bluebird promise impl (@benny-medflyt)
+
 ## [3.1.6] - December 28 2016
 - fix #173 where pool would not attempt to dispense reources upon `pool.destroy`
 - fix some out of date readme section
@@ -150,7 +153,8 @@
 - First NPM release
 
 =======
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.6...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.7...HEAD
+[3.1.7]: https://github.com/coopernurse/node-pool/compare/v3.1.6...v3.1.7
 [3.1.6]: https://github.com/coopernurse/node-pool/compare/v3.1.5...v3.1.6
 [3.1.5]: https://github.com/coopernurse/node-pool/compare/v3.1.4...v3.1.5
 [3.1.4]: https://github.com/coopernurse/node-pool/compare/v3.1.3...v3.1.4
