@@ -59,11 +59,14 @@
     "throttle"
   ],
   "main": "index.js",
+  "browser": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "http://github.com/coopernurse/node-pool.git"
   },
   "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-preset-env": "^1.1.8",
     "eslint": "^3.4.0",
     "eslint-config-standard": "^6.0.0",
     "eslint-plugin-promise": "^3.3.0",
@@ -76,7 +79,9 @@
   "scripts": {
     "lint": "eslint lib test",
     "lint-fix": "eslint --fix lib test",
-    "test": "tap test/*-test.js "
+    "test": "tap test/*-test.js ",
+    "build": "babel index.js -d dist; babel lib -d dist/lib",
+    "prepublish": "npm run build"
   },
   "license": "MIT"
 }
