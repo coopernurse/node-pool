@@ -137,6 +137,7 @@ An optional object/dictionary with the any of the following properties:
 - `numTestsPerRun`: Number of resources to check each eviction run.  Default: 3.
 - `softIdleTimeoutMillis`: amount of time an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any), with the extra condition that at least "min idle" object instances remain in the pool. Default -1 (nothing can get evicted)
 - `idleTimeoutMillis`: the minimum amount of time that an object may sit idle in the pool before it is eligible for eviction due to idle time. Supercedes `softIdleTimeoutMillis` Default: 30000
+- `maxTries`: maximum number of consequent failures before pool stops trying to create resource and rejects resource request. Default: 0 (tries forever until resource is created).
 - `Promise`: Promise lib, a Promises/A+ implementation that the pool should use. Defaults to whatever `global.Promise` is (usually native promises).
 
 ### pool.acquire
