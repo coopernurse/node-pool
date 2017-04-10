@@ -119,7 +119,7 @@ const pool = genericPool.createPool(factory, opts)
 
 Can be any object/instance but must have the following properties:
 
-- `create` : a function that the pool will call when it wants a new resource. It should return a Promise that either resolves to a `resource` or rejects to an `Error` if it is unable to create a resource for whatever.
+- `create` : a function that the pool will call when it wants a new resource. It should return a Promise that either resolves to a `resource` or rejects to an `Error` if it is unable to create a resource for whatever reason.
 - `destroy`: a function that the pool will call when it wants to destroy a resource. It should accept one argument `resource` where `resource` is whatever `factory.create` made. The `destroy` function should return a `Promise` that resolves once it has destroyed the resource.
 
 
