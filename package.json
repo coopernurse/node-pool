@@ -59,6 +59,7 @@
     "throttle"
   ],
   "main": "index.js",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "http://github.com/coopernurse/node-pool.git"
@@ -78,5 +79,8 @@
     "lint-fix": "eslint --fix lib test",
     "test": "tap test/*-test.js "
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^8.0.19"
+  }
 }
