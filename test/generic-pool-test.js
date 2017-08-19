@@ -667,3 +667,29 @@ tap.test('destroy should redispense', function (t) {
   })
   .catch(t.threw)
 })
+
+tap.test('evictor start with acquire when autostart is false', function (t) {
+  const pool = createPool({
+    create: function () {
+      return Promise.resolve({ id: 'validId' })
+    },
+    validate: function (resource) {
+      return Promise.resolve(true)
+    },
+    destroy: function (client) {}
+  }, {
+    evictionRunIntervalMillis: 10000,
+    autostart: false
+  })
+
+  t.equal(pool._scheduledEviction, null)
+
+  pool.acquire()
+  .then(function (obj) {
+    t.notEqual(pool._scheduledEviction, null)
+    pool.release(obj)
+    utils.stopPool(pool)
+    t.end()
+  })
+  .catch(t.threw)
+})
