@@ -1,5 +1,10 @@
 # Change Log
 
+## [3.1.8] - September 14 2017
+- fix undefined and annoying `autostart=false` behaviour (@sushantdhiman)
+- document `autostart` behaviour (@sandfox)
+- fix typos (@wvanderdeijl @AlexTes)
+
 ## [3.1.7] - Febuary 9 2017
 - fix warning when using bluebird promise impl (@benny-medflyt)
 
@@ -153,7 +158,8 @@
 - First NPM release
 
 =======
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.7...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.8...HEAD
+[3.1.8]: https://github.com/coopernurse/node-pool/compare/v3.1.7...v3.1.8
 [3.1.7]: https://github.com/coopernurse/node-pool/compare/v3.1.6...v3.1.7
 [3.1.6]: https://github.com/coopernurse/node-pool/compare/v3.1.5...v3.1.6
 [3.1.5]: https://github.com/coopernurse/node-pool/compare/v3.1.4...v3.1.5
