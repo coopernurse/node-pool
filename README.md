@@ -185,6 +185,20 @@ This function is for when you want to return a resource to the pool.
 
 and returns a `Promise`. This promise will resolve once the `resource` is accepted by the pool, or reject if the pool is unable to accept the `resource` for any reason (e.g `resource` is not a resource or object that came from the pool). If you do not care the outcome it is safe to ignore this promise.
 
+### pool.hasResource
+
+```js
+pool.hasResource(resource)
+```
+
+This function is for when you already have a resource but dob't know is it present in the pool.
+
+`hasResource` takes one required argument:
+
+- `resource`: any object which you need to test
+
+and returns true if resource if part of this pool or false otherwise.  
+
 ### pool.destroy
 
 ```js
