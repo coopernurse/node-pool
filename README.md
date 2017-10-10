@@ -197,7 +197,7 @@ This function is for when you already have a resource but dob't know is it prese
 
 - `resource`: any object which you need to test
 
-and returns true if resource if part of this pool or false otherwise.  
+and returns true (primitive, not Promise) if resource if part of this pool or false otherwise.  
 
 ### pool.destroy
 

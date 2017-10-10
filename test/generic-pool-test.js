@@ -649,13 +649,10 @@ tap.test('hasResource should return true for borrowed resource', function (t) {
 
   pool.acquire()
     .then(function (obj) {
-      return pool.hasResource(obj)
-        .then(function (hasResource) {
-          t.equal(hasResource, true)
+          t.equal(pool.hasResource(obj), true)
           pool.release(obj)
           utils.stopPool(pool)
           t.end()
-      })
     })
   .catch(t.threw)
 })
@@ -678,10 +675,7 @@ tap.test('hasResource should return false for released resource', function (t) {
           return obj
       })
       .then(function (obj) {
-          return pool.hasResource(obj)
-      })
-      .then(function (hasResource) {
-          t.equal(hasResource, false)
+          t.equal(pool.hasResource(obj), false)
           utils.stopPool(pool)
           t.end()
       })
