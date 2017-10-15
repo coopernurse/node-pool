@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.2.0] - October 15 2017
+- add `isBorrowedResource` method to check if objects are currently on loan from pool (@C-h-e-r-r-y)
+
 ## [3.1.8] - September 14 2017
 - fix undefined and annoying `autostart=false` behaviour (@sushantdhiman)
 - document `autostart` behaviour (@sandfox)
@@ -158,7 +161,8 @@
 - First NPM release
 
 =======
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.1.8...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/coopernurse/node-pool/compare/v3.1.8...v3.2.0
 [3.1.8]: https://github.com/coopernurse/node-pool/compare/v3.1.7...v3.1.8
 [3.1.7]: https://github.com/coopernurse/node-pool/compare/v3.1.6...v3.1.7
 [3.1.6]: https://github.com/coopernurse/node-pool/compare/v3.1.5...v3.1.6
