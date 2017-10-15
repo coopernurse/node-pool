@@ -1,6 +1,8 @@
 module.exports = {
-    "extends": "standard",
-    "plugins": [
-        "standard"
-    ]
+  parserOptions: { ecmaVersion: 6 },
+  plugins: ["prettier"],
+  rules: {
+    "prettier/prettier": "error"
+  },
+  extends: ["prettier"]
 };
