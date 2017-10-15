@@ -70,6 +70,9 @@
     "eslint-plugin-standard": "^2.0.0",
     "tap": "^8.0.0"
   },
+  "dependencies": {
+    "promise-retry": "^1.1.1"
+  },
   "engines": {
     "node": ">= 4"
   },
