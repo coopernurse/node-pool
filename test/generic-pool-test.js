@@ -635,7 +635,7 @@ tap.test('release to pool should work', function (t) {
   .catch(t.threw)
 })
 
-tap.test('hasResource should return true for borrowed resource', function (t) {
+tap.test('isBorrowedResource should return true for borrowed resource', function (t) {
   const pool = createPool({
     create: function () {
       return Promise.resolve({ id: 'validId' })
@@ -649,7 +649,7 @@ tap.test('hasResource should return true for borrowed resource', function (t) {
 
   pool.acquire()
     .then(function (obj) {
-      t.equal(pool.hasResource(obj), true)
+      t.equal(pool.isBorrowedResource(obj), true)
       pool.release(obj)
       utils.stopPool(pool)
       t.end()
@@ -657,7 +657,7 @@ tap.test('hasResource should return true for borrowed resource', function (t) {
   .catch(t.threw)
 })
 
-tap.test('hasResource should return false for released resource', function (t) {
+tap.test('isBorrowedResource should return false for released resource', function (t) {
   const pool = createPool({
     create: function () {
       return Promise.resolve({ id: 'validId' })
@@ -675,7 +675,7 @@ tap.test('hasResource should return false for released resource', function (t) {
       return obj
     })
     .then(function (obj) {
-      t.equal(pool.hasResource(obj), false)
+      t.equal(pool.isBorrowedResource(obj), false)
       utils.stopPool(pool)
       t.end()
     })
