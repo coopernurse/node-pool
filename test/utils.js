@@ -2,27 +2,27 @@
  * Generic class for handling creation of resources
  * for testing
  */
-var ResourceFactory = function ResourceFactory () {
-  this.created = 0
-  this.destroyed = 0
-  this.bin = []
-}
+var ResourceFactory = function ResourceFactory() {
+  this.created = 0;
+  this.destroyed = 0;
+  this.bin = [];
+};
 
-ResourceFactory.prototype.create = function () {
-  var id = this.created++
+ResourceFactory.prototype.create = function() {
+  var id = this.created++;
   var resource = {
     id: id
-  }
-  return Promise.resolve(resource)
-}
+  };
+  return Promise.resolve(resource);
+};
 
-ResourceFactory.prototype.destroy = function (resource) {
-  this.destroyed++
-  this.bin.push(resource)
-  return Promise.resolve()
-}
+ResourceFactory.prototype.destroy = function(resource) {
+  this.destroyed++;
+  this.bin.push(resource);
+  return Promise.resolve();
+};
 
-exports.ResourceFactory = ResourceFactory
+exports.ResourceFactory = ResourceFactory;
 
 /**
  * drains and terminates the pool
@@ -30,9 +30,8 @@ exports.ResourceFactory = ResourceFactory
  * @param  {[type]} pool [description]
  * @return {[type]}      [description]
  */
-exports.stopPool = function (pool) {
-  return pool.drain()
-  .then(function () {
-    return pool.clear()
-  })
-}
+exports.stopPool = function(pool) {
+  return pool.drain().then(function() {
+    return pool.clear();
+  });
+};

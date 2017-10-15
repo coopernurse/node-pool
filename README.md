@@ -356,7 +356,7 @@ The tests are run/written using Tap. Most are ports from the old espresso tests 
 
 ## Linting
 
-We use eslint and the `standard` ruleset.
+We use eslint combined with prettier
 
 
 ## License
