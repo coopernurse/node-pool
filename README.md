@@ -185,19 +185,19 @@ This function is for when you want to return a resource to the pool.
 
 and returns a `Promise`. This promise will resolve once the `resource` is accepted by the pool, or reject if the pool is unable to accept the `resource` for any reason (e.g `resource` is not a resource or object that came from the pool). If you do not care the outcome it is safe to ignore this promise.
 
-### pool.hasResource
+### pool.isBorrowedResource
 
 ```js
-pool.hasResource(resource)
+pool.isBorrowedResource(resource)
 ```
 
-This function is for when you already have a resource but dob't know is it present in the pool.
+This function is for when you need to check if a resource has been acquired from the pool and not yet released/destroyed.
 
-`hasResource` takes one required argument:
+`isBorrowedResource` takes one required argument:
 
 - `resource`: any object which you need to test
 
-and returns true (primitive, not Promise) if resource if part of this pool or false otherwise.  
+and returns true (primitive, not Promise) if resource is currently borrowed from the pool, false otherwise.  
 
 ### pool.destroy
 
