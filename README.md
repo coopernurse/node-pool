@@ -10,7 +10,7 @@
 
 **V3 upgrade warning**
 
-Version 3 contains many breaking changes. The differences are mostly minor and I hope easy to accomodate. There is a very rough and basic [upgrade guide](https://gist.github.com/sandfox/5ca20648b60a0cb959638c0cd6fcd02d) I've written, improvements and other attempts most welcome.
+Version 3 contains many breaking changes. The differences are mostly minor and I hope easy to accommodate. There is a very rough and basic [upgrade guide](https://gist.github.com/sandfox/5ca20648b60a0cb959638c0cd6fcd02d) I've written, improvements and other attempts most welcome.
 
 If you are after the older version 2 of this library you should look at the [current github branch](https://github.com/coopernurse/node-pool/tree/v2.5) for it.
 
@@ -32,37 +32,27 @@ $ npm install generic-pool [--save]
 Here is an example using a fictional generic database driver that doesn't implement any pooling whatsoever itself.
 
 ```js
-var genericPool = require('generic-pool');
-var DbDriver = require('some-db-driver');
+const genericPool = require("generic-pool");
+const DbDriver = require("some-db-driver");
 
 /**
  * Step 1 - Create pool using a factory object
  */
 const factory = {
-    create: function(){
-		 return new Promise(function(resolve, reject){
-	        var client = DbDriver.createClient()
-	        client.on('connected', function(){
-	            resolve(client)
-	        })
-	    })
-    },
-    destroy: function(client){
-        return new Promise(function(resolve){
-          client.on('end', function(){
-            resolve()
-          })
-          client.disconnect()
-        })
-    }
-}
+  create: function() {
+    return DbDriver.createClient();
+  },
+  destroy: function(client) {
+    client.disconnect();
+  }
+};
 
-var opts = {
-    max: 10, // maximum size of the pool
-    min: 2 // minimum size of the pool
-}
+const opts = {
+  max: 10, // maximum size of the pool
+  min: 2 // minimum size of the pool
+};
 
-var myPool = genericPool.createPool(factory, opts)
+const myPool = genericPool.createPool(factory, opts);
 
 /**
  * Step 2 - Use pool in your code to acquire/release resources
@@ -70,18 +60,19 @@ var myPool = genericPool.createPool(factory, opts)
 
 // acquire connection - Promise is resolved
 // once a resource becomes available
-const resourcePromise = myPool.acquire()
+const resourcePromise = myPool.acquire();
 
-resourcePromise.then(function(client) {
-	client.query("select * from foo", [], function() {
-	    // return object back to pool
-	    myPool.release(client);
-	});
-})
-.catch(function(err){
-   // handle error - this is generally a timeout or maxWaitingClients 
-   // error
-});
+resourcePromise
+  .then(function(client) {
+    client.query("select * from foo", [], function() {
+      // return object back to pool
+      myPool.release(client);
+    });
+  })
+  .catch(function(err) {
+    // handle error - this is generally a timeout or maxWaitingClients
+    // error
+  });
 
 /**
  * Step 3 - Drain pool during shutdown (optional)
@@ -89,7 +80,7 @@ resourcePromise.then(function(client) {
 // Only call this once in your application -- at the point you want
 // to shutdown and stop using this pool.
 myPool.drain().then(function() {
-    myPool.clear();
+  myPool.clear();
 });
 
 ```
@@ -125,13 +116,13 @@ Can be any object/instance but must have the following properties:
 
 optionally it can also have the following property:
 
-- `validate`: a function that the pool will call if it wants to validate a resource. It should accept one argument `resource` where `resource` is whatever `factory.create` made. Should return a `Promise` that resolves a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid. 
+- `validate`: a function that the pool will call if it wants to validate a resource. It should accept one argument `resource` where `resource` is whatever `factory.create` made. Should return a `Promise` that resolves a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid.
 
 _Note: The values returned from `create`, `destroy`, and `validate` are all wrapped in a `Promise.resolve` by the pool before being used internally._
 
 **opts**
 
-An optional object/dictionary with the any of the following properties: 
+An optional object/dictionary with the any of the following properties:
 
 - `max`: maximum number of resources to create at any given time. (default=1)
 - `min`: minimum number of resources to keep in pool at any given time. If this is set >= max, the pool will silently set the min to equal `max`. (default=0)
@@ -197,7 +188,7 @@ This function is for when you need to check if a resource has been acquired from
 
 - `resource`: any object which you need to test
 
-and returns true (primitive, not Promise) if resource is currently borrowed from the pool, false otherwise.  
+and returns true (primitive, not Promise) if resource is currently borrowed from the pool, false otherwise.
 
 ### pool.destroy
 
@@ -228,7 +219,7 @@ pool.on('factoryDestroyError', function(err){
 The pool is an event emitter. Below are the events it emits and any args for those events
 
 - `factoryCreateError` : emitted when a promise returned by `factory.create` is rejected. If this event has no listeners then the `error` will be silently discarded
-  - `error`: whatever `reason` the promise was rejected with. 
+  - `error`: whatever `reason` the promise was rejected with.
 
 - `factoryDestroyError` : emitted when a promise returned by `factory.destroy` is rejected. If this event has no listeners then the `error` will be silently discarded
   - `error`: whatever `reason` the promise was rejected with.
@@ -253,7 +244,7 @@ By default the evictor does not run, to enable it you must set the `evictionRunI
 The pool supports optional priority queueing.  This becomes relevant when no resources are available and the caller has to wait. `acquire()` accepts an optional priority int which
 specifies the caller's relative position in the queue. Each priority slot has it's own internal queue created for it. When a resource is available for borrowing, the first request in the highest priority queue will be given it.
 
-Specifying a `priority` to `acquire` that is outside the `priorityRange` set at `Pool` creation time will result in the `priority` being converted the lowest possible `priority` 
+Specifying a `priority` to `acquire` that is outside the `priorityRange` set at `Pool` creation time will result in the `priority` being converted the lowest possible `priority`
 
 ```js
 // create pool with priorityRange of 3
