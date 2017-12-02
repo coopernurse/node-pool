@@ -781,3 +781,21 @@ tap.test("evictor start with acquire when autostart is false", function(t) {
     })
     .catch(t.threw);
 });
+
+tap.test("use method", function(t) {
+  const pool = createPool({
+    create: function() {
+      return Promise.resolve({
+        id: "validId"
+      });
+    },
+    destroy: function(client) {}
+  })
+  const result = pool.use(function(resource) {
+    t.equal("validId", resource.id)
+    return Promise.resolve()
+  })
+  result.then(function() {
+    t.end
+  })
+})
