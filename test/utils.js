@@ -1,3 +1,5 @@
+const Pool = require("../lib/Pool");
+
 /**
  * Generic class for handling creation of resources
  * for testing
@@ -27,8 +29,8 @@ exports.ResourceFactory = ResourceFactory;
 /**
  * drains and terminates the pool
  *
- * @param  {[type]} pool [description]
- * @return {[type]}      [description]
+ * @param  {Pool} pool [description]
+ * @return {Promise}      [description]
  */
 exports.stopPool = function(pool) {
   return pool.drain().then(function() {
