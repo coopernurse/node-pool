@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.3.0] - December 27 2017
+- add `use` method to simplify basic pool usage (@san00)
+
 ## [3.2.0] - October 15 2017
 - add `isBorrowedResource` method to check if objects are currently on loan from pool (@C-h-e-r-r-y)
 
@@ -161,7 +164,8 @@
 - First NPM release
 
 =======
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.2.0...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.3.0...HEAD
+[3.3.0]: https://github.com/coopernurse/node-pool/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/coopernurse/node-pool/compare/v3.1.8...v3.2.0
 [3.1.8]: https://github.com/coopernurse/node-pool/compare/v3.1.7...v3.1.8
 [3.1.7]: https://github.com/coopernurse/node-pool/compare/v3.1.6...v3.1.7
