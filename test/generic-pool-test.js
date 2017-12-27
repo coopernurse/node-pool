@@ -568,13 +568,7 @@ tap.test(
 );
 
 tap.test("returns only valid object to the pool", function(t) {
-  const pool = createPool({
-    create: function() {
-      return Promise.resolve({ id: "validId" });
-    },
-    destroy: function(client) {},
-    max: 1
-  });
+  const pool = createPool(new ResourceFactory(), { max: 1 });
 
   pool
     .acquire()
@@ -604,16 +598,7 @@ tap.test("returns only valid object to the pool", function(t) {
 });
 
 tap.test("validate acquires object from the pool", function(t) {
-  const pool = createPool({
-    create: function() {
-      return Promise.resolve({ id: "validId" });
-    },
-    validate: function(resource) {
-      return Promise.resolve(true);
-    },
-    destroy: function(client) {},
-    max: 1
-  });
+  const pool = createPool(new ResourceFactory(), { max: 1 });
 
   pool
     .acquire()
@@ -628,16 +613,7 @@ tap.test("validate acquires object from the pool", function(t) {
 });
 
 tap.test("release to pool should work", function(t) {
-  const pool = createPool({
-    create: function() {
-      return Promise.resolve({ id: "validId" });
-    },
-    validate: function(resource) {
-      return Promise.resolve(true);
-    },
-    destroy: function(client) {},
-    max: 1
-  });
+  const pool = createPool(new ResourceFactory(), { max: 1 });
 
   pool
     .acquire()
@@ -665,16 +641,7 @@ tap.test("release to pool should work", function(t) {
 tap.test(
   "isBorrowedResource should return true for borrowed resource",
   function(t) {
-    const pool = createPool({
-      create: function() {
-        return Promise.resolve({ id: "validId" });
-      },
-      validate: function(resource) {
-        return Promise.resolve(true);
-      },
-      destroy: function(client) {},
-      max: 1
-    });
+    const pool = createPool(new ResourceFactory(), { max: 1 });
 
     pool
       .acquire()
@@ -691,16 +658,7 @@ tap.test(
 tap.test(
   "isBorrowedResource should return false for released resource",
   function(t) {
-    const pool = createPool({
-      create: function() {
-        return Promise.resolve({ id: "validId" });
-      },
-      validate: function(resource) {
-        return Promise.resolve(true);
-      },
-      destroy: function(client) {},
-      max: 1
-    });
+    const pool = createPool(new ResourceFactory(), { max: 1 });
 
     pool
       .acquire()
@@ -718,16 +676,7 @@ tap.test(
 );
 
 tap.test("destroy should redispense", function(t) {
-  const pool = createPool({
-    create: function() {
-      return Promise.resolve({ id: "validId" });
-    },
-    validate: function(resource) {
-      return Promise.resolve(true);
-    },
-    destroy: function(client) {},
-    max: 1
-  });
+  const pool = createPool(new ResourceFactory(), { max: 1 });
 
   pool
     .acquire()
@@ -753,21 +702,10 @@ tap.test("destroy should redispense", function(t) {
 });
 
 tap.test("evictor start with acquire when autostart is false", function(t) {
-  const pool = createPool(
-    {
-      create: function() {
-        return Promise.resolve({ id: "validId" });
-      },
-      validate: function(resource) {
-        return Promise.resolve(true);
-      },
-      destroy: function(client) {}
-    },
-    {
-      evictionRunIntervalMillis: 10000,
-      autostart: false
-    }
-  );
+  const pool = createPool(new ResourceFactory(), {
+    evictionRunIntervalMillis: 10000,
+    autostart: false
+  });
 
   t.equal(pool._scheduledEviction, null);
 
@@ -783,16 +721,9 @@ tap.test("evictor start with acquire when autostart is false", function(t) {
 });
 
 tap.test("use method", function(t) {
-  const pool = createPool({
-    create: function() {
-      return Promise.resolve({
-        id: "validId"
-      });
-    },
-    destroy: function(client) {}
-  });
+  const pool = createPool(new ResourceFactory());
   const result = pool.use(function(resource) {
-    t.equal("validId", resource.id);
+    t.equal(0, resource.id);
     return Promise.resolve();
   });
   result.then(function() {

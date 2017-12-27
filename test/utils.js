@@ -4,26 +4,27 @@ const Pool = require("../lib/Pool");
  * Generic class for handling creation of resources
  * for testing
  */
-var ResourceFactory = function ResourceFactory() {
-  this.created = 0;
-  this.destroyed = 0;
-  this.bin = [];
-};
+class ResourceFactory {
+  constructor() {
+    this.created = 0;
+    this.destroyed = 0;
+    this.bin = [];
+  }
 
-ResourceFactory.prototype.create = function() {
-  var id = this.created++;
-  var resource = {
-    id: id
-  };
-  return Promise.resolve(resource);
-};
+  create() {
+    return Promise.resolve({ id: this.created++ });
+  }
 
-ResourceFactory.prototype.destroy = function(resource) {
-  this.destroyed++;
-  this.bin.push(resource);
-  return Promise.resolve();
-};
+  validate() {
+    return Promise.resolve(true);
+  }
 
+  destroy(resource) {
+    this.destroyed++;
+    this.bin.push(resource);
+    return Promise.resolve();
+  }
+}
 exports.ResourceFactory = ResourceFactory;
 
 /**
