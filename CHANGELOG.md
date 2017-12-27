@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.4.0] - December 27 2017
+- #218 fix numerous docblock annotations and minor errors in internal classes (@geovanisouza92)
+
 ## [3.3.0] - December 27 2017
 - add `use` method to simplify basic pool usage (@san00)
 
