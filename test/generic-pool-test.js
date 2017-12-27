@@ -796,6 +796,6 @@ tap.test("use method", function(t) {
     return Promise.resolve();
   });
   result.then(function() {
-    t.end;
+    t.end();
   });
 });
