@@ -790,12 +790,12 @@ tap.test("use method", function(t) {
       });
     },
     destroy: function(client) {}
-  })
+  });
   const result = pool.use(function(resource) {
-    t.equal("validId", resource.id)
-    return Promise.resolve()
-  })
+    t.equal("validId", resource.id);
+    return Promise.resolve();
+  });
   result.then(function() {
-    t.end
-  })
-})
+    t.end;
+  });
+});
