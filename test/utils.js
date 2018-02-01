@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 const Pool = require("../lib/Pool");
 
