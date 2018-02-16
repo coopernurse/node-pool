@@ -735,14 +735,14 @@ tap.test("use method should resolve after fn promise is resolved", function(t) {
   const pool = createPool(new ResourceFactory());
   let done_with_resource = false;
   const result = pool.use(function(resource) {
-    return new Promise(function (resolve, reject) {
-       setImmediate(function () {
-         done_with_resource = true;
-         resolve("value")
-       })
-     })
+    return new Promise(function(resolve, reject) {
+      setImmediate(function() {
+        done_with_resource = true;
+        resolve("value");
+      });
+    });
   });
-  result.then((val) => {
+  result.then(val => {
     t.equal(done_with_resource, true);
     t.equal(val, "value");
     t.end();
