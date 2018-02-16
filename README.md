@@ -232,6 +232,27 @@ pool.start()
 
 If `autostart` is `false` then this method can be used to start the pool and therefore begin creation of resources, start the evictor, and any other internal logic.
 
+### pool.use
+
+```js
+
+const myTask = dbClient => {
+  return new Promise( (resolve, reject) => {
+    // do something with the client and resolve/reject
+    })
+}
+
+pool.use(myTask).then(/* a promise that will run after myTask resolves */)
+```
+
+This method handles acquiring a `resource` from the pool, handing it to your function and then calling `pool.release` or `pool.destroy` with resource after your function has finished.
+
+`use` takes one required argument:
+
+- `fn`: a function that accepts a `resource` and returns a `Promise`. Once that promise `resolve`s the `resource` is returned to the pool, else if it `reject`s then the resource is destroyed.
+
+and returns a `Promise` that either `resolve`s with the value from the user supplied `fn` or `reject`s with an error.
+
 ## Idle Object Eviction
 
 The pool has an evictor (off by default) which will inspect idle items in the pool and `destroy` them if they are too old.
