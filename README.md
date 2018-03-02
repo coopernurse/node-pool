@@ -99,7 +99,7 @@ Whilst it is possible to directly instantiate the Pool class directly, it is rec
 The createPool function takes two arguments:
 
 - `factory` :  an object containing functions to create/destroy/test resources for the `Pool`
-- `opts` : an optional object/dictonary to allow configuring/altering behaviour the of the `Pool`
+- `opts` : an optional object/dictonary to allow configuring/altering behaviour of the `Pool`
 
 ```js
 const genericPool = require('generic-pool')
