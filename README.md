@@ -134,7 +134,7 @@ An optional object/dictionary with the any of the following properties:
                          see example.  (default 1)
 - `autostart`: boolean, should the pool start creating resources, initialize the evictor, etc once the constructor is called. If false, the pool can be started by calling `pool.start`, otherwise the first call to `acquire` will start the pool. (default true)
 - `evictionRunIntervalMillis`: How often to run eviction checks. Default: 0 (does not run).
-- `numTestsPerRun`: Number of resources to check each eviction run.  Default: 3.
+- `numTestsPerEvictionRun`: Number of resources to check each eviction run.  Default: 3.
 - `softIdleTimeoutMillis`: amount of time an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any), with the extra condition that at least "min idle" object instances remain in the pool. Default -1 (nothing can get evicted)
 - `idleTimeoutMillis`: the minimum amount of time that an object may sit idle in the pool before it is eligible for eviction due to idle time. Supercedes `softIdleTimeoutMillis` Default: 30000
 - `Promise`: Promise lib, a Promises/A+ implementation that the pool should use. Defaults to whatever `global.Promise` is (usually native promises).
