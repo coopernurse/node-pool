@@ -768,3 +768,46 @@ tap.test("evictor should not run when softIdleTimeoutMillis is -1", function(
       t.end();
     });
 });
+
+tap.test("should respect when maxWaitingClients is set to 0 ", function(t) {
+  let assertionCount = 0;
+  const resourceFactory = new ResourceFactory();
+  const config = {
+    max: 2,
+    maxWaitingClients: 0
+  };
+
+  const pool = createPool(resourceFactory, config);
+
+  const borrowedResources = [];
+
+  t.equal(pool.size, 0);
+  assertionCount += 1;
+
+  pool
+    .acquire()
+    .then(function(obj) {
+      borrowedResources.push(obj);
+      t.equal(pool.size, 1);
+      assertionCount += 1;
+    })
+    .then(function() {
+      return pool.acquire();
+    })
+    .then(function(obj) {
+      borrowedResources.push(obj);
+      t.equal(pool.size, 2);
+      assertionCount += 1;
+    })
+    .then(function() {
+      return pool.acquire();
+    })
+    .then(function(obj) {
+      // should not go in here
+      t.equal(1, 2);
+    })
+    .catch(error => {
+      t.equal(error.message, "max waitingClients count exceeded");
+      t.end();
+    });
+});
