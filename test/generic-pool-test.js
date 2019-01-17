@@ -748,3 +748,23 @@ tap.test("use method should resolve after fn promise is resolved", function(t) {
     t.end();
   });
 });
+
+tap.test("evictor should not run when softIdleTimeoutMillis is -1", function(
+  t
+) {
+  const resourceFactory = new ResourceFactory();
+  const pool = createPool(resourceFactory, {
+    evictionRunIntervalMillis: 10
+  });
+  pool
+    .acquire()
+    .then(res => pool.release(res))
+    .then(() => {
+      return new Promise(res => setTimeout(res, 30));
+    })
+    .then(() => t.equal(resourceFactory.destroyed, 0))
+    .then(() => {
+      utils.stopPool(pool);
+      t.end();
+    });
+});
