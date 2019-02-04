@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.6.0] - Febuary 4 2019
+- update docs (@chdh)
+- fix #159 - pool.clear can no longer "skip" clearing up resources when called early in pool lifecycle (@sandfox)
+
 ## [3.5.0] - January 17 2019
 - update nodejs versions tested by travis
 - eviction iterator no longer stops when reaching end of object list #243 (@DiegoRBaquero)
