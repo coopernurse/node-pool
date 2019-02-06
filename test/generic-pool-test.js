@@ -276,18 +276,16 @@ tap.test("clear promise resolves with no value", function(t) {
   };
   const pool = createPool(factory, { max: 3, min: 3 });
   Promise.all([pool.acquire(), pool.acquire(), pool.acquire()]).then(all => {
-    for (let resource of all) {
+    all.forEach(resource => {
       process.nextTick(pool.release.bind(pool), resource);
-    }
+    });
   });
 
   t.equal(pool.pending, 3, "all acquisitions pending");
 
   pool
     .drain()
-    .then(() => {
-      return pool.clear();
-    })
+    .then(() => pool.clear())
     .then(resolved => {
       t.equal(resolved, undefined, "clear promise resolves with no value");
       t.end();
