@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.6.1] - Febuary 6 2019
+- fix #251 - silence bluebird warning about side-effect only handler (@sandfox)
+- Pool.clear no longer resolves to pointless array on undefineds (@restjohn)
+
 ## [3.6.0] - Febuary 4 2019
 - update docs (@chdh)
 - fix #159 - pool.clear can no longer "skip" clearing up resources when called early in pool lifecycle (@sandfox)
@@ -184,7 +188,9 @@
 
 =======
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.5.0...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.6.1...HEAD
+[3.6.1]: https://github.com/coopernurse/node-pool/compare/v3.6.0...v3.6.1
+[3.6.0]: https://github.com/coopernurse/node-pool/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/coopernurse/node-pool/compare/v3.4.2...v3.5.0
 [3.4.2]: https://github.com/coopernurse/node-pool/compare/v3.4.1...v3.4.2
 [3.4.1]: https://github.com/coopernurse/node-pool/compare/v3.4.0...v3.4.1
