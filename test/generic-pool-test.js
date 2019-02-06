@@ -257,6 +257,47 @@ tap.test("tests drain", function(t) {
     });
 });
 
+tap.test("clear promise resolves with no value", function(t) {
+  let resources = [];
+  const factory = {
+    create: function create() {
+      return new Promise(function tryCreate(resolve, reject) {
+        let resource = resources.shift();
+        if (resource) {
+          resolve(resource);
+        } else {
+          process.nextTick(tryCreate.bind(this, resolve, reject));
+        }
+      });
+    },
+    destroy: function() {
+      return Promise.resolve();
+    }
+  };
+  const pool = createPool(factory, { max: 3, min: 3 });
+  Promise.all([pool.acquire(), pool.acquire(), pool.acquire()]).then(all => {
+    all.forEach(resource => {
+      process.nextTick(pool.release.bind(pool), resource);
+    });
+  });
+
+  t.equal(pool.pending, 3, "all acquisitions pending");
+
+  pool
+    .drain()
+    .then(() => pool.clear())
+    .then(resolved => {
+      t.equal(resolved, undefined, "clear promise resolves with no value");
+      t.end();
+    });
+
+  process.nextTick(() => {
+    resources.push("a");
+    resources.push("b");
+    resources.push("c");
+  });
+});
+
 tap.test("handle creation errors", function(t) {
   let created = 0;
   const resourceFactory = {
