@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.7.1] - March 28 2019
+- fix #257 - `pool.use` now destroys resources on rejection, matching the docs.
+
 ## [3.6.1] - Febuary 6 2019
 - fix #251 - silence bluebird warning about side-effect only handler (@sandfox)
 - Pool.clear no longer resolves to pointless array on undefineds (@restjohn)
@@ -188,7 +191,8 @@
 
 =======
 
-[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.6.1...HEAD
+[unreleased]: https://github.com/coopernurse/node-pool/compare/v3.7.1...HEAD
+[3.7.1]: https://github.com/coopernurse/node-pool/compare/v3.6.1...v3.7.1
 [3.6.1]: https://github.com/coopernurse/node-pool/compare/v3.6.0...v3.6.1
 [3.6.0]: https://github.com/coopernurse/node-pool/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/coopernurse/node-pool/compare/v3.4.2...v3.5.0
