@@ -1,0 +1,6 @@
+.eslintignore
+.eslintrc.js
+.travis.yml
+Makefile
+tsconfig.json
+test/*
