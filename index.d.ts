@@ -1,6 +1,6 @@
-// Type definitions for generic-pool 3.1
+// Type definitions for node-pool 3.1
 // Derived from https://github.com/DefinitelyTyped/DefinitelyTyped
-// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/454dcbcbe5e932010b128dca9793758dd28adb45/types/generic-pool/index.d.ts
+// -> https://github.com/DefinitelyTyped/DefinitelyTyped/blob/454dcbcbe5e932010b128dca9793758dd28adb45/types/generic-pool/index.d.ts
 
 /// <reference types="node" />
 
