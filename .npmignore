@@ -1,7 +1,0 @@
-node_modules/generic-pool/.eslintignore
-node_modules/generic-pool/.eslintrc.js
-node_modules/generic-pool/.travis.yml
-node_modules/generic-pool/CHANGELOG.md
-node_modules/generic-pool/Makefile
-node_modules/generic-pool/tsconfig.json
-node_modules/generic-pool/test/*
