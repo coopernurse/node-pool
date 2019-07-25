@@ -852,3 +852,19 @@ tap.test("should respect when maxWaitingClients is set to 0 ", function(t) {
       t.end();
     });
 });
+
+tap.test("should provide a way to wait until the pool is ready", function(t) {
+  const resourceFactory = new ResourceFactory();
+  const config = {
+    min: 2,
+    max: 4
+  };
+
+  const pool = createPool(resourceFactory, config);
+
+  pool.ready()
+    .then(() => {
+      t.equal(pool.min, 2)
+      t.end()
+    })
+})
