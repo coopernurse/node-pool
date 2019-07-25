@@ -862,9 +862,11 @@ tap.test("should provide a way to wait until the pool is ready", function(t) {
 
   const pool = createPool(resourceFactory, config);
 
-  pool.ready()
-    .then(() => {
-      t.equal(pool.min, 2)
-      t.end()
-    })
-})
+  pool.ready().then(() => {
+    t.ok(
+      pool.available >= config.min,
+      "expected available resources to be at least as the minimum"
+    );
+    t.end();
+  });
+});
