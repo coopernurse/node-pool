@@ -99,7 +99,7 @@ Whilst it is possible to directly instantiate the Pool class directly, it is rec
 The createPool function takes two arguments:
 
 - `factory` :  an object containing functions to create/destroy/test resources for the `Pool`
-- `opts` : an optional object/dictonary to allow configuring/altering behaviour the of the `Pool`
+- `opts` : an optional object/dictonary to allow configuring/altering behaviour of the `Pool`
 
 ```js
 const genericPool = require('generic-pool')
@@ -127,14 +127,14 @@ An optional object/dictionary with the any of the following properties:
 - `max`: maximum number of resources to create at any given time. (default=1)
 - `min`: minimum number of resources to keep in pool at any given time. If this is set >= max, the pool will silently set the min to equal `max`. (default=0)
 - `maxWaitingClients`: maximum number of queued requests allowed, additional `acquire` calls will be callback with an `err` in a future cycle of the event loop.
-- `testOnBorrow`: `boolean`: should the pool validate resources before giving them to clients. Requires that either `factory.validate` or `factory.validateAsync` to be specified
+- `testOnBorrow`: `boolean`: should the pool validate resources before giving them to clients. Requires that `factory.validate` is specified.
 - `acquireTimeoutMillis`: max milliseconds an `acquire` call will wait for a resource before timing out. (default no limit), if supplied should non-zero positive integer.
 - `fifo` : if true the oldest resources will be first to be allocated. If false the most recently released resources will be the first to be allocated. This in effect turns the pool's behaviour from a queue into a stack. `boolean`, (default true)
 - `priorityRange`: int between 1 and x - if set, borrowers can specify their relative priority in the queue if no resources are available.
                          see example.  (default 1)
 - `autostart`: boolean, should the pool start creating resources, initialize the evictor, etc once the constructor is called. If false, the pool can be started by calling `pool.start`, otherwise the first call to `acquire` will start the pool. (default true)
 - `evictionRunIntervalMillis`: How often to run eviction checks. Default: 0 (does not run).
-- `numTestsPerRun`: Number of resources to check each eviction run.  Default: 3.
+- `numTestsPerEvictionRun`: Number of resources to check each eviction run.  Default: 3.
 - `softIdleTimeoutMillis`: amount of time an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any), with the extra condition that at least "min idle" object instances remain in the pool. Default -1 (nothing can get evicted)
 - `idleTimeoutMillis`: the minimum amount of time that an object may sit idle in the pool before it is eligible for eviction due to idle time. Supercedes `softIdleTimeoutMillis` Default: 30000
 - `maxTries`: maximum number of consequent failures before pool stops trying to create resource and rejects resource request. Default: 0 (tries forever until resource is created).
@@ -232,6 +232,27 @@ pool.start()
 ```
 
 If `autostart` is `false` then this method can be used to start the pool and therefore begin creation of resources, start the evictor, and any other internal logic.
+
+### pool.use
+
+```js
+
+const myTask = dbClient => {
+  return new Promise( (resolve, reject) => {
+    // do something with the client and resolve/reject
+    })
+}
+
+pool.use(myTask).then(/* a promise that will run after myTask resolves */)
+```
+
+This method handles acquiring a `resource` from the pool, handing it to your function and then calling `pool.release` or `pool.destroy` with resource after your function has finished.
+
+`use` takes one required argument:
+
+- `fn`: a function that accepts a `resource` and returns a `Promise`. Once that promise `resolve`s the `resource` is returned to the pool, else if it `reject`s then the resource is destroyed.
+
+and returns a `Promise` that either `resolve`s with the value from the user supplied `fn` or `reject`s with an error.
 
 ## Idle Object Eviction
 

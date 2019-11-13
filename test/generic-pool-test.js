@@ -257,6 +257,47 @@ tap.test("tests drain", function(t) {
     });
 });
 
+tap.test("clear promise resolves with no value", function(t) {
+  let resources = [];
+  const factory = {
+    create: function create() {
+      return new Promise(function tryCreate(resolve, reject) {
+        let resource = resources.shift();
+        if (resource) {
+          resolve(resource);
+        } else {
+          process.nextTick(tryCreate.bind(this, resolve, reject));
+        }
+      });
+    },
+    destroy: function() {
+      return Promise.resolve();
+    }
+  };
+  const pool = createPool(factory, { max: 3, min: 3 });
+  Promise.all([pool.acquire(), pool.acquire(), pool.acquire()]).then(all => {
+    all.forEach(resource => {
+      process.nextTick(pool.release.bind(pool), resource);
+    });
+  });
+
+  t.equal(pool.pending, 3, "all acquisitions pending");
+
+  pool
+    .drain()
+    .then(() => pool.clear())
+    .then(resolved => {
+      t.equal(resolved, undefined, "clear promise resolves with no value");
+      t.end();
+    });
+
+  process.nextTick(() => {
+    resources.push("a");
+    resources.push("b");
+    resources.push("c");
+  });
+});
+
 tap.test("handle creation errors", function(t) {
   let created = 0;
   const resourceFactory = {
@@ -729,4 +770,85 @@ tap.test("use method", function(t) {
   result.then(function() {
     t.end();
   });
+});
+
+tap.test("use method should resolve after fn promise is resolved", function(t) {
+  const pool = createPool(new ResourceFactory());
+  let done_with_resource = false;
+  const result = pool.use(function(resource) {
+    return new Promise(function(resolve, reject) {
+      setImmediate(function() {
+        done_with_resource = true;
+        resolve("value");
+      });
+    });
+  });
+  result.then(val => {
+    t.equal(done_with_resource, true);
+    t.equal(val, "value");
+    t.end();
+  });
+});
+
+tap.test("evictor should not run when softIdleTimeoutMillis is -1", function(
+  t
+) {
+  const resourceFactory = new ResourceFactory();
+  const pool = createPool(resourceFactory, {
+    evictionRunIntervalMillis: 10
+  });
+  pool
+    .acquire()
+    .then(res => pool.release(res))
+    .then(() => {
+      return new Promise(res => setTimeout(res, 30));
+    })
+    .then(() => t.equal(resourceFactory.destroyed, 0))
+    .then(() => {
+      utils.stopPool(pool);
+      t.end();
+    });
+});
+
+tap.test("should respect when maxWaitingClients is set to 0 ", function(t) {
+  let assertionCount = 0;
+  const resourceFactory = new ResourceFactory();
+  const config = {
+    max: 2,
+    maxWaitingClients: 0
+  };
+
+  const pool = createPool(resourceFactory, config);
+
+  const borrowedResources = [];
+
+  t.equal(pool.size, 0);
+  assertionCount += 1;
+
+  pool
+    .acquire()
+    .then(function(obj) {
+      borrowedResources.push(obj);
+      t.equal(pool.size, 1);
+      assertionCount += 1;
+    })
+    .then(function() {
+      return pool.acquire();
+    })
+    .then(function(obj) {
+      borrowedResources.push(obj);
+      t.equal(pool.size, 2);
+      assertionCount += 1;
+    })
+    .then(function() {
+      return pool.acquire();
+    })
+    .then(function(obj) {
+      // should not go in here
+      t.equal(1, 2);
+    })
+    .catch(error => {
+      t.equal(error.message, "max waitingClients count exceeded");
+      t.end();
+    });
 });
