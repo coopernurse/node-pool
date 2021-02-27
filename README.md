@@ -250,6 +250,7 @@ This method handles acquiring a `resource` from the pool, handing it to your fun
 `use` takes one required argument:
 
 - `fn`: a function that accepts a `resource` and returns a `Promise`. Once that promise `resolve`s the `resource` is returned to the pool, else if it `reject`s then the resource is destroyed.
+- `priority`: Optionally, you can specify the priority as number. See [Priority Queueing](#priority-queueing) section.
 
 and returns a `Promise` that either `resolve`s with the value from the user supplied `fn` or `reject`s with an error.
 
