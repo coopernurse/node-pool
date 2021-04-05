@@ -232,6 +232,14 @@ pool.start()
 
 If `autostart` is `false` then this method can be used to start the pool and therefore begin creation of resources, start the evictor, and any other internal logic.
 
+### pool.ready
+
+```js
+pool.ready()
+```
+
+Waits for the pool to fully start.
+
 ### pool.use
 
 ```js
