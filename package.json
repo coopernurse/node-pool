@@ -1,7 +1,7 @@
 {
   "name": "generic-pool",
   "description": "Generic resource pooling for Node.JS",
-  "version": "3.7.2",
+  "version": "3.7.8",
   "author": "James Cooper <james@bitmechanic.com>",
   "contributors": [
     {
