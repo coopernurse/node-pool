@@ -1,68 +1,271 @@
 {
   "name": "generic-pool",
   "description": "Generic resource pooling for Node.JS",
+  "homepage": "https://github.com/coopernurse/node-pool#readme",
   "version": "3.8.1",
-  "author": "James Cooper <james@bitmechanic.com>",
+  "main": "index.js",
+  "author": {
+    "email": "james@bitmechanic.com",
+    "name": "James Cooper"
+  },
   "contributors": [
+    {
+      "name": "James Butler",
+      "email": "james.butler@sandfox.co.uk"
+    },
     {
       "name": "James Cooper",
       "email": "james@bitmechanic.com"
     },
     {
-      "name": "Peter Galiba",
-      "email": "poetro@poetro.hu",
-      "url": "http://poetro.hu/"
-    },
-    {
-      "name": "Gary Dusbabek"
-    },
-    {
-      "name": "Tom MacWright",
-      "url": "http://www.developmentseed.org/"
-    },
-    {
-      "name": "Douglas Christopher Wilson",
-      "email": "doug@somethingdoug.com",
-      "url": "http://somethingdoug.com/"
-    },
-    {
-      "name": "calibr"
-    },
-    {
-      "name": "Justin Robinson",
-      "email": "jrobinson@redventures.com>"
-    },
-    {
-      "name": "Nayana Hettiarachchi",
-      "email": "nayana@corp-gems.com"
+      "name": "Kiko Beats",
+      "email": "josefrancisco.verdu@gmail.com"
     },
     {
       "name": "Felipe Machado",
       "email": "felipou@gmail.com"
     },
     {
+      "name": "Idan Attias",
+      "email": "idana@wix.com"
+    },
+    {
+      "name": "Bryan Donovan",
+      "email": "bdondo@gmail.com"
+    },
+    {
+      "name": "rebareba",
+      "email": "forcdc1990@gmail.com"
+    },
+    {
+      "name": "Thomas Dimson",
+      "email": "tdimson@gmail.com"
+    },
+    {
+      "name": "C-h-e-r-r-y",
+      "email": "C-h-e-r-r-y@users.noreply.github.com"
+    },
+    {
+      "name": "t3hmrman",
+      "email": "t3hmrman@gmail.com"
+    },
+    {
+      "name": "Kevin Burke",
+      "email": "burke@shyp.com"
+    },
+    {
+      "name": "Peter Galiba",
+      "email": "poetro@poetro.hu"
+    },
+    {
+      "name": "Joe Z",
+      "email": "jzarate@gmail.com"
+    },
+    {
+      "name": "Anup Baldawa",
+      "email": "anup@joinhoney.com"
+    },
+    {
+      "name": "travis4all",
+      "email": "travis4all@diamon.dz"
+    },
+    {
+      "name": "windyrobin",
+      "email": "windyrobin@Gmail.com"
+    },
+    {
+      "name": "Nayana Hettiarachchi",
+      "email": "nayana@corp-gems.com"
+    },
+    {
       "name": "Felix Becker",
       "email": "felix.b@outlook.com"
     },
     {
-      "name": "sandfox",
-      "email": "james.butler@sandfox.co.uk"
+      "name": "Geovani de Souza",
+      "email": "geovanisouza92@gmail.com"
     },
     {
-      "name": "Lewis J Ellis",
-      "email": "me@lewisjellis.com"
+      "name": "Ryan Dao",
+      "email": "ddao@paypal.com"
+    },
+    {
+      "name": "Sushant",
+      "email": "sushantdhiman@outlook.com"
+    },
+    {
+      "name": "Jemila",
+      "email": "jemila.abulhawa@gmail.com"
+    },
+    {
+      "name": "Christian d'Heureuse",
+      "email": "chdh@inventec.ch"
+    },
+    {
+      "name": "Will Shaver",
+      "email": "will.shaver@emberex.com"
+    },
+    {
+      "name": "Justin Robinson",
+      "email": "jrobinson@redventures.com"
+    },
+    {
+      "name": "Diego Rodríguez Baquero",
+      "email": "diegorbaquero@gmail.com"
+    },
+    {
+      "name": "Asbjørn Sannes",
+      "email": "asbjorn.sannes@interhost.no"
+    },
+    {
+      "name": "linchuang",
+      "email": "linchuang@tencent.com"
+    },
+    {
+      "name": "restjohn",
+      "email": "restjohn@users.noreply.github.com"
+    },
+    {
+      "name": "san00",
+      "email": "c5d59d07@opayq.com"
+    },
+    {
+      "name": "王秋石",
+      "email": "12qiushi@163.com"
+    },
+    {
+      "name": "An Nguyen Le",
+      "email": "nguyenan169@gmail.com"
+    },
+    {
+      "name": "Arek Flinik",
+      "email": "aflinik@gmail.com"
+    },
+    {
+      "name": "Bryan Kaplan",
+      "email": "bryan@pinchit.com"
+    },
+    {
+      "name": "Douglas Christopher Wilson",
+      "email": "doug@somethingdoug.com"
+    },
+    {
+      "name": "Drew R",
+      "email": "drewrathbone@gmail.com"
+    },
+    {
+      "name": "Dumitru Uzun",
+      "email": "contact@duzun.me"
+    },
+    {
+      "name": "Jason Rhodes",
+      "email": "jason.matthew.rhodes@gmail.com"
+    },
+    {
+      "name": "John Dooley",
+      "email": "john.j.dooley@gmail.com"
+    },
+    {
+      "name": "Lewis Ellis",
+      "email": "lewis@getsentry.com"
+    },
+    {
+      "name": "Louis Roché",
+      "email": "mail+github@louisroche.net"
+    },
+    {
+      "name": "Magnus Eide",
+      "email": "eide@iterate.no"
+    },
+    {
+      "name": "Mike Morris",
+      "email": "mikemorris@users.noreply.github.com"
+    },
+    {
+      "name": "Piotr",
+      "email": "pwalc@agora.pl"
+    },
+    {
+      "name": "Rajesh kumar",
+      "email": "zazzel.cvs@gmail.com"
+    },
+    {
+      "name": "Randall Leeds",
+      "email": "randall.leeds@gmail.com"
+    },
+    {
+      "name": "Roy Binux",
+      "email": "root@binux.me"
+    },
+    {
+      "name": "Sandro Santilli",
+      "email": "strk@keybit.net"
+    },
+    {
+      "name": "Stephen Cresswell",
+      "email": "229672+cressie176@users.noreply.github.com"
+    },
+    {
+      "name": "Teemu Ikonen",
+      "email": "teemu.ikonen@iki.fi"
+    },
+    {
+      "name": "Tevye Krynski",
+      "email": "tevye@mog.com"
+    },
+    {
+      "name": "Thom Seddon",
+      "email": "thom@nightworld.com"
+    },
+    {
+      "name": "Thomas Watson Steen",
+      "email": "w@tson.dk"
+    },
+    {
+      "name": "Tom MacWright",
+      "email": "macwright@gmail.com"
+    },
+    {
+      "name": "Wilfred van der Deijl",
+      "email": "wilfred@vanderdeijl.com"
+    },
+    {
+      "name": "Young Hahn",
+      "email": "young@developmentseed.org"
+    },
+    {
+      "name": "benny-medflyt",
+      "email": "benny@medflyt.com"
+    },
+    {
+      "name": "calibr",
+      "email": "awcalibr@gmail.com"
+    },
+    {
+      "name": "gdusbabek",
+      "email": "gdusbabek@gmail.com"
+    },
+    {
+      "name": "molipet",
+      "email": "molipet@gmail.com"
+    },
+    {
+      "name": "Alexander Tesfamichael",
+      "email": "Alex.Tesfamichael@gmail.com"
     }
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/coopernurse/node-pool.git"
+  },
+  "bugs": {
+    "url": "https://github.com/coopernurse/node-pool/issues"
+  },
   "keywords": [
     "pool",
     "pooling",
     "throttle"
   ],
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/coopernurse/node-pool.git"
-  },
   "devDependencies": {
     "@types/node": "^8.5.1",
     "eslint": "^4.9.0",
@@ -76,6 +279,11 @@
   "engines": {
     "node": ">= 4"
   },
+  "files": [
+    "index.d.ts",
+    "index.js",
+    "lib"
+  ],
   "scripts": {
     "lint": "eslint lib test index.js .eslintrc.js",
     "lint-fix": "eslint --fix lib test index.js .eslintrc.js",
