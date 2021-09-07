@@ -9,7 +9,7 @@ import { EventEmitter } from "events";
 export declare interface Pool<T> {
     on(event: 'factoryCreateError', listener: (error: Error) => void | Promise<void>): this;
     on(event: 'factoryDestroyError', listener: (error: Error) => void | Promise<void>): this;
-    on(event: 'resourceAcquires', listener: () => void | Promise<void>): this;
+    on(event: 'resourceAcquired', listener: () => void | Promise<void>): this;
     on(event: 'resourceReleased', listener: () => void | Promise<void>): this;
 }
 
