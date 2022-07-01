@@ -23,6 +23,7 @@ export class Pool<T> extends EventEmitter {
     clear(): Promise<void>;
     use<U>(cb: (resource: T) => U | Promise<U>): Promise<U>;
     isBorrowedResource(resource: T): boolean;
+    ready(): Promise<void>;
 }
 
 export interface Factory<T> {
