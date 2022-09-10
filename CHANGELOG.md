@@ -1,4 +1,14 @@
-# Change Log
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [3.9.0](https://github.com/coopernurse/node-pool/compare/v3.8.2...v3.9.0) (2022-09-10)
+
+
+### Bug Fixes
+
+* add ready function to index.d.ts ([0a5ef1d](https://github.com/coopernurse/node-pool/commit/0a5ef1dd9124ea7d56626c7cc295e181c15ad4e2))
+* unref setTimeout in pool ([e94fd37](https://github.com/coopernurse/node-pool/commit/e94fd374266acb1531b986050ba7486b03b18250))
 
 ## [3.7.1] - March 28 2019
 - fix #257 - `pool.use` now destroys resources on rejection, matching the docs.
