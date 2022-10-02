@@ -146,7 +146,6 @@ export interface Options {
   min?: number;
   maxWaitingClients?: number;
   testOnBorrow?: boolean;
-  testOnReturn?: boolean;
   acquireTimeoutMillis?: number;
   destroyTimeoutMillis?: number;
   fifo?: boolean;
