@@ -790,6 +790,34 @@ tap.test("use method should resolve after fn promise is resolved", function(t) {
   });
 });
 
+tap.test("use method should handle synchronous work functions", function(t) {
+  const pool = createPool(new ResourceFactory());
+  const initialBorrowed = pool.borrowed;
+  const result = pool.use(resource => {
+    t.equal(initialBorrowed + 1, pool.borrowed);
+    return resource.id;
+  });
+  result.then(val => {
+    t.equal(val, 0);
+    t.equal(initialBorrowed, pool.borrowed);
+    t.end();
+  });
+});
+
+tap.test("use method should handle synchronous throws", function(t) {
+  const pool = createPool(new ResourceFactory());
+  const initialBorrowed = pool.borrowed;
+  const result = pool.use(resource => {
+    t.equal(initialBorrowed + 1, pool.borrowed);
+    throw new Error("expected");
+  });
+  result.catch(e => {
+    t.equal(initialBorrowed, pool.borrowed);
+    t.equal(e.message, "expected");
+    t.end();
+  });
+});
+
 tap.test("evictor should not run when softIdleTimeoutMillis is -1", function(
   t
 ) {
