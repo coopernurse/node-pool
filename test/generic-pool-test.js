@@ -208,6 +208,30 @@ tap.test("evictor removes instances on idletimeout", function(t) {
   }, 120);
 });
 
+tap.test("evictor removes instances on maxAgeMillis", function(t) {
+  const resourceFactory = new ResourceFactory();
+  const config = {
+    min: 2,
+    max: 2,
+    maxAgeMillis: 50,
+    evictionRunIntervalMillis: 10
+  };
+  const pool = createPool(resourceFactory, config);
+
+  setTimeout(function() {
+    pool
+      .acquire()
+      .then(res => {
+        t.ok(res.id > 1);
+        return pool.release(res);
+      })
+      .then(() => {
+        utils.stopPool(pool);
+        t.end();
+      });
+  }, 120);
+});
+
 tap.test("tests drain", function(t) {
   const count = 5;
   let acquired = 0;
