@@ -139,6 +139,7 @@ An optional object/dictionary with the any of the following properties:
 - `softIdleTimeoutMillis`: amount of time an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any), with the extra condition that at least "min idle" object instances remain in the pool. Default -1 (nothing can get evicted)
 - `idleTimeoutMillis`: the minimum amount of time that an object may sit idle in the pool before it is eligible for eviction due to idle time. Supercedes `softIdleTimeoutMillis` Default: 30000
 - `Promise`: Promise lib, a Promises/A+ implementation that the pool should use. Defaults to whatever `global.Promise` is (usually native promises).
+- `maxAgeMillis`: the maximum amount of time passed since an object has been created before it is eligible for eviction. Note it must first become idle to be evicted. Default: -1 (no max age)
 
 ### pool.acquire
 
@@ -265,10 +266,13 @@ and returns a `Promise` that either `resolve`s with the value from the user supp
 
 ## Idle Object Eviction
 
-The pool has an evictor (off by default) which will inspect idle items in the pool and `destroy` them if they are too old.
+The pool has an evictor (off by default) which will inspect idle items in the pool and `destroy` them if they have been idle too long.
 
 By default the evictor does not run, to enable it you must set the `evictionRunIntervalMillis` option to a non-zero value. Once enable the evictor will check at most `numTestsPerEvictionRun` each time, this is to stop it blocking your application if you have lots of resources in the pool.
 
+## Max Age Object Eviction
+
+By setting `maxAgeMillis` the evictor will inspect idle items in the pool and `destroy` any objects that have been created more than `maxAgeMillis` ago.
 
 ## Priority Queueing
 

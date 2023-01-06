@@ -123,6 +123,7 @@ export interface IEvictorConfig {
   softIdleTimeoutMillis: number;
   idleTimeoutMillis: number;
   min: number;
+  maxAgeMillis: number;
 }
 
 export interface IEvictor<T> {
@@ -155,6 +156,7 @@ export interface Options {
   numTestsPerEvictionRun?: number;
   softIdleTimeoutMillis?: number;
   idleTimeoutMillis?: number;
+  maxAgeMillis?: number;
 }
 
 export class Pool<T> extends EventEmitter {
