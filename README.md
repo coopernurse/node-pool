@@ -272,7 +272,7 @@ By default the evictor does not run, to enable it you must set the `evictionRunI
 
 ## Max Age Object Eviction
 
-By setting `maxAgeMillis` the evictor will inspect idle items in the pool and `destroy` any objects have been created more than `maxAgeMillis` ago.
+By setting `maxAgeMillis` the evictor will inspect idle items in the pool and `destroy` any objects that have been created more than `maxAgeMillis` ago.
 
 ## Priority Queueing
 
