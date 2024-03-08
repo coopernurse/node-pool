@@ -361,7 +361,7 @@ pool.borrowed
 // returns number of callers waiting to acquire a resource
 pool.pending
 
-// returns number of maxixmum number of resources allowed by pool
+// returns number of maximum number of resources allowed by pool
 pool.max
 
 // returns number of minimum number of resources allowed by pool
