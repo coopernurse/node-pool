@@ -186,7 +186,7 @@ export class Pool<T> extends EventEmitter {
 
   clear(): Promise<void>;
 
-  use<U>(cb: (resource: T) => U | Promise<U>): Promise<U>;
+  use<U>(cb: (resource: T) => U | Promise<U>, priority?: number): Promise<U>;
 
   isBorrowedResource(resource: T): boolean;
 
