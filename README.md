@@ -116,7 +116,7 @@ Can be any object/instance but must have the following properties:
 
 optionally it can also have the following property:
 
-- `validate`: a function that the pool will call if it wants to validate a resource. It should accept one argument `resource` where `resource` is whatever `factory.create` made. Should return a `Promise` that resolves a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid.
+- `validate`: a function that the pool will call if it wants to validate a resource. It should accept one argument `resource` where `resource` is whatever `factory.create` made. Should return a `Promise` that resolves a `boolean` where `true` indicates the resource is still valid or `false` if the resource is invalid. A rejected promise is treated as `false`: the resource is destroyed and the pool continues serving waiting clients.
 
 _Note: The values returned from `create`, `destroy`, and `validate` are all wrapped in a `Promise.resolve` by the pool before being used internally._
 
